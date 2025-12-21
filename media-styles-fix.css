@@ -1,0 +1,63 @@
+/* Copy these corrected media card styles into theme.css */
+
+/* Replace the .media-card iframe section around line 433 with: */
+.media-card iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Replace the .post-media .media-card section around line 1420 with: */
+.post-media .media-card {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: none;
+}
+
+.post-media .media-card img {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: auto;
+  border-radius: 8px;
+}
+
+.post-media .media-card video {
+  width: 100%;
+  display: block;
+  background: #000;
+  border-radius: 8px;
+}
+
+.post-media .media-card iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: none;
+  display: block;
+  border-radius: 8px;
+}
+
+/* Replace the responsive media cards section around line 1290 with: */
+@media (max-width: 768px) {
+  .media-card {
+    border-radius: 6px;
+  }
+  
+  .media-card img,
+  .media-card video,
+  .media-card iframe {
+    border-radius: 6px;
+  }
+  
+  .media-caption {
+    font-size: 13px;
+    padding: 6px 0 0 0;
+  }
+}

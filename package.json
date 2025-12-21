@@ -1,0 +1,17 @@
+{
+  "name": "personal-journal",
+  "version": "1.0.0",
+  "description": "Full-stack personal journal application",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"npm run backend:dev\" \"npm run frontend:dev\"",
+    "backend:dev": "cd backend && npm run dev",
+    "frontend:dev": "cd frontend && npm start",
+    "build": "cd frontend && npm run build",
+    "start:prod": "NODE_ENV=production node backend/server.js",
+    "start": "npm run start:prod"
+  },
+  "devDependencies": {
+    "concurrently": "^7.6.0"
+  }
+}
