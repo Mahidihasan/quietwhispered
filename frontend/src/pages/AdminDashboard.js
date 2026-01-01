@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostEditor from '../components/PostEditor';
-import { postsAPI, authAPI } from '../api';
+import { postsAPI, authAPI, quoteAPI } from '../api';
 import { FiLogOut, FiFilter } from 'react-icons/fi';
 import { format } from 'date-fns';
 
@@ -38,11 +38,15 @@ const AdminDashboard = () => {
         }
     }, [navigate]);
 
-    const loadQuote = useCallback(() => {
-        const savedQuote = localStorage.getItem('siteQuote');
-        if (savedQuote) {
-            setQuote(JSON.parse(savedQuote));
-        } else {
+    const loadQuote = useCallback(async () => {
+        try {
+            const response = await quoteAPI.get();
+            if (response.data.success) {
+                setQuote(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error loading quote:', error);
+            // Set default quote on error
             setQuote({
                 text: "The pen is mightier than the sword.",
                 author: "— Edward Bulwer-Lytton"
@@ -98,15 +102,17 @@ const AdminDashboard = () => {
         return [...new Set(years)].sort((a, b) => b - a);
     };
 
-    const handleSaveQuote = (e) => {
+    const handleSaveQuote = async (e) => {
         e.preventDefault();
         setQuoteSaving(true);
         try {
-            localStorage.setItem('siteQuote', JSON.stringify(quote));
-            alert('Quote saved successfully!');
+            const response = await quoteAPI.update(quote);
+            if (response.data.success) {
+                alert('Quote saved successfully! All devices will see the updated quote.');
+            }
         } catch (error) {
             console.error('Error saving quote:', error);
-            alert('Failed to save quote');
+            alert('Failed to save quote. Please try again.');
         } finally {
             setQuoteSaving(false);
         }

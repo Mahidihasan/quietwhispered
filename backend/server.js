@@ -89,6 +89,7 @@ db.once('open', () => {
 const postRoutes = require('./routes/posts');
 const authRoutes = require('./routes/auth');
 const uploadRoutes = require('./routes/uploads');
+const quoteRoutes = require('./routes/quote');
 
 // Apply rate limiter to auth routes BEFORE registering them
 const rateLimitedAuthRoutes = express.Router();
@@ -98,6 +99,7 @@ rateLimitedAuthRoutes.use('/', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/auth', rateLimitedAuthRoutes);
 app.use('/api/uploads', uploadRoutes);
+app.use('/api/quote', quoteRoutes);
 app.use('/uploads', express.static(uploadsDir));
 
 // Explicit media handler to avoid reliance on static mounting

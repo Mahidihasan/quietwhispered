@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Entry from '../components/Entry';
 import ArchiveSidebar from '../components/ArchiveSidebar';
-import { postsAPI } from '../api';
+import { postsAPI, quoteAPI } from '../api';
 
 const JournalHome = () => {
   const [posts, setPosts] = useState([]);
@@ -13,12 +13,21 @@ const JournalHome = () => {
     author: "— Edward Bulwer-Lytton"
   });
 
-  useEffect(() => {
-    const savedQuote = localStorage.getItem('siteQuote');
-    if (savedQuote) {
-      setQuote(JSON.parse(savedQuote));
+  const fetchQuote = useCallback(async () => {
+    try {
+      const response = await quoteAPI.get();
+      if (response.data.success) {
+        setQuote(response.data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching quote:', err);
+      // Keep default quote on error
     }
   }, []);
+
+  useEffect(() => {
+    fetchQuote();
+  }, [fetchQuote]);
 
   const fetchPosts = useCallback(async () => {
     try {

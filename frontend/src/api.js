@@ -61,4 +61,16 @@ export const postsAPI = {
     }
 };
 
+// Quote API calls
+export const quoteAPI = {
+    get: () => api.get('/quote', {
+        headers: {
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        }
+    }),
+    update: (data) => api.put('/quote', data),
+};
+
 export default api;
