@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 const fileUpload = require('express-fileupload');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
@@ -17,19 +18,23 @@ if (!process.env.MONGODB_URI) {
 }
 
 const app = express();
+const uploadsDir = path.join(__dirname, process.env.FILE_UPLOAD_PATH || 'uploads');
 
 // Security: Helmet for security headers
+// In production, allow backend's own domain for media
+const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
 app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
-            mediaSrc: ["'self'", "https://res.cloudinary.com"],
+            imgSrc: ["'self'", "data:", "https://res.cloudinary.com", backendUrl],
+            mediaSrc: ["'self'", "https://res.cloudinary.com", backendUrl],
             frameSrc: ["'self'", "https://www.youtube.com", "https://player.vimeo.com"],
             scriptSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'"]
         }
     },
+    crossOriginResourcePolicy: false,
     hsts: {
         maxAge: 31536000,
         includeSubDomains: true,
@@ -93,17 +98,40 @@ rateLimitedAuthRoutes.use('/', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/auth', rateLimitedAuthRoutes);
 app.use('/api/uploads', uploadRoutes);
-app.use('/uploads', express.static(path.join(__dirname, process.env.FILE_UPLOAD_PATH || 'uploads')));
+app.use('/uploads', express.static(uploadsDir));
+
+// Explicit media handler to avoid reliance on static mounting
+app.get('/media/:filename', (req, res) => {
+    const filename = req.params.filename;
+    if (!filename) {
+        return res.status(400).json({ success: false, message: 'Filename is required' });
+    }
+    const filePath = path.join(uploadsDir, filename);
+    fs.access(filePath, fs.constants.F_OK, (err) => {
+        if (err) {
+            return res.status(404).json({ success: false, message: 'File not found' });
+        }
+        res.sendFile(filePath, (sendErr) => {
+            if (sendErr) {
+                console.error('Error sending file:', sendErr);
+                if (!res.headersSent) {
+                    res.status(500).json({ success: false, message: 'Failed to send file' });
+                }
+            }
+        });
+    });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ success: true, message: 'Server is running' });
 });
 
-// Serve static files and frontend in production
-if (process.env.NODE_ENV === 'production') {
-    const frontendBuildPath = path.join(__dirname, '../frontend/build');
-    
+// Serve static files and frontend build when available (works in dev/prod)
+const frontendBuildPath = path.join(__dirname, '../frontend/build');
+if (fs.existsSync(frontendBuildPath)) {
+    console.log('📦 Serving frontend build from', frontendBuildPath);
+
     // Serve static assets (JS, CSS, images, etc.)
     app.use(express.static(frontendBuildPath, {
         etag: false,
@@ -115,6 +143,8 @@ if (process.env.NODE_ENV === 'production') {
     app.get('*', (req, res) => {
         res.sendFile(path.join(frontendBuildPath, 'index.html'));
     });
+} else {
+    console.warn('⚠️ Frontend build not found at', frontendBuildPath, '- run "npm run build" in frontend/ if you want the backend to serve the UI.');
 }
 
 const PORT = process.env.PORT || 5000;

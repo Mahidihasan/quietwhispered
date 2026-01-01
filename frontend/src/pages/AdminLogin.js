@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../api';
-import { FiLogIn } from 'react-icons/fi';
 
 const AdminLogin = () => {
     const [credentials, setCredentials] = useState({
@@ -48,7 +47,6 @@ const AdminLogin = () => {
                     <div className="login-header">
                         <h2>Admin Portal</h2>
                         <p>Secure Access</p>
-                        <FiLogIn size={40} />
                     </div>
 
                     {error && (
@@ -94,10 +92,6 @@ const AdminLogin = () => {
                             {loading ? 'Logging in...' : 'Enter Admin Portal'}
                         </button>
                     </form>
-
-                    <div className="login-footer">
-                        <p>Demo: admin / changeme123</p>
-                    </div>
                 </div>
             </div>
         </div>

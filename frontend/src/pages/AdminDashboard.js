@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostEditor from '../components/PostEditor';
 import { postsAPI, authAPI } from '../api';
-import { FiPlus, FiEdit, FiTrash2, FiLogOut, FiFilter } from 'react-icons/fi';
+import { FiLogOut, FiFilter } from 'react-icons/fi';
 import { format } from 'date-fns';
 
 const AdminDashboard = () => {
@@ -140,9 +140,6 @@ const AdminDashboard = () => {
         <div className="admin-dashboard">
             <div className="dashboard-header">
                 <h2>Admin Dashboard</h2>
-                <button className="pixel-button" onClick={handleLogout}>
-                    <FiLogOut /> Logout
-                </button>
             </div>
 
             {/* Quote Management Section */}
@@ -168,20 +165,20 @@ const AdminDashboard = () => {
                             required
                         />
                     </label>
-                    <button type="submit" className="pixel-button" disabled={quoteSaving}>
+                    <button type="submit" className="btn-primary" disabled={quoteSaving}>
                         {quoteSaving ? 'Saving...' : 'Save Quote'}
                     </button>
                 </form>
             </div>
 
             <button 
-                className="pixel-button new-post-btn"
+                className="btn-primary new-post-btn"
                 onClick={() => {
                     setEditingPost(null);
                     setShowEditor(true);
                 }}
             >
-                <FiPlus /> New Post
+                + New Entry
             </button>
 
             {/* Filter Section */}
@@ -295,6 +292,7 @@ const AdminDashboard = () => {
                                     Edit
                                 </button>
                                 <button 
+                                    className="delete"
                                     onClick={() => handleDelete(post._id)}
                                 >
                                     Delete

@@ -40,4 +40,7 @@ mongodb_data/
 
 # Development
 .nodemon.json
-uploads/
+
+# Uploads - keep folder structure, not uploaded files
+uploads/*
+!uploads/.gitkeep

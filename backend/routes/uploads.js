@@ -19,6 +19,7 @@ router.post('/', protect, async (req, res) => {
         }
 
         const file = req.files.file;
+        
         const mimeOk = ALLOWED_MIME.some(prefix => file.mimetype.startsWith(prefix));
         if (!mimeOk) {
             return res.status(400).json({ success: false, message: 'Only image and video uploads are allowed' });
@@ -33,7 +34,7 @@ router.post('/', protect, async (req, res) => {
         const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${safeName}`;
         const type = file.mimetype.startsWith('video') ? 'video' : 'image';
 
-        res.status(201).json({ success: true, url: fileUrl, type });
+        res.status(201).json({ success: true, url: fileUrl, filename: safeName, type });
     } catch (error) {
         console.error('Upload error:', error);
         res.status(500).json({ success: false, message: 'File upload failed' });

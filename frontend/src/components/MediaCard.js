@@ -1,15 +1,50 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { getMediaType, getEmbedUrl } from '../utils/mediaUtils';
+
+const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
 /**
  * Modern media card component for images and videos
  * Supports: uploaded images/videos, YouTube, and Vimeo embeds
  */
 const MediaCard = ({ src, alt, caption, className = '' }) => {
+  const [safeSrc, setSafeSrc] = useState('');
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    // Process the src URL
+    let processedSrc = src;
+    
+    if (!src) {
+      setSafeSrc(FALLBACK_IMAGE);
+      return;
+    }
+
+    // If it's just a filename (no http/https and no /), prepend /uploads/
+    if (typeof src === 'string' && 
+        !src.startsWith('http') && 
+        !src.startsWith('/') && 
+        !src.includes('youtu') && 
+        !src.includes('vimeo')) {
+      processedSrc = `/uploads/${src}`;
+    }
+
+    setSafeSrc(processedSrc);
+    setError(false);
+  }, [src]);
+
   if (!src) return null;
 
-  const mediaType = getMediaType(src);
-  const embedUrl = getEmbedUrl(src);
+  const mediaType = getMediaType(safeSrc);
+  const embedUrl = getEmbedUrl(safeSrc);
+
+  const handleError = (e) => {
+    console.error('Image failed to load:', safeSrc);
+    setError(true);
+    if (safeSrc !== FALLBACK_IMAGE) {
+      setSafeSrc(FALLBACK_IMAGE);
+    }
+  };
 
   const renderMedia = () => {
     // YouTube or Vimeo embed
@@ -25,20 +60,19 @@ const MediaCard = ({ src, alt, caption, className = '' }) => {
         />
       );
     }
-
-    // Uploaded video file
+    
     if (mediaType === 'video') {
       return (
-        <video controls playsInline preload="metadata">
-          <source src={src} type="video/mp4" />
-          <source src={src} type="video/webm" />
+        <video controls playsInline preload="metadata" onError={handleError}>
+          <source src={safeSrc} type="video/mp4" />
+          <source src={safeSrc} type="video/webm" />
           Your browser does not support the video tag.
         </video>
       );
     }
 
     // Image (default)
-    return <img src={src} alt={alt || ''} />;
+    return <img src={safeSrc} alt={alt || ''} onError={handleError} />;
   };
 
   return (

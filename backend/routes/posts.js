@@ -91,6 +91,7 @@ router.post('/', protect, async (req, res) => {
         await post.save();
         res.status(201).json({ success: true, data: post });
     } catch (error) {
+        console.error('[POST CREATE] Error:', error);
         res.status(400).json({ 
             success: false, 
             message: process.env.NODE_ENV === 'production' ? 'Invalid request' : error.message 
@@ -111,6 +112,7 @@ router.put('/:id', protect, async (req, res) => {
         }
         res.json({ success: true, data: post });
     } catch (error) {
+        console.error('[POST UPDATE] Error:', error);
         res.status(400).json({ 
             success: false, 
             message: process.env.NODE_ENV === 'production' ? 'Invalid request' : error.message 

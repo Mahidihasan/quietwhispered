@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/theme.css';
 import Navbar from './components/Navbar';
 import JournalHome from './pages/JournalHome';
@@ -13,6 +13,18 @@ const ProtectedRoute = ({ children }) => {
     return token ? children : <Navigate to="/admin/login" />;
 };
 
+// Ensure direct hits to /admin/login or other paths normalize to hash URLs
+const HashNormalizer = () => {
+    useEffect(() => {
+        const { hash, pathname, search } = window.location;
+        const hasHash = hash && hash !== '#' && hash !== '#/';
+        if (!hasHash && pathname && pathname !== '/') {
+            window.location.hash = `#${pathname}${search || ''}`;
+        }
+    }, []);
+    return null;
+};
+
 function App() {
     useEffect(() => {
         // Set API base URL if not already set
@@ -24,6 +36,7 @@ function App() {
     return (
         <Router>
             <div className="App">
+                <HashNormalizer />
                 <Navbar />
                 <Routes>
                     <Route path="/" element={<JournalHome />} />

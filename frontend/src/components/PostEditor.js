@@ -32,7 +32,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 mood: post.mood || ''
             });
             // Detect if editing a video post with URL
-            if (post.type === 'video' && post.media && !post.media.startsWith('/uploads')) {
+            if (post.type === 'video' && post.media && !post.media.startsWith('/uploads') && !post.media.startsWith('http')) {
                 setVideoMode('url');
             }
         }
@@ -104,24 +104,30 @@ const PostEditor = ({ post, onClose, onSave }) => {
             // Handle cover image upload
             if (coverFile) {
                 const uploadRes = await postsAPI.upload(coverFile);
-                uploadedCover = uploadRes.data.url;
+                uploadedCover = uploadRes.data.url || uploadRes.data.filename;
             }
 
-            // Handle video
+            // CRITICAL: Determine the final post type and media URL
+            // Priority: videoFile > videoUrl (if mode is 'url') > coverImage
+
             if (videoFile) {
-                // Upload video file
+                // Upload video file (NEW VIDEO UPLOAD)
                 const uploadRes = await postsAPI.upload(videoFile);
-                uploadedVideo = uploadRes.data.url;
+                uploadedVideo = uploadRes.data.url || uploadRes.data.filename;
                 postType = 'video';
                 mediaUrl = uploadedVideo;
-            } else if (formData.videoUrl.trim()) {
-                // Use video URL
+            } else if (videoMode === 'url' && formData.videoUrl.trim()) {
+                // Use existing or new video URL (URL mode is active)
                 postType = 'video';
                 mediaUrl = formData.videoUrl;
             } else if (uploadedCover) {
-                // Image cover
+                // Use cover image (image upload or existing image)
                 postType = 'image';
                 mediaUrl = uploadedCover;
+            } else {
+                // No media selected, default to story type
+                postType = 'story';
+                mediaUrl = '';
             }
 
             const payload = {
@@ -136,17 +142,18 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 media: mediaUrl
             };
 
+            console.log('[PostEditor] Full payload:', JSON.stringify(payload, null, 2));
+
             if (post) {
                 await postsAPI.update(post._id, payload);
             } else {
                 await postsAPI.create(payload);
             }
-            
+
             onSave();
-        } catch (error) {
-            setError(error.response?.data?.message || 'Error saving post');
-            console.error('Error saving post:', error);
-        } finally {
+            setLoading(false);
+        } catch (err) {
+            setError(err.response?.data?.message || 'Error saving post');
             setLoading(false);
         }
     };

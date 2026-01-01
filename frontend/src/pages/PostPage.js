@@ -3,7 +3,63 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
-import MediaCard from '../components/MediaCard';
+
+const FALLBACK_IMAGE = '/images/posts/fallback.svg';
+
+const uploadOrigin = process.env.REACT_APP_UPLOAD_ORIGIN || 'http://localhost:5000';
+const apiOrigin = (() => {
+    try {
+        return process.env.REACT_APP_API_URL ? new URL(process.env.REACT_APP_API_URL).origin : null;
+    } catch {
+        return null;
+    }
+})();
+
+const siteOrigin = process.env.REACT_APP_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+
+const buildAbsoluteUrl = (raw) => {
+    if (!raw) return null;
+    
+    // Already a full URL
+    if (/^https?:\/\//i.test(raw)) {
+        return raw;
+    }
+    
+    // Protocol-relative URL
+    if (raw.startsWith('//')) {
+        return `https:${raw}`;
+    }
+
+    // Remove leading slashes
+    const clean = raw.replace(/^\/+/, '');
+    
+    // Simple filename or path starting with 'uploads'
+    // Always use the backend upload origin
+    const finalUrl = `http://localhost:5000/uploads/${clean}`;
+    return finalUrl;
+};
+
+const setMetaTag = (attr, name, content) => {
+    if (!content) return;
+    let tag = document.querySelector(`meta[${attr}="${name}"]`);
+    if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, name);
+        document.head.appendChild(tag);
+    }
+    tag.setAttribute('content', content);
+};
+
+const setCanonical = (url) => {
+    if (!url) return;
+    let link = document.querySelector('link[rel="canonical"]');
+    if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+    }
+    link.setAttribute('href', url);
+};
 
 const PostPage = () => {
     const { id } = useParams();
@@ -32,6 +88,26 @@ const PostPage = () => {
         fetchPost();
     }, [fetchPost]);
 
+    useEffect(() => {
+        if (!post) return;
+        const base = process.env.REACT_APP_SITE_URL || window.location.origin;
+        const absoluteImage = buildAbsoluteUrl(post.media) || `${base}${FALLBACK_IMAGE}`;
+        console.log('Post cover URL:', absoluteImage);
+        const description = (post.content || '').split('\n').find(Boolean)?.slice(0, 180) || 'Read this journal entry.';
+        const url = window.location.href;
+
+        document.title = `${post.title} | Journal`;
+        setCanonical(url);
+        setMetaTag('property', 'og:title', post.title);
+        setMetaTag('property', 'og:description', description);
+        setMetaTag('property', 'og:image', absoluteImage);
+        setMetaTag('property', 'og:url', url);
+        setMetaTag('name', 'twitter:card', 'summary_large_image');
+        setMetaTag('name', 'twitter:title', post.title);
+        setMetaTag('name', 'twitter:description', description);
+        setMetaTag('name', 'twitter:image', absoluteImage);
+    }, [post]);
+
     if (loading) {
         return (
             <div className="loading">
@@ -58,6 +134,8 @@ const PostPage = () => {
             </div>
         );
     }
+
+    const coverUrl = buildAbsoluteUrl(post.media);
 
     const getMoodColor = (mood) => {
         const moodColors = {
@@ -108,9 +186,20 @@ const PostPage = () => {
 
                 {post.media && (
                     <div className="post-media">
-                        <MediaCard 
-                            src={post.media} 
+                        <img 
+                            src={coverUrl} 
                             alt={post.title}
+                            style={{
+                                width: '100%',
+                                height: 'auto',
+                                borderRadius: '8px',
+                                display: 'block',
+                                margin: '0 auto'
+                            }}
+                            onError={(e) => {
+                                console.error('Image failed to load:', coverUrl);
+                                e.target.src = '/images/posts/fallback.svg';
+                            }}
                         />
                     </div>
                 )}

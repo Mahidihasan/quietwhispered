@@ -64,6 +64,7 @@ const HomePage = () => {
                                 ))}
                             </div>
                         )}
+
                     </div>
 
                     {posts.length > 0 && (
