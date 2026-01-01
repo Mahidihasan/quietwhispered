@@ -173,12 +173,12 @@ a:hover {
   grid-template-columns: minmax(0, 720px) minmax(260px, 320px);
   gap: clamp(50px, 8vw, 88px);
   padding: clamp(20px, 3vw, 32px) clamp(28px, 5vw, 56px);
-  height: calc(100vh - 62px);
+  min-height: calc(100vh - 62px);
   justify-content: center;
   align-items: start;
   max-width: 1280px;
   margin: 0 auto;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .quiet-main {
@@ -192,6 +192,13 @@ a:hover {
   height: 100%;
   padding-right: 12px;
   margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+  .quiet-main {
+    overflow-y: visible;
+    height: auto;
+  }
 }
 
 .quiet-main::-webkit-scrollbar {
@@ -212,6 +219,13 @@ a:hover {
   padding-left: 20px;
   max-width: 320px;
   width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .quiet-archive {
+    overflow-y: visible;
+    height: auto;
+  }
 }
 
 .quiet-archive::-webkit-scrollbar {
@@ -2868,14 +2882,18 @@ a:hover {
   .quiet-page {
     grid-template-columns: 1fr;
     max-width: 900px;
+    min-height: auto;
     height: auto;
     padding: clamp(16px, 4vw, 28px) clamp(16px, 5vw, 32px);
     overflow: visible;
+    display: flex;
+    flex-direction: column;
   }
 
   .quiet-main,
   .quiet-archive {
     height: auto;
+    max-height: none;
     overflow: visible;
     padding-right: 0;
   }
@@ -2932,19 +2950,30 @@ a:hover {
 
   .home-content {
     gap: 16px;
+    display: flex;
+    flex-direction: column;
   }
 
   .archive-column {
     width: 100%;
     margin-top: 12px;
+    position: static;
   }
 
   .quiet-page {
     padding: 18px 14px;
+    gap: 24px;
   }
 
   .quiet-main {
     gap: 32px;
+    max-height: none;
+    height: auto;
+  }
+
+  .quiet-archive {
+    max-height: none;
+    height: auto;
   }
 
   .editor-modal {
