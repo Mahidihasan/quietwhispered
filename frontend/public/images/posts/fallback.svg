@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450" role="img" aria-label="Placeholder image">
+  <rect width="800" height="450" fill="#0e0f11"/>
+  <rect x="32" y="32" width="736" height="386" rx="12" fill="#1a1b1e" stroke="#2a2a2d" stroke-width="4"/>
+  <circle cx="140" cy="190" r="64" fill="none" stroke="#2a2a2d" stroke-width="6"/>
+  <path d="M180 220l60-60 120 120" fill="none" stroke="#9d8f7a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+  <text x="50%" y="72%" text-anchor="middle" fill="#9a9a9a" font-family="'EB Garamond', 'Georgia', serif" font-size="32" letter-spacing="1">Image unavailable</text>
+</svg>

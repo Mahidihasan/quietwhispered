@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Locked down by default. If you use Firebase Storage, replace UID.
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == "P8XDi8J7v1ffk8Cd882QFsPw5fh2";
+    }
+  }
+}
