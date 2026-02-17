@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Frontend for Personal Pixel Journal",
   "private": true,
+  "engines": {
+    "node": "18.x"
+  },
   "homepage": "/",
   "dependencies": {
     "react": "^18.2.0",
