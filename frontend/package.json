@@ -8,15 +8,16 @@
   },
   "homepage": "/",
   "dependencies": {
+    "browser-image-compression": "^2.0.2",
+    "date-fns": "^2.29.3",
+    "firebase": "^9.23.0",
+    "firebase-admin": "^13.6.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "react-router-dom": "^6.8.0",
-    "firebase": "^9.23.0",
-    "date-fns": "^2.29.3",
-    "browser-image-compression": "^2.0.2",
+    "react-icons": "^4.7.1",
     "react-markdown": "^8.0.5",
-    "react-icons": "^4.7.1"
+    "react-router-dom": "^6.8.0",
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "dev": "react-scripts start",

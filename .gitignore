@@ -11,6 +11,10 @@ pnpm-debug.log*
 .env.*.local
 .env.production
 
+# Secrets
+serviceAccount.json
+quietwhispered-firebase-adminsdk-fbsvc-71fdbb9587.json
+
 # Production build
 build/
 dist/

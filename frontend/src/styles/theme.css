@@ -81,6 +81,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   position: relative;
+  isolation: isolate;
 }
 
 body::before {
@@ -95,7 +96,7 @@ body::before {
     repeating-linear-gradient(0deg, rgba(90, 60, 30, 0.06) 0px, rgba(90, 60, 30, 0.06) 1px, transparent 1px, transparent 4px);
   opacity: 0.8;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
 body::after {
@@ -106,7 +107,12 @@ body::after {
   mix-blend-mode: multiply;
   opacity: 0.45;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
 }
 
 /* Typography - Text is the hero */
@@ -204,6 +210,8 @@ a:hover {
   background: var(--bg-primary);
   overflow-x: hidden;
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 }
 
 /* NAVBAR - Minimal & Quiet */
