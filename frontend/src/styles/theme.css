@@ -4550,4 +4550,240 @@ a:hover {
   }
 }
 
+/* Global mobile fit for journal + admin editor */
+@media (max-width: 640px) {
+  .navbar {
+    padding: 10px 12px;
+  }
+
+  .nav-content {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .logo {
+    width: 100%;
+  }
+
+  .logo h1 {
+    font-size: 12px;
+    letter-spacing: 1.2px;
+  }
+
+  .theme-switch {
+    margin-left: auto;
+  }
+
+  .quiet-page {
+    padding: 16px 12px 40px;
+    gap: 18px;
+    border-radius: 12px;
+  }
+
+  .quiet-main {
+    padding-right: 0;
+  }
+
+  .journal-quote p {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  .entry {
+    padding: 18px 14px;
+  }
+
+  .entry-media,
+  .media-card {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .admin-dashboard {
+    padding: 20px 14px 40px;
+  }
+
+  .admin-hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-hero-actions .btn-primary,
+  .admin-hero-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .posts-scroll {
+    overflow: visible;
+    padding-right: 0;
+  }
+
+  .writing-layout {
+    padding: 16px 12px;
+  }
+
+  .writing-sidebar,
+  .writing-content {
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+
+  .writing-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .toolbar-group {
+    width: 100%;
+    flex-wrap: wrap;
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .toolbar-btn,
+  .toolbar-select,
+  .toolbar-input {
+    flex: 1 1 auto;
+    min-width: 96px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nav-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 10px;
+  }
+
+  .theme-switch {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .journal-quote p {
+    font-size: 16px;
+  }
+
+  .entry-title {
+    font-size: 20px;
+  }
+
+  .writing-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 500px) and (max-height: 500px) {
+  .writing-layout {
+    padding: 12px 10px;
+    gap: 12px;
+  }
+
+  .writing-sidebar,
+  .writing-content {
+    padding: 12px;
+  }
+
+  .writing-toolbar {
+    gap: 6px;
+  }
+
+  .toolbar-group {
+    gap: 6px;
+  }
+
+  .toolbar-btn,
+  .toolbar-select,
+  .toolbar-input {
+    font-size: 10px;
+    padding: 6px 8px;
+    min-width: 0;
+  }
+
+  .toolbar-color {
+    width: 24px;
+    height: 24px;
+  }
+
+  .writing-title {
+    font-size: 20px;
+    padding: 8px 0 12px;
+  }
+
+  .writing-textarea {
+    font-size: 14px;
+    min-height: 140px;
+  }
+
+  .sidebar-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 320px), (max-width: 240px) {
+  .writing-layout {
+    padding: 8px 6px;
+    gap: 10px;
+  }
+
+  .writing-sidebar,
+  .writing-content {
+    padding: 10px 8px;
+    border-radius: 10px;
+    box-shadow: none;
+  }
+
+  .writing-toolbar {
+    gap: 6px;
+    padding-bottom: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .writing-toolbar::-webkit-scrollbar {
+    height: 0;
+  }
+
+  .toolbar-group {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .toolbar-btn,
+  .toolbar-select,
+  .toolbar-input {
+    font-size: 9px;
+    padding: 5px 6px;
+    min-width: 72px;
+  }
+
+  .toolbar-color {
+    width: 22px;
+    height: 22px;
+  }
+
+  .writing-title {
+    font-size: 18px;
+    padding: 6px 0 10px;
+  }
+
+  .writing-textarea {
+    font-size: 13px;
+    min-height: 120px;
+  }
+}
+
 
