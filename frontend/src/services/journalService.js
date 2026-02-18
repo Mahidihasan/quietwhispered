@@ -16,9 +16,19 @@ import {
 import { auth, db } from '../firebase';
 import { uploadImageToCloudinary } from './cloudinaryUpload';
 
-const entriesCollection = collection(db, 'journalEntries');
+const ensureFirebase = () => {
+  if (!auth || !db) {
+    throw new Error('Firebase is not initialized. Check environment configuration.');
+  }
+};
+
+const getEntriesCollection = () => {
+  ensureFirebase();
+  return collection(db, 'journalEntries');
+};
 
 const ensureUser = () => {
+  ensureFirebase();
   const user = auth.currentUser;
   if (!user) {
     throw new Error('You must be signed in to access journal data.');
@@ -46,6 +56,7 @@ export const uploadImage = async (file, options = {}) => {
 
 export const createEntry = async (entry) => {
   const user = ensureUser();
+  const entriesCollection = getEntriesCollection();
   const payload = {
     ...entry,
     title: entry.title || '',
@@ -61,6 +72,7 @@ export const createEntry = async (entry) => {
 
 export const updateEntry = async (id, updates) => {
   ensureUser();
+  ensureFirebase();
   const refDoc = doc(db, 'journalEntries', id);
   return updateDoc(refDoc, {
     ...updates,
@@ -70,12 +82,14 @@ export const updateEntry = async (id, updates) => {
 
 export const deleteEntry = async (id) => {
   ensureUser();
+  ensureFirebase();
   const refDoc = doc(db, 'journalEntries', id);
   return deleteDoc(refDoc);
 };
 
 export const getEntryById = async (id) => {
   ensureUser();
+  ensureFirebase();
   const refDoc = doc(db, 'journalEntries', id);
   const snap = await getDoc(refDoc);
   if (!snap.exists()) return null;
@@ -84,6 +98,7 @@ export const getEntryById = async (id) => {
 
 export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   const user = ensureUser();
+  const entriesCollection = getEntriesCollection();
   const baseQuery = [
     where('ownerId', '==', user.uid),
     orderBy('createdAt', 'desc'),
@@ -98,6 +113,7 @@ export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
 
 export const getAllEntries = async () => {
   const user = ensureUser();
+  const entriesCollection = getEntriesCollection();
   const q = query(entriesCollection, where('ownerId', '==', user.uid), orderBy('createdAt', 'desc'));
   const snap = await getDocs(q);
   return snap.docs.map(normalizeEntry);

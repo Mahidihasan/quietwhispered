@@ -7,6 +7,7 @@ import PostPage from './pages/PostPage';
 import AdminLogin from './pages/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import useAuth from './hooks/useAuth';
+import { firebaseInitError } from './firebase';
 
 // Protected Route Component
 const ProtectedRoute = ({ children, user, loading }) => {
@@ -54,6 +55,12 @@ function App() {
             <div className="App">
                 <HashNormalizer />
                 <Navbar onToggleTheme={handleToggleTheme} theme={theme} />
+                {firebaseInitError && (
+                    <div className="error-state firebase-error">
+                        <h3>Firebase configuration issue</h3>
+                        <p>{String(firebaseInitError.message || firebaseInitError)}</p>
+                    </div>
+                )}
                 <Routes>
                     <Route
                         path="/"

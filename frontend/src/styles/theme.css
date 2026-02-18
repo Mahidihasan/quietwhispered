@@ -3454,6 +3454,12 @@ a:hover {
   margin-bottom: 1rem;
 }
 
+.firebase-error {
+  margin: 24px auto 0;
+  max-width: 960px;
+  width: calc(100% - 48px);
+}
+
 /* FORM ELEMENTS - Clean minimal */
 .form-row {
   display: grid;

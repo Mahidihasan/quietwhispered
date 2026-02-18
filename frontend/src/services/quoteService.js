@@ -1,9 +1,19 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
-const quoteDocRef = doc(db, 'settings', 'quote');
+const ensureFirebase = () => {
+  if (!auth || !db) {
+    throw new Error('Firebase is not initialized. Check environment configuration.');
+  }
+};
+
+const getQuoteDocRef = () => {
+  ensureFirebase();
+  return doc(db, 'settings', 'quote');
+};
 
 const ensureUser = () => {
+  ensureFirebase();
   const user = auth.currentUser;
   if (!user) {
     throw new Error('You must be signed in to access quote data.');
@@ -13,6 +23,7 @@ const ensureUser = () => {
 
 export const getQuote = async () => {
   ensureUser();
+  const quoteDocRef = getQuoteDocRef();
   const snap = await getDoc(quoteDocRef);
   if (!snap.exists()) {
     return null;
@@ -22,6 +33,7 @@ export const getQuote = async () => {
 
 export const saveQuote = async (quote) => {
   const user = ensureUser();
+  const quoteDocRef = getQuoteDocRef();
   const payload = {
     text: quote.text || '',
     author: quote.author || '',
