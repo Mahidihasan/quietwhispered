@@ -190,6 +190,92 @@ const PostEditor = ({ post, onClose, onSave }) => {
         });
     };
 
+    const replaceRange = (start, end, replacement) => {
+        const textarea = contentRef.current;
+        if (!textarea) return;
+        const before = formData.content.slice(0, start);
+        const after = formData.content.slice(end);
+        const nextValue = `${before}${replacement}${after}`;
+        setFormData(prev => ({ ...prev, content: nextValue }));
+        requestAnimationFrame(() => {
+            textarea.focus();
+            const cursor = start + replacement.length;
+            textarea.setSelectionRange(cursor, cursor);
+        });
+    };
+
+    const getLineInfo = () => {
+        const textarea = contentRef.current;
+        if (!textarea) return null;
+        const value = formData.content;
+        const cursor = textarea.selectionStart ?? value.length;
+        const lineStart = value.lastIndexOf('\n', cursor - 1) + 1;
+        const lineEndIndex = value.indexOf('\n', cursor);
+        const lineEnd = lineEndIndex === -1 ? value.length : lineEndIndex;
+        const line = value.slice(lineStart, lineEnd);
+        const offset = cursor - lineStart;
+        return { line, lineStart, lineEnd, offset };
+    };
+
+    const handleEditorKeyDown = (event) => {
+        const info = getLineInfo();
+        if (!info) return;
+        const { line, lineStart, lineEnd, offset } = info;
+        const listMatch = line.match(/^(\s*)([-*•]|\d+\.)\s+(.*)$/);
+        const listPrefixMatch = line.match(/^(\s*)([-*•]|\d+\.)\s*$/);
+
+        if (event.key === 'Tab') {
+            event.preventDefault();
+            replaceRange(lineStart + offset, lineStart + offset, '  ');
+            return;
+        }
+
+        if (event.key === ' ' && offset === line.length) {
+            if (line.trim() === '-') {
+                event.preventDefault();
+                replaceRange(lineStart, lineEnd, `${line.replace('-', '')}- `);
+                return;
+            }
+            if (line.trim() === '1.') {
+                event.preventDefault();
+                replaceRange(lineStart, lineEnd, `${line.replace('1.', '')}1. `);
+                return;
+            }
+        }
+
+        if (event.key === 'Enter') {
+            if (listPrefixMatch) {
+                event.preventDefault();
+                const value = formData.content;
+                const before = value.slice(0, lineStart);
+                let after = value.slice(lineEnd);
+                if (after.startsWith('\n')) {
+                    after = after.slice(1);
+                }
+                const nextValue = `${before}\n${after}`;
+                setFormData(prev => ({ ...prev, content: nextValue }));
+                requestAnimationFrame(() => {
+                    const textarea = contentRef.current;
+                    if (!textarea) return;
+                    textarea.focus();
+                    const cursor = lineStart + 1;
+                    textarea.setSelectionRange(cursor, cursor);
+                });
+                return;
+            }
+            if (listMatch) {
+                event.preventDefault();
+                const indent = listMatch[1] || '';
+                const marker = listMatch[2];
+                const isOrdered = /\d+\./.test(marker);
+                const nextMarker = isOrdered
+                    ? `${Math.max(1, parseInt(marker, 10) + 1)}.`
+                    : marker;
+                replaceRange(lineStart + offset, lineStart + offset, `\n${indent}${nextMarker} `);
+            }
+        }
+    };
+
     const handleInlineImageUpload = async (event) => {
         const file = event.target.files?.[0];
         if (!file) return;
@@ -544,6 +630,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         name="content"
                         value={formData.content}
                         onChange={handleChange}
+                        onKeyDown={handleEditorKeyDown}
                         className="writing-textarea"
                         placeholder="Write your entry..."
                         rows="20"

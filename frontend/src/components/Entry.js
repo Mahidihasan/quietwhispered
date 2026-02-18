@@ -52,38 +52,78 @@ const Entry = ({ post }) => {
     return safe;
   };
 
-  const lines = (post.content || '').split('\n').filter(line => line.trim());
-  const blocks = lines.map((line, index) => {
+  const lines = (post.content || '').split('\n');
+  const blocks = [];
+  let listBlock = null;
+
+  const flushList = () => {
+    if (listBlock) {
+      blocks.push(listBlock);
+      listBlock = null;
+    }
+  };
+
+  lines.forEach((line, index) => {
     const trimmed = line.trim();
+    if (!trimmed) {
+      flushList();
+      return;
+    }
+
+    const listMatch = line.match(/^(\s*)([-*•]|\d+\.)\s+(.*)$/);
+    if (listMatch) {
+      const indent = Math.floor((listMatch[1] || '').length / 2);
+      const marker = listMatch[2];
+      const listType = /\d+\./.test(marker) ? 'ol' : 'ul';
+      if (!listBlock || listBlock.listType !== listType) {
+        flushList();
+        listBlock = { type: 'list', listType, items: [], key: `list-${index}` };
+      }
+      listBlock.items.push({
+        html: renderInline(listMatch[3]),
+        indent,
+        key: `li-${index}-${listBlock.items.length}`
+      });
+      return;
+    }
+
+    flushList();
+
     const imageMatch = trimmed.match(/^\[image:\s*(.+?)\s*\]$/i);
     if (imageMatch) {
       const [rawUrl, rawCaption] = imageMatch[1].split('|');
-      return {
+      blocks.push({
         type: 'image',
         src: rawUrl.trim(),
         caption: rawCaption ? rawCaption.trim() : '',
         key: `img-${index}`
-      };
+      });
+      return;
     }
     const videoMatch = trimmed.match(/^\[video:\s*(.+?)\s*\]$/i);
     if (videoMatch) {
-      return { type: 'video', src: videoMatch[1], key: `vid-${index}` };
+      blocks.push({ type: 'video', src: videoMatch[1], key: `vid-${index}` });
+      return;
     }
     const embedMatch = trimmed.match(/^\[embed:\s*(.+?)\s*\]$/i);
     if (embedMatch) {
-      return { type: 'embed', src: embedMatch[1], key: `emb-${index}` };
+      blocks.push({ type: 'embed', src: embedMatch[1], key: `emb-${index}` });
+      return;
     }
     const alignMatch = trimmed.match(/^\[align=(left|center|right)\](.*)\[\/align\]$/i);
     if (alignMatch) {
-      return {
+      blocks.push({
         type: 'text',
         align: alignMatch[1].toLowerCase(),
         html: renderInline(alignMatch[2]),
         key: `txt-${index}`
-      };
+      });
+      return;
     }
-    return { type: 'text', align: null, html: renderInline(line), key: `txt-${index}` };
+    blocks.push({ type: 'text', align: null, html: renderInline(line), key: `txt-${index}` });
   });
+
+  flushList();
 
   const inlineImageUrls = new Set(
     blocks
@@ -116,6 +156,20 @@ const Entry = ({ post }) => {
 
       <div className="entry-body">
         {blocks.map(block => {
+          if (block.type === 'list') {
+            const ListTag = block.listType === 'ol' ? 'ol' : 'ul';
+            return (
+              <ListTag key={block.key} className={`entry-list ${block.listType}`}>
+                {block.items.map((item) => (
+                  <li
+                    key={item.key}
+                    style={{ marginLeft: `${item.indent * 16}px` }}
+                    dangerouslySetInnerHTML={{ __html: item.html }}
+                  />
+                ))}
+              </ListTag>
+            );
+          }
           if (block.type === 'image' || block.type === 'video' || block.type === 'embed') {
             const isVideo = block.type === 'video' || block.type === 'embed';
             return (
