@@ -3,7 +3,8 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../components/MediaCard';
-import { getEntryById } from '../services/journalService';
+import { getEntryById, getPublicEntryById } from '../services/journalService';
+import useAuth from '../hooks/useAuth';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
@@ -45,11 +46,12 @@ const PostPage = () => {
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    const { user, loading: authLoading } = useAuth();
 
     const fetchPost = useCallback(async () => {
         try {
             setLoading(true);
-            const data = await getEntryById(id);
+            const data = user ? await getEntryById(id) : await getPublicEntryById(id);
             if (!data) {
                 setError('Post not found or has been deleted');
                 setPost(null);
@@ -62,11 +64,12 @@ const PostPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [id]);
+    }, [id, user]);
 
     useEffect(() => {
+        if (authLoading) return;
         fetchPost();
-    }, [fetchPost]);
+    }, [authLoading, fetchPost]);
 
     useEffect(() => {
         if (!post) return;
@@ -116,6 +119,10 @@ const PostPage = () => {
     }
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
+    const titleSizeValue = Number(post.titleSize);
+    const titleSize = Number.isFinite(titleSizeValue)
+        ? Math.min(56, Math.max(20, titleSizeValue))
+        : null;
 
     const getMoodColor = (mood) => {
         const moodColors = {
@@ -137,7 +144,7 @@ const PostPage = () => {
 
             <article className="post-content">
                 <header className="post-page-header">
-                    <h1>{post.title}</h1>
+                    <h1 style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>{post.title}</h1>
                     
                     <div className="post-page-meta">
                         <div className="meta-item">

@@ -22,6 +22,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const [selectedFont, setSelectedFont] = useState('EB Garamond');
     const [markColor, setMarkColor] = useState('#d7c7a5');
     const [fontColor, setFontColor] = useState('#1f1b16');
+    const [titleSize, setTitleSize] = useState('32');
     const [imageCaption, setImageCaption] = useState('');
     const [savedImageCaption, setSavedImageCaption] = useState('');
     const [isImageCaptionSaved, setIsImageCaptionSaved] = useState(false);
@@ -42,6 +43,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 imageUrls: post.imageUrls || []
             });
             setImageUrls(post.imageUrls || []);
+            setTitleSize(String(post.titleSize || 32));
         }
     }, [post]);
 
@@ -119,7 +121,8 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 type: postType,
                 media: mediaUrl,
                 imageUrls: finalImageUrls,
-                youtubeEmbedUrl
+                youtubeEmbedUrl,
+                titleSize: Number(titleSize) || 32
             };
 
             console.log('[PostEditor] Full payload:', JSON.stringify(payload, null, 2));
@@ -437,6 +440,21 @@ const PostEditor = ({ post, onClose, onSave }) => {
                                 <option value="24">24</option>
                                 <option value="28">28</option>
                             </select>
+                            <select
+                                className="toolbar-select"
+                                value={titleSize}
+                                onChange={(e) => setTitleSize(e.target.value)}
+                                aria-label="Title size"
+                            >
+                                <option value="20">Title 20</option>
+                                <option value="24">Title 24</option>
+                                <option value="28">Title 28</option>
+                                <option value="32">Title 32</option>
+                                <option value="36">Title 36</option>
+                                <option value="40">Title 40</option>
+                                <option value="44">Title 44</option>
+                                <option value="48">Title 48</option>
+                            </select>
                             <input
                                 type="color"
                                 className="toolbar-color"
@@ -517,6 +535,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         onChange={handleChange}
                         className="writing-title"
                         placeholder="Title..."
+                        style={{ fontSize: `${Number(titleSize) || 32}px` }}
                         required
                     />
 

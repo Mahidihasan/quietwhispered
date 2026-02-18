@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Entry from '../components/Entry';
 import ArchiveSidebar from '../components/ArchiveSidebar';
-import { getEntriesPage } from '../services/journalService';
-import { getQuote } from '../services/quoteService';
+import { getEntriesPage, getPublicEntriesPage } from '../services/journalService';
+import { getQuote, getPublicQuote } from '../services/quoteService';
+import useAuth from '../hooks/useAuth';
 
 const JournalHome = () => {
   const [posts, setPosts] = useState([]);
@@ -11,6 +12,8 @@ const JournalHome = () => {
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 5;
+  const { user, loading: authLoading } = useAuth();
+  const isPrivateMode = Boolean(user);
   const [quote, setQuote] = useState({
     text: "",
     author: "",
@@ -21,7 +24,7 @@ const JournalHome = () => {
 
   const fetchQuote = useCallback(async () => {
     try {
-      const data = await getQuote();
+      const data = isPrivateMode ? await getQuote() : await getPublicQuote();
       if (data) {
         setQuote(prev => ({
           ...prev,
@@ -35,7 +38,7 @@ const JournalHome = () => {
       console.error('Error fetching quote:', err);
       // Keep default quote on error
     }
-  }, []);
+  }, [isPrivateMode]);
 
   useEffect(() => {
     fetchQuote();
@@ -45,7 +48,8 @@ const JournalHome = () => {
   const fetchPosts = useCallback(async (cursor = null) => {
     try {
       setIsLoading(true);
-      const { entries, lastDoc: nextLastDoc } = await getEntriesPage({ pageSize, lastDoc: cursor });
+      const fetchFn = isPrivateMode ? getEntriesPage : getPublicEntriesPage;
+      const { entries, lastDoc: nextLastDoc } = await fetchFn({ pageSize, lastDoc: cursor });
       setPosts(prev => (cursor ? [...prev, ...entries] : entries));
       setLastDoc(nextLastDoc);
       setHasMore(entries.length === pageSize);
@@ -55,9 +59,16 @@ const JournalHome = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [isPrivateMode]);
 
-  useEffect(() => { fetchPosts(null); }, [fetchPosts]);
+  useEffect(() => {
+    if (authLoading) return;
+    setPosts([]);
+    setLastDoc(null);
+    setHasMore(true);
+    setIsInitialLoad(true);
+    fetchPosts(null);
+  }, [authLoading, fetchPosts]);
 
   const showInitialLoading = isInitialLoad && isLoading;
 

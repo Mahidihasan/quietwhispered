@@ -96,6 +96,16 @@ export const getEntryById = async (id) => {
   return normalizeEntry(snap);
 };
 
+export const getPublicEntryById = async (id) => {
+  ensureFirebase();
+  const refDoc = doc(db, 'journalEntries', id);
+  const snap = await getDoc(refDoc);
+  if (!snap.exists()) return null;
+  const data = snap.data();
+  if (!data?.isPublished) return null;
+  return normalizeEntry(snap);
+};
+
 export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   const user = ensureUser();
   const entriesCollection = getEntriesCollection();
@@ -117,4 +127,15 @@ export const getAllEntries = async () => {
   const q = query(entriesCollection, where('ownerId', '==', user.uid), orderBy('createdAt', 'desc'));
   const snap = await getDocs(q);
   return snap.docs.map(normalizeEntry);
+};
+
+export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
+  ensureFirebase();
+  const entriesCollection = getEntriesCollection();
+  const baseQuery = [where('isPublished', '==', true), orderBy('createdAt', 'desc'), limit(pageSize)];
+  const q = lastDoc ? query(entriesCollection, ...baseQuery, startAfter(lastDoc)) : query(entriesCollection, ...baseQuery);
+  const snap = await getDocs(q);
+  const entries = snap.docs.map(normalizeEntry);
+  const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+  return { entries, lastDoc: nextLast };
 };

@@ -31,6 +31,16 @@ export const getQuote = async () => {
   return snap.data();
 };
 
+export const getPublicQuote = async () => {
+  ensureFirebase();
+  const quoteDocRef = getQuoteDocRef();
+  const snap = await getDoc(quoteDocRef);
+  if (!snap.exists()) {
+    return null;
+  }
+  return snap.data();
+};
+
 export const saveQuote = async (quote) => {
   const user = ensureUser();
   const quoteDocRef = getQuoteDocRef();

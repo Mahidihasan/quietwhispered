@@ -6,6 +6,10 @@ const Entry = ({ post }) => {
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
+  const titleSizeValue = Number(post.titleSize);
+  const titleSize = Number.isFinite(titleSizeValue)
+    ? Math.min(56, Math.max(20, titleSizeValue))
+    : null;
 
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter']);
 
@@ -81,10 +85,19 @@ const Entry = ({ post }) => {
     return { type: 'text', align: null, html: renderInline(line), key: `txt-${index}` };
   });
 
+  const inlineImageUrls = new Set(
+    blocks
+      .filter((block) => block.type === 'image' && block.src)
+      .map((block) => block.src)
+  );
+  const shouldShowCover = coverImage && post.type === 'image' && !inlineImageUrls.has(coverImage);
+
   return (
     <article id={`post-${post._id}`} className="entry fade-in">
       <header className="entry-header">
-        <h2 className="entry-title">{post.title}</h2>
+        <h2 className="entry-title" style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>
+          {post.title}
+        </h2>
         <div className="entry-meta">
           <span className="entry-date">{format(new Date(post.date || post.createdAt), 'MMMM d, yyyy')}</span>
           {moodLabel && <span className="entry-sep">•</span>}
@@ -95,7 +108,7 @@ const Entry = ({ post }) => {
         </div>
       </header>
 
-      {coverImage && post.type === 'image' && (
+      {shouldShowCover && (
         <div className="entry-media">
           <MediaCard src={coverImage} alt={post.title} />
         </div>
