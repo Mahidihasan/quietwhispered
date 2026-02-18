@@ -23,6 +23,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const [markColor, setMarkColor] = useState('#d7c7a5');
     const [fontColor, setFontColor] = useState('#1f1b16');
     const [imageCaption, setImageCaption] = useState('');
+    const [savedImageCaption, setSavedImageCaption] = useState('');
     const [isImageCaptionSaved, setIsImageCaptionSaved] = useState(false);
     const [fontSize, setFontSize] = useState('18');
     const [imageUrls, setImageUrls] = useState([]);
@@ -197,7 +198,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 onProgress: setUploadProgress
             });
             setImageUrls(prev => (prev.includes(url) ? prev : [...prev, url]));
-            const caption = isImageCaptionSaved ? imageCaption.trim() : '';
+            const caption = isImageCaptionSaved ? savedImageCaption.trim() : '';
             const captionPart = caption ? ` | ${caption}` : '';
             insertAtCursor(`\n[image: ${url}${captionPart}]\n`);
         } catch (err) {
@@ -473,7 +474,11 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             <button
                                 type="button"
                                 className={`toolbar-btn ${isImageCaptionSaved ? 'is-saved' : ''}`}
-                                onClick={() => setIsImageCaptionSaved(Boolean(imageCaption.trim()))}
+                                onClick={() => {
+                                    const nextCaption = imageCaption.trim();
+                                    setSavedImageCaption(nextCaption);
+                                    setIsImageCaptionSaved(Boolean(nextCaption));
+                                }}
                                 title={isImageCaptionSaved ? 'Caption saved' : 'Save caption'}
                                 aria-pressed={isImageCaptionSaved}
                                 disabled={!imageCaption.trim()}

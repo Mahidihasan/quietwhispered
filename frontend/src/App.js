@@ -64,19 +64,11 @@ function App() {
                 <Routes>
                     <Route
                         path="/"
-                        element={
-                            <ProtectedRoute user={user} loading={loading}>
-                                <JournalHome />
-                            </ProtectedRoute>
-                        }
+                        element={<JournalHome />}
                     />
                     <Route
                         path="/post/:id"
-                        element={
-                            <ProtectedRoute user={user} loading={loading}>
-                                <PostPage />
-                            </ProtectedRoute>
-                        }
+                        element={<PostPage />}
                     />
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route
