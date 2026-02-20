@@ -9,6 +9,7 @@ const JournalHome = () => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(true);
   const pageSize = 5;
@@ -48,6 +49,7 @@ const JournalHome = () => {
   const fetchPosts = useCallback(async (cursor = null) => {
     try {
       setIsLoading(true);
+      setLoadError('');
       const fetchFn = isPrivateMode ? getEntriesPage : getPublicEntriesPage;
       const { entries, lastDoc: nextLastDoc } = await fetchFn({ pageSize, lastDoc: cursor });
       setPosts(prev => (cursor ? [...prev, ...entries] : entries));
@@ -56,6 +58,7 @@ const JournalHome = () => {
       setIsInitialLoad(false);
     } catch (err) {
       console.error('Error fetching posts:', err);
+      setLoadError(err?.message ? String(err.message) : 'Failed to load posts.');
     } finally {
       setIsLoading(false);
     }
@@ -67,10 +70,12 @@ const JournalHome = () => {
     setLastDoc(null);
     setHasMore(true);
     setIsInitialLoad(true);
+    setLoadError('');
     fetchPosts(null);
   }, [authLoading, fetchPosts]);
 
   const showInitialLoading = isInitialLoad && isLoading;
+  const showEmptyState = !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
 
   return (
     <div className="quiet-page">
@@ -88,10 +93,29 @@ const JournalHome = () => {
           )}
         </div>
 
+        {loadError && (
+          <div className="error-state pixel-card">
+            <h3>Could not load entries</h3>
+            <p>{loadError}</p>
+            {!isPrivateMode && (
+              <p>
+                If these entries are private, sign in via <a href="#/admin/login">Admin Login</a>.
+              </p>
+            )}
+          </div>
+        )}
+
         {showInitialLoading && (
           <div className="loading minimal">
             <div className="minimal-loader"><span></span></div>
             <p>Loading journal...</p>
+          </div>
+        )}
+
+        {showEmptyState && (
+          <div className="empty-state pixel-card">
+            <h3>No entries yet</h3>
+            <p>{isPrivateMode ? 'Create your first entry from the admin dashboard.' : 'No public entries are available yet.'}</p>
           </div>
         )}
 

@@ -39,13 +39,22 @@ const ensureUser = () => {
 const normalizeEntry = (snap) => {
   const data = snap.data();
   const createdAt = data.createdAt?.toDate?.() || null;
+  const updatedAt = data.updatedAt?.toDate?.() || null;
+  const normalizedDate = data.date?.toDate?.() || data.date || createdAt || null;
   return {
     _id: snap.id,
     id: snap.id,
     ...data,
     createdAt,
-    date: data.date || createdAt || null
+    updatedAt,
+    date: normalizedDate
   };
+};
+
+const isMissingIndexError = (err) => {
+  const code = err?.code || err?.name;
+  const message = String(err?.message || '');
+  return code === 'failed-precondition' && /requires an index|index/i.test(message);
 };
 
 export const uploadImage = async (file, options = {}) => {
@@ -109,16 +118,28 @@ export const getPublicEntryById = async (id) => {
 export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   const user = ensureUser();
   const entriesCollection = getEntriesCollection();
-  const baseQuery = [
-    where('ownerId', '==', user.uid),
-    orderBy('createdAt', 'desc'),
-    limit(pageSize)
-  ];
-  const q = lastDoc ? query(entriesCollection, ...baseQuery, startAfter(lastDoc)) : query(entriesCollection, ...baseQuery);
-  const snap = await getDocs(q);
-  const entries = snap.docs.map(normalizeEntry);
-  const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
-  return { entries, lastDoc: nextLast };
+  try {
+    const baseQuery = [where('ownerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(pageSize)];
+    const q = lastDoc
+      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
+      : query(entriesCollection, ...baseQuery);
+    const snap = await getDocs(q);
+    const entries = snap.docs.map(normalizeEntry);
+    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+    return { entries, lastDoc: nextLast };
+  } catch (err) {
+    if (!isMissingIndexError(err)) throw err;
+
+    // Fallback when the composite index is missing: drop ordering (implicit __name__ order).
+    const baseQuery = [where('ownerId', '==', user.uid), limit(pageSize)];
+    const q = lastDoc
+      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
+      : query(entriesCollection, ...baseQuery);
+    const snap = await getDocs(q);
+    const entries = snap.docs.map(normalizeEntry);
+    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+    return { entries, lastDoc: nextLast };
+  }
 };
 
 export const getAllEntries = async () => {
@@ -132,10 +153,26 @@ export const getAllEntries = async () => {
 export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   ensureFirebase();
   const entriesCollection = getEntriesCollection();
-  const baseQuery = [where('isPublished', '==', true), orderBy('createdAt', 'desc'), limit(pageSize)];
-  const q = lastDoc ? query(entriesCollection, ...baseQuery, startAfter(lastDoc)) : query(entriesCollection, ...baseQuery);
-  const snap = await getDocs(q);
-  const entries = snap.docs.map(normalizeEntry);
-  const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
-  return { entries, lastDoc: nextLast };
+  try {
+    const baseQuery = [where('isPublished', '==', true), orderBy('createdAt', 'desc'), limit(pageSize)];
+    const q = lastDoc
+      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
+      : query(entriesCollection, ...baseQuery);
+    const snap = await getDocs(q);
+    const entries = snap.docs.map(normalizeEntry);
+    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+    return { entries, lastDoc: nextLast };
+  } catch (err) {
+    if (!isMissingIndexError(err)) throw err;
+
+    // Fallback when the composite index is missing: drop ordering (implicit __name__ order).
+    const baseQuery = [where('isPublished', '==', true), limit(pageSize)];
+    const q = lastDoc
+      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
+      : query(entriesCollection, ...baseQuery);
+    const snap = await getDocs(q);
+    const entries = snap.docs.map(normalizeEntry);
+    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+    return { entries, lastDoc: nextLast };
+  }
 };
