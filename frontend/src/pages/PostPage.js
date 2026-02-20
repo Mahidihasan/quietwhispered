@@ -214,6 +214,10 @@ const PostPage = () => {
     const titleSize = Number.isFinite(titleSizeValue)
         ? Math.min(56, Math.max(20, titleSizeValue))
         : null;
+    const lineHeightValue = Number(post.lineHeight);
+    const lineHeight = Number.isFinite(lineHeightValue)
+        ? Math.min(2.6, Math.max(1.2, lineHeightValue))
+        : null;
 
     const getMoodColor = (mood) => {
         const moodColors = {
@@ -287,7 +291,7 @@ const PostPage = () => {
                     </div>
                 )}
 
-                <div className="post-body">
+                <div className="post-body" style={lineHeight ? { lineHeight } : undefined}>
                     {parseContentBlocks(post.content).map((block) => {
                         if (block.type === 'list') {
                             const ListTag = block.listType === 'ol' ? 'ol' : 'ul';

@@ -13,7 +13,8 @@ const PostEditor = ({ post, onClose, onSave }) => {
         coverImage: '',
         youtubeEmbedUrl: '',
         mood: '',
-        imageUrls: []
+        imageUrls: [],
+        lineHeight: 1.75
     });
     const [tagInput, setTagInput] = useState('');
     const [error, setError] = useState('');
@@ -27,6 +28,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const [savedImageCaption, setSavedImageCaption] = useState('');
     const [isImageCaptionSaved, setIsImageCaptionSaved] = useState(false);
     const [fontSize, setFontSize] = useState('18');
+    const [lineHeight, setLineHeight] = useState('1.75');
     const [imageUrls, setImageUrls] = useState([]);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [isUploading, setIsUploading] = useState(false);
@@ -40,10 +42,12 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 coverImage: post.media || post.imageUrls?.[0] || '',
                 youtubeEmbedUrl: post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '') || '',
                 mood: post.mood || '',
-                imageUrls: post.imageUrls || []
+                imageUrls: post.imageUrls || [],
+                lineHeight: Number(post.lineHeight) || 1.75
             });
             setImageUrls(post.imageUrls || []);
             setTitleSize(String(post.titleSize || 32));
+            setLineHeight(String(Number(post.lineHeight) || 1.75));
         }
     }, [post]);
 
@@ -122,7 +126,8 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 media: mediaUrl,
                 imageUrls: finalImageUrls,
                 youtubeEmbedUrl,
-                titleSize: Number(titleSize) || 32
+                titleSize: Number(titleSize) || 32,
+                lineHeight: Number(lineHeight) || 1.75
             };
 
             console.log('[PostEditor] Full payload:', JSON.stringify(payload, null, 2));
@@ -305,6 +310,53 @@ const PostEditor = ({ post, onClose, onSave }) => {
         insertAtCursor(`\n[embed: ${url}]\n`);
     };
 
+    const buildShareUrl = (postId) => {
+        if (!postId || typeof window === 'undefined') return '';
+        const base = `${window.location.origin}${window.location.pathname}`;
+        return `${base}#/post/${postId}`;
+    };
+
+    const handleCopyShareUrl = async () => {
+        if (!post?._id) return;
+        const url = buildShareUrl(post._id);
+        try {
+            if (navigator?.clipboard?.writeText) {
+                await navigator.clipboard.writeText(url);
+                return;
+            }
+        } catch (err) {
+            // Fallback below
+        }
+
+        try {
+            const el = document.createElement('textarea');
+            el.value = url;
+            el.setAttribute('readonly', '');
+            el.style.position = 'fixed';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        } catch (err) {
+            setError('Could not copy URL. Please copy it manually.');
+        }
+    };
+
+    const handleNativeShare = async () => {
+        if (!post?._id) return;
+        const url = buildShareUrl(post._id);
+        if (!navigator?.share) return;
+        try {
+            await navigator.share({
+                title: formData.title || 'Journal entry',
+                url
+            });
+        } catch (err) {
+            // user canceled or unsupported
+        }
+    };
+
     return (
         <div className="writing-editor">
             <div className="editor-header">
@@ -432,7 +484,42 @@ const PostEditor = ({ post, onClose, onSave }) => {
             <MediaCard src={formData.youtubeEmbedUrl} alt="YouTube preview" />
         </div>
     )}
-</div><div className="sidebar-section sidebar-publish">
+</div>
+
+                    <div className="sidebar-section">
+                        <label className="sidebar-label">Share URL</label>
+                        {post?._id ? (
+                            <>
+                                <input
+                                    type="text"
+                                    readOnly
+                                    className="sidebar-input"
+                                    value={buildShareUrl(post._id)}
+                                    onFocus={(e) => e.target.select()}
+                                />
+                                <div className="sidebar-share-actions">
+                                    <button type="button" className="toolbar-btn" onClick={handleCopyShareUrl}>
+                                        Copy
+                                    </button>
+                                    <a className="toolbar-btn" href={buildShareUrl(post._id)} target="_blank" rel="noreferrer">
+                                        Open
+                                    </a>
+                                    {typeof navigator !== 'undefined' && navigator.share && (
+                                        <button type="button" className="toolbar-btn" onClick={handleNativeShare}>
+                                            Share
+                                        </button>
+                                    )}
+                                </div>
+                                {!formData.isPublished && (
+                                    <div className="sidebar-hint">This link only works publicly after you publish the entry.</div>
+                                )}
+                            </>
+                        ) : (
+                            <div className="sidebar-hint">Save the entry first to generate a share link.</div>
+                        )}
+                    </div>
+
+                    <div className="sidebar-section sidebar-publish">
                         <label className="sidebar-publish-label">
                             <input
                                 type="checkbox"
@@ -493,6 +580,19 @@ const PostEditor = ({ post, onClose, onSave }) => {
                                 <option value="EB Garamond">Garamond</option>
                                 <option value="Newsreader">Newsreader</option>
                                 <option value="Inter">Inter</option>
+                            </select>
+                            <select
+                                className="toolbar-select"
+                                value={lineHeight}
+                                onChange={(e) => setLineHeight(e.target.value)}
+                                aria-label="Line spacing"
+                                title="Line spacing"
+                            >
+                                <option value="1.4">Line 1.4</option>
+                                <option value="1.6">Line 1.6</option>
+                                <option value="1.75">Line 1.75</option>
+                                <option value="2">Line 2</option>
+                                <option value="2.2">Line 2.2</option>
                             </select>
                             <button
                                 type="button"
@@ -632,6 +732,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         onChange={handleChange}
                         onKeyDown={handleEditorKeyDown}
                         className="writing-textarea"
+                        style={{ lineHeight: Number(lineHeight) || 1.75 }}
                         placeholder="Write your entry..."
                         rows="20"
                         required

@@ -10,6 +10,10 @@ const Entry = ({ post }) => {
   const titleSize = Number.isFinite(titleSizeValue)
     ? Math.min(56, Math.max(20, titleSizeValue))
     : null;
+  const lineHeightValue = Number(post.lineHeight);
+  const lineHeight = Number.isFinite(lineHeightValue)
+    ? Math.min(2.6, Math.max(1.2, lineHeightValue))
+    : null;
 
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter']);
 
@@ -154,7 +158,7 @@ const Entry = ({ post }) => {
         </div>
       )}
 
-      <div className="entry-body">
+      <div className="entry-body" style={lineHeight ? { lineHeight } : undefined}>
         {blocks.map(block => {
           if (block.type === 'list') {
             const ListTag = block.listType === 'ol' ? 'ol' : 'ul';
