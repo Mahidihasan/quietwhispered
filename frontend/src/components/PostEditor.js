@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { createEntry, updateEntry, uploadImage } from '../services/journalService';
 import MediaCard from './MediaCard';
+import ThinkerLoader from './ThinkerLoader';
 
 const PostEditor = ({ post, onClose, onSave }) => {
     const [formData, setFormData] = useState({
@@ -535,8 +536,13 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         <button type="button" className="btn-secondary btn-small" onClick={onClose} disabled={loading}>
                             Cancel
                         </button>
-                        <button type="submit" className="btn-primary btn-small" disabled={loading}>
-                            {loading ? '...' : (post ? 'Update' : 'Save')}
+                        <button type="submit" className="btn-primary btn-small" disabled={loading} aria-busy={loading}>
+                            {loading ? (
+                                <span className="btn-loading">
+                                    <ThinkerLoader className="thinker-loader" />
+                                    <span className="btn-loading-text">Saving</span>
+                                </span>
+                            ) : (post ? 'Update' : 'Save')}
                         </button>
                     </div>
                 </aside>

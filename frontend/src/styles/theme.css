@@ -379,6 +379,24 @@ a:hover {
   background: #F3EBDD;
   color: var(--retro-ink);
   border-radius: 18px;
+  isolation: isolate;
+}
+
+.quiet-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240' viewBox='0 0 240 240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/></filter><rect width='240' height='240' filter='url(%23n)' opacity='0.12'/></svg>");
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.quiet-page > * {
+  position: relative;
+  z-index: 1;
 }
 
 .quiet-main {
@@ -657,6 +675,7 @@ a:hover {
   color: var(--paper-text);
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   margin-bottom: 32px;
 }
 
@@ -698,21 +717,44 @@ a:hover {
   opacity: 0.55;
 }
 
+:root[data-theme="dark"] .entry::before {
+  opacity: 0.22;
+}
+
 /* Realistic paper fiber + coffee edge aging */
 .entry::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='noise'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' seed='8'/></filter><rect width='300' height='300' filter='url(%23noise)' opacity='0.12'/></svg>");
+  border-radius: inherit;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320' viewBox='0 0 320 320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='8'/></filter><rect width='320' height='320' filter='url(%23n)' opacity='0.16'/></svg>"),
+    repeating-linear-gradient(
+      0deg,
+      rgba(70, 45, 22, 0.035) 0px,
+      rgba(70, 45, 22, 0.035) 1px,
+      transparent 1px,
+      transparent 7px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(70, 45, 22, 0.02) 0px,
+      rgba(70, 45, 22, 0.02) 1px,
+      transparent 1px,
+      transparent 11px
+    );
+  background-size: 320px 320px, auto, auto;
   mix-blend-mode: multiply;
-  opacity: 0.25;
+  opacity: 0.33;
   pointer-events: none;
+  z-index: 0;
 }
 
 .entry::after {
   content: '';
   position: absolute;
   inset: -10px;
+  border-radius: inherit;
   background:
     radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.12), transparent 45%),
     radial-gradient(circle at 100% 0%, rgba(0, 0, 0, 0.1), transparent 45%),
@@ -720,6 +762,7 @@ a:hover {
     radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.12), transparent 45%);
   opacity: 0.5;
   pointer-events: none;
+  z-index: 0;
 }
 
 
@@ -1665,6 +1708,55 @@ a:hover {
   font-size: 12px !important;
 }
 
+.btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.thinker-loader {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+}
+
+.thinker-loader--lg {
+  width: 28px;
+  height: 28px;
+}
+
+.thinker-loader__stroke {
+  stroke: currentColor;
+  stroke-width: 1.6;
+}
+
+.thinker-loader__dot {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: thinkerDot 900ms ease-in-out infinite;
+}
+
+@keyframes thinkerDot {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thinker-loader__dot {
+    animation: none;
+  }
+}
+
 @media (max-width: 1024px) {
   .writing-layout {
     grid-template-columns: 1fr;
@@ -1770,6 +1862,41 @@ a:hover {
 
 .fade-in {
   animation: subtleFade 300ms ease-in;
+}
+
+@keyframes scrollFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  will-change: opacity, transform;
+}
+
+.scroll-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  animation: scrollFadeUp 420ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+
+  .scroll-reveal.is-visible {
+    animation: none;
+  }
 }
 
 .nav-button {

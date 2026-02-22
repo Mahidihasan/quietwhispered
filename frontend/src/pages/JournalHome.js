@@ -4,6 +4,7 @@ import ArchiveSidebar from '../components/ArchiveSidebar';
 import { getEntriesPage, getPublicEntriesPage } from '../services/journalService';
 import { getQuote, getPublicQuote } from '../services/quoteService';
 import useAuth from '../hooks/useAuth';
+import ThinkerLoader from '../components/ThinkerLoader';
 
 const JournalHome = () => {
   const [posts, setPosts] = useState([]);
@@ -75,7 +76,7 @@ const JournalHome = () => {
   }, [authLoading, fetchPosts]);
 
   const showInitialLoading = isInitialLoad && isLoading;
-  const showEmptyState = !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
+  const showEmptyState = !isInitialLoad && !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
 
   return (
     <div className="quiet-page">
@@ -106,8 +107,8 @@ const JournalHome = () => {
         )}
 
         {showInitialLoading && (
-          <div className="loading minimal">
-            <div className="minimal-loader"><span></span></div>
+          <div className="loading minimal" role="status" aria-live="polite">
+            <ThinkerLoader className="thinker-loader thinker-loader--lg" />
             <p>Loading journal...</p>
           </div>
         )}

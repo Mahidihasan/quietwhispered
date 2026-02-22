@@ -1,8 +1,34 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { format } from 'date-fns';
 import MediaCard from './MediaCard';
 
 const Entry = ({ post }) => {
+  const entryRef = useRef(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const node = entryRef.current;
+    if (!node) return;
+
+    if (typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { root: null, threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
@@ -137,7 +163,11 @@ const Entry = ({ post }) => {
   const shouldShowCover = coverImage && post.type === 'image' && !inlineImageUrls.has(coverImage);
 
   return (
-    <article id={`post-${post._id}`} className="entry fade-in">
+    <article
+      ref={entryRef}
+      id={`post-${post._id}`}
+      className={`entry scroll-reveal ${isVisible ? 'is-visible' : ''}`.trim()}
+    >
       <header className="entry-header">
         <h2 className="entry-title" style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>
           {post.title}
