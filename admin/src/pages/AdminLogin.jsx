@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmail } from '../services/authService';
+import { signInWithEmail } from '../shared/services/authService';
 
 const AdminLogin = () => {
     const [credentials, setCredentials] = useState({
@@ -26,7 +26,7 @@ const AdminLogin = () => {
 
         try {
             await signInWithEmail(credentials.email, credentials.password);
-            navigate('/admin/dashboard');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.message || 'Login failed. Please try again.');
             console.error('Login error:', err);

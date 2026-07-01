@@ -130,7 +130,6 @@ export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   } catch (err) {
     if (!isMissingIndexError(err)) throw err;
 
-    // Fallback when the composite index is missing: drop ordering (implicit __name__ order).
     const baseQuery = [where('ownerId', '==', user.uid), limit(pageSize)];
     const q = lastDoc
       ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
@@ -165,7 +164,6 @@ export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}
   } catch (err) {
     if (!isMissingIndexError(err)) throw err;
 
-    // Fallback when the composite index is missing: drop ordering (implicit __name__ order).
     const baseQuery = [where('isPublished', '==', true), limit(pageSize)];
     const q = lastDoc
       ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))

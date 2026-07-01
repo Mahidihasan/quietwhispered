@@ -2,12 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
-import MediaCard from '../components/MediaCard';
-import ThinkerLoader from '../components/ThinkerLoader';
-import { getEntryById, getPublicEntryById } from '../services/journalService';
-import { getPublicMediaSettings } from '../services/mediaSettingsService';
-import useAuth from '../hooks/useAuth';
-import { resolvePostDate } from '../utils/dateUtils';
+import MediaCard from '../shared/components/MediaCard.jsx';
+import ThinkerLoader from '../shared/components/ThinkerLoader';
+import { getEntryById, getPublicEntryById } from '../shared/services/journalService';
+import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
+import useAuth from '../shared/hooks/useAuth';
+import { resolvePostDate } from '../shared/utils/dateUtils';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 

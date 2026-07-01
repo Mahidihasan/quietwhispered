@@ -2,14 +2,45 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostEditor from '../components/PostEditor';
 import Icon from '../components/Icon';
-import { getAllEntries, deleteEntry, uploadImage } from '../services/journalService';
-import { getQuote, saveQuote } from '../services/quoteService';
-import { signOutUser } from '../services/authService';
+import { getAllEntries, deleteEntry, uploadImage } from '../shared/services/journalService';
+import { getQuote, saveQuote } from '../shared/services/quoteService';
+import { signOutUser } from '../shared/services/authService';
 import { FiLogOut, FiFilter, FiImage, FiX, FiPlus, FiEdit2, FiTrash2, FiGrid, FiList, FiChevronDown, FiSearch } from 'react-icons/fi';
 import { format } from 'date-fns';
-import useAuth from '../hooks/useAuth';
-import { getPublicMediaSettings } from '../services/mediaSettingsService';
-import { resolvePostDate } from '../utils/dateUtils';
+import useAuth from '../shared/hooks/useAuth';
+import { getPublicMediaSettings, saveMediaSettings } from '../shared/services/mediaSettingsService';
+import { resolvePostDate } from '../shared/utils/dateUtils';
+
+const TEXTURE_OPTIONS = [
+  { value: 'none', label: 'None' },
+  { value: 'vellum', label: 'Vellum' },
+  { value: 'linen', label: 'Linen' },
+  { value: 'laid', label: 'Laid' },
+  { value: 'wove', label: 'Wove' },
+  { value: 'parchment', label: 'Parchment' },
+  { value: 'canvas', label: 'Canvas' },
+  { value: 'grid', label: 'Grid' },
+  { value: 'lines', label: 'Lines' },
+  { value: 'marble', label: 'Marble' },
+];
+
+const FRAME_OPTIONS = [
+  { value: 'polaroid', label: 'Polaroid' },
+  { value: 'border', label: 'Border' },
+  { value: 'double', label: 'Double' },
+  { value: 'shadow', label: 'Shadow' },
+  { value: 'vintage', label: 'Vintage' },
+  { value: 'minimal', label: 'Minimal' },
+  { value: 'rounded', label: 'Rounded' },
+  { value: 'filmstrip', label: 'Filmstrip' },
+];
+
+const FRAME_SIZE_OPTIONS = [
+  { value: 'sm', label: 'Small' },
+  { value: 'md', label: 'Medium' },
+  { value: 'lg', label: 'Large' },
+  { value: 'xl', label: 'Full width' },
+];
 
 const AdminDashboard = () => {
     const [posts, setPosts] = useState([]);
@@ -24,6 +55,12 @@ const AdminDashboard = () => {
     const [isQuoteUploading, setIsQuoteUploading] = useState(false);
     const [loadError, setLoadError] = useState('');
     const [mediaSettings, setMediaSettings] = useState(null);
+    const [settingsForm, setSettingsForm] = useState({
+        paperTexture: 'none',
+        mediaFrame: 'polaroid',
+        frameSize: 'md'
+    });
+    const [settingsSaving, setSettingsSaving] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [viewMode, setViewMode] = useState('list');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -81,15 +118,37 @@ const AdminDashboard = () => {
         try {
             const settings = await getPublicMediaSettings();
             setMediaSettings(settings);
+            if (settings) {
+                setSettingsForm({
+                    paperTexture: settings.paperTexture || 'none',
+                    mediaFrame: settings.mediaFrame || 'polaroid',
+                    frameSize: settings.frameSize || 'md'
+                });
+            }
         } catch (error) {
             console.error('Error loading media settings:', error);
         }
     }, []);
 
+    const handleSaveSettings = async (e) => {
+        e.preventDefault();
+        setSettingsSaving(true);
+        try {
+            const updated = await saveMediaSettings(settingsForm);
+            setMediaSettings(updated);
+            alert('Settings saved successfully! All devices will see the updated styling.');
+        } catch (error) {
+            console.error('Error saving settings:', error);
+            alert('Failed to save settings. Please try again.');
+        } finally {
+            setSettingsSaving(false);
+        }
+    };
+
     useEffect(() => {
         if (authLoading) return;
         if (!user) {
-            navigate('/admin/login');
+            navigate('/login');
             return;
         }
         fetchAllPosts();
@@ -195,7 +254,7 @@ const AdminDashboard = () => {
         } catch (error) {
             console.error('Logout error:', error);
         } finally {
-            navigate('/');
+            navigate('/login');
         }
     };
 
@@ -244,7 +303,6 @@ const AdminDashboard = () => {
         }));
     };
 
-
     const publishedCount = posts.filter((post) => post.isPublished).length;
     const draftCount = posts.filter((post) => !post.isPublished).length;
     const mediaCount = posts.filter((post) => post.media).length;
@@ -253,7 +311,6 @@ const AdminDashboard = () => {
 
     return (
         <div className={`admin-dashboard ${mediaSettings?.paperTexture && mediaSettings.paperTexture !== 'none' ? `texture-${mediaSettings.paperTexture}` : ''}`.trim()}>
-            {/* Header */}
             <header className="admin-hero">
                 <div className="admin-hero-left">
                     <h1>Journal Studio</h1>
@@ -295,7 +352,6 @@ const AdminDashboard = () => {
                 </div>
             )}
 
-            {/* Stats Grid */}
             <section className="admin-stats">
                 <div className="stat-card">
                     <div className="stat-icon"><Icon name="paper" size="lg" /></div>
@@ -319,10 +375,8 @@ const AdminDashboard = () => {
                 </div>
             </section>
 
-            {/* Main Grid */}
             <section className="admin-grid">
                 <div className="admin-left-column">
-                    {/* Posts List */}
                     <div className="posts-list">
                         <div className="posts-header" ref={filtersRef}>
                             <div className="posts-header-left">
@@ -332,7 +386,6 @@ const AdminDashboard = () => {
                                 )}
                             </div>
                             <div className="posts-header-right">
-                                {/* Search */}
                                 <div className="search-box">
                                     <FiSearch className="search-icon" />
                                     <input
@@ -348,7 +401,6 @@ const AdminDashboard = () => {
                                         </button>
                                     )}
                                 </div>
-                                {/* View toggle */}
                                 <div className="view-toggle">
                                     <button
                                         type="button"
@@ -367,7 +419,6 @@ const AdminDashboard = () => {
                                         <FiGrid />
                                     </button>
                                 </div>
-                                {/* Filter */}
                                 <div className="filter-popover">
                                     <button
                                         type="button"
@@ -529,7 +580,6 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* Quote Panel - Sidebar */}
                 <div className="admin-panel admin-quote-panel">
                     <div className="panel-header">
                         <h3>Homepage Quote</h3>
@@ -604,10 +654,57 @@ const AdminDashboard = () => {
                         </button>
                     </form>
                 </div>
+
+                <div className="admin-panel media-settings-panel" style={{ marginTop: '24px' }}>
+                    <div className="panel-header">
+                        <h3>Journal Styles</h3>
+                        <span className="panel-note">Configure global paper texture and media frames.</span>
+                    </div>
+                    <form className="media-settings-form" onSubmit={handleSaveSettings}>
+                        <label>
+                            <span>Global Paper Texture</span>
+                            <div className="texture-preview">
+                                {TEXTURE_OPTIONS.map(opt => (
+                                    <button
+                                        key={opt.value}
+                                        type="button"
+                                        className={`texture-option ${settingsForm.paperTexture === opt.value ? 'active' : ''}`}
+                                        onClick={() => setSettingsForm(prev => ({ ...prev, paperTexture: opt.value }))}
+                                    >
+                                        <span className="texture-label">{opt.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </label>
+                        <label style={{ marginTop: '12px' }}>
+                            <span>Global Media Frame</span>
+                            <select
+                                value={settingsForm.mediaFrame}
+                                onChange={(e) => setSettingsForm(prev => ({ ...prev, mediaFrame: e.target.value }))}
+                            >
+                                {FRAME_OPTIONS.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <label style={{ marginTop: '12px' }}>
+                            <span>Global Frame Size</span>
+                            <select
+                                value={settingsForm.frameSize}
+                                onChange={(e) => setSettingsForm(prev => ({ ...prev, frameSize: e.target.value }))}
+                            >
+                                {FRAME_SIZE_OPTIONS.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </label>
+                        <button type="submit" className="btn-primary" style={{ marginTop: '16px' }} disabled={settingsSaving}>
+                            {settingsSaving ? 'Saving...' : 'Save Settings'}
+                        </button>
+                    </form>
+                </div>
             </section>
 
-
-            {/* Post Editor Modal */}
             {showEditor && (
                 <div className="editor-overlay" onClick={(e) => {
                     if (e.target === e.currentTarget) {

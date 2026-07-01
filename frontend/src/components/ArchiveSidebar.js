@@ -1,5 +1,5 @@
 import React from 'react';
-import { resolvePostDate } from '../utils/dateUtils';
+import { resolvePostDate } from '../shared/utils/dateUtils';
 
 const ArchiveSidebar = ({ posts }) => {
   if (!posts?.length) return null;

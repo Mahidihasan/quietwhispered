@@ -32,9 +32,6 @@ const DEFAULT_SETTINGS = {
   updatedAt: null
 };
 
-/**
- * Save global media settings (admin only).
- */
 export const saveMediaSettings = async (settings) => {
   ensureFirebase();
   const user = auth.currentUser;
@@ -56,9 +53,6 @@ export const saveMediaSettings = async (settings) => {
   return payload;
 };
 
-/**
- * Get global media settings (public).
- */
 export const getMediaSettings = async () => {
   ensureFirebase();
   const ref = getSettingsRef();
@@ -73,9 +67,6 @@ export const getMediaSettings = async () => {
   };
 };
 
-/**
- * Get public media settings (no auth required).
- */
 export const getPublicMediaSettings = async () => {
   if (cachedPublicMediaSettings) {
     return cachedPublicMediaSettings;

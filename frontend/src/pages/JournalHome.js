@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Entry from '../components/Entry';
-import { getEntriesPage, getPublicEntriesPage } from '../services/journalService';
-import { getQuote, getPublicQuote } from '../services/quoteService';
-import { getPublicMediaSettings } from '../services/mediaSettingsService';
-import useAuth from '../hooks/useAuth';
+import { getEntriesPage, getPublicEntriesPage } from '../shared/services/journalService';
+import { getQuote, getPublicQuote } from '../shared/services/quoteService';
+import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
+import useAuth from '../shared/hooks/useAuth';
+import { buildAdminAppUrl } from '../shared/config';
 
 const JournalHome = ({ onPostsChange }) => {
   const [posts, setPosts] = useState([]);
@@ -123,7 +124,7 @@ const JournalHome = ({ onPostsChange }) => {
             <p>{loadError}</p>
             {!isPrivateMode && (
               <p>
-                If these entries are private, sign in via <a href="/admin/login">Admin Login</a>.
+                If these entries are private, sign in via <a href={buildAdminAppUrl('/login')}>Admin Login</a>.
               </p>
             )}
           </div>

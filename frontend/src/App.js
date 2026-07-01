@@ -1,25 +1,13 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './styles/theme.css';
 import './styles/textures.css';
 import Navbar from './components/Navbar';
 import JournalHome from './pages/JournalHome';
 import PostPage from './pages/PostPage';
-import AdminLogin from './pages/AdminLogin';
-import AdminDashboard from './pages/AdminDashboard';
-import useAuth from './hooks/useAuth';
-import { firebaseInitError } from './firebase';
-
-// Protected Route Component
-const ProtectedRoute = ({ children, user, loading }) => {
-    if (loading) {
-        return null;
-    }
-    return user ? children : <Navigate to="/admin/login" replace />;
-};
+import { firebaseInitError } from './shared/firebase';
 
 function App() {
-    const { user, loading } = useAuth();
     const [posts, setPosts] = useState([]);
 
     return (
@@ -40,15 +28,6 @@ function App() {
                     <Route
                         path="/post/:id"
                         element={<PostPage />}
-                    />
-                    <Route path="/admin/login" element={<AdminLogin />} />
-                    <Route
-                        path="/admin/dashboard"
-                        element={
-                            <ProtectedRoute user={user} loading={loading}>
-                                <AdminDashboard />
-                            </ProtectedRoute>
-                        }
                     />
                 </Routes>
             </div>

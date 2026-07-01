@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import MediaCard from './MediaCard';
-import { getPublicMediaSettings } from '../services/mediaSettingsService';
-import { resolvePostDate } from '../utils/dateUtils';
+import MediaCard from '../shared/components/MediaCard.jsx';
+import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
+import { resolvePostDate } from '../shared/utils/dateUtils';
 
 const escapeHtml = (value) => {
   return String(value || '')

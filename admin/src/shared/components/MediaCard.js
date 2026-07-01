@@ -3,11 +3,6 @@ import { getMediaType, getEmbedUrl } from '../utils/mediaUtils';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
-/**
- * Modern media card component for images and videos
- * Supports: uploaded images/videos, YouTube, and Vimeo embeds
- * Supports: frame styles, texture overlays, and custom sizes
- */
 const MediaCard = ({ src, alt, caption, className = '', 
   frame = 'polaroid', 
   frameSize = 'md',
@@ -38,7 +33,7 @@ const MediaCard = ({ src, alt, caption, className = '',
   const mediaType = getMediaType(safeSrc);
   const embedUrl = getEmbedUrl(safeSrc);
 
-  const handleError = (e) => {
+  const handleError = () => {
     console.error('Image failed to load:', safeSrc);
     if (safeSrc !== FALLBACK_IMAGE) {
       setSafeSrc(FALLBACK_IMAGE);

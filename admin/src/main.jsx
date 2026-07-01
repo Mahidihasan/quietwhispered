@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/theme.css';
+import './styles/textures.css';
 import App from './App';
-import ErrorBoundary from './shared/ErrorBoundary.jsx';
+import ErrorBoundary from './ErrorBoundary';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <ErrorBoundary>
       <App />

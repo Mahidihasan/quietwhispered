@@ -65,7 +65,6 @@ export const getMediaType = (mediaUrl) => {
 export const getEmbedUrl = (mediaUrl) => {
   const youtubeId = getYouTubeId(mediaUrl);
   if (youtubeId) {
-    // Use privacy-enhanced domain and minimize UI chrome
     return `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1&autoplay=0&controls=1&iv_load_policy=3&fs=0&playsinline=1&disablekb=1&cc_load_policy=0`;
   }
   

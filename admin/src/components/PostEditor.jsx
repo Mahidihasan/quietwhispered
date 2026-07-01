@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { createEntry, updateEntry, uploadImage } from '../services/journalService';
-import MediaCard from './MediaCard';
-import ThinkerLoader from './ThinkerLoader';
+import { createEntry, updateEntry, uploadImage } from '../shared/services/journalService';
+import MediaCard from '../shared/components/MediaCard.jsx';
+import ThinkerLoader from '../shared/components/ThinkerLoader';
 import Icon from './Icon';
-import { resolvePostDate } from '../utils/dateUtils';
+import { resolvePostDate } from '../shared/utils/dateUtils';
 
 const MOOD_OPTIONS = [
   { icon: 'smile', label: 'Calm' },
@@ -124,7 +124,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
         }
     }, [post]);
 
-    // Auto-save draft every 30 seconds
     useEffect(() => {
         if (!formData.title && !formData.content) return;
         if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
@@ -418,7 +417,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
         } catch (err) {}
     };
 
-    // Drag-and-drop support
     const handleDragOver = (e) => { e.preventDefault(); e.stopPropagation(); };
     const handleDrop = (e) => {
         e.preventDefault();
@@ -435,7 +433,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
         }
     };
 
-    // Quick mood select
     const handleMoodSelect = (mood) => {
         setFormData(prev => ({ ...prev, mood: prev.mood === mood ? '' : mood }));
         setShowMoodPicker(false);
@@ -448,7 +445,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
 
     return (
         <div className="writing-editor" ref={dropRef} onDragOver={handleDragOver} onDrop={handleDrop}>
-            {/* Minimal Header */}
             <div className="editor-header">
                 <div className="editor-header-left">
                     <span className="editor-kicker">
@@ -477,15 +473,12 @@ const PostEditor = ({ post, onClose, onSave }) => {
             )}
 
             <form onSubmit={handleSubmit} className="writing-layout">
-                {/* LEFT: Metadata — collapsible on mobile */}
                 <aside className="writing-sidebar">
-                    {/* Date */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="calendar" size="sm" /> Date</label>
                         <input type="date" name="date" value={formData.date} onChange={handleChange} className="sidebar-input" />
                     </div>
 
-                    {/* Mood Picker */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="smile" size="sm" /> Mood</label>
                         <div className="mood-trigger" onClick={() => setShowMoodPicker(!showMoodPicker)}>
@@ -523,13 +516,11 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         )}
                     </div>
 
-                    {/* Location */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="mapPin" size="sm" /> Location</label>
                         <input type="text" name="location" value={formData.location} onChange={handleChange} className="sidebar-input" placeholder="Where are you?" />
                     </div>
 
-                    {/* Tags */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="tag" size="sm" /> Tags</label>
                         <div className="sidebar-tags-input">
@@ -555,7 +546,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         )}
                     </div>
 
-                    {/* Cover Image */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="image" size="sm" /> Cover</label>
                         <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverFileChange} className="sidebar-file-input" id="coverUpload" />
@@ -565,7 +555,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         {isUploading && <div className="sidebar-upload-status">Uploading... {uploadProgress}%</div>}
                     </div>
 
-                    {/* Paper Texture */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="paper" size="sm" /> Paper Texture</label>
                         <div className="texture-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
@@ -583,7 +572,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         </div>
                     </div>
 
-                    {/* Media Frame */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="image" size="sm" /> Media Frame</label>
                         <select
@@ -598,7 +586,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         </select>
                     </div>
 
-                    {/* Frame Size */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="image" size="sm" /> Frame Size</label>
                         <select
@@ -613,7 +600,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         </select>
                     </div>
 
-                    {/* YouTube */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="video" size="sm" /> YouTube</label>
                         <input type="url" name="youtubeEmbedUrl" value={formData.youtubeEmbedUrl} onChange={handleChange} className="sidebar-input" placeholder="https://youtube.com/watch?v=..." />
@@ -625,7 +611,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         )}
                     </div>
 
-                    {/* Share */}
                     <div className="sidebar-section">
                         <label className="sidebar-label"><Icon name="share" size="sm" /> Share</label>
                         {post?._id ? (
@@ -647,7 +632,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         )}
                     </div>
 
-                    {/* Publish toggle */}
                     <div className="sidebar-section sidebar-publish">
                         <label className="sidebar-publish-label">
                             <input type="checkbox" name="isPublished" checked={formData.isPublished} onChange={handleChange} />
@@ -655,7 +639,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         </label>
                     </div>
 
-                    {/* Actions */}
                     <div className="sidebar-actions">
                         <button type="button" className="btn-secondary" onClick={onClose} disabled={loading}>
                             Cancel
@@ -671,9 +654,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                     </div>
                 </aside>
 
-                {/* RIGHT: Writing Area */}
                 <div className="writing-content">
-                    {/* Tab bar for mobile */}
                     <div className="editor-tabs">
                         <button
                             type="button"
@@ -698,9 +679,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         </button>
                     </div>
 
-                    {/* Writing tab */}
                     <div className={`editor-panel ${activeTab === 'write' ? 'active' : ''}`}>
-                        {/* Minimal Toolbar */}
                         <div className="writing-toolbar">
                             <div className="toolbar-group">
                                 <button type="button" className="toolbar-btn" onClick={applyBold} title="Bold"><strong>B</strong></button>
@@ -776,7 +755,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             </div>
                         </div>
 
-                        {/* Title */}
                         <input
                             type="text"
                             name="title"
@@ -791,7 +769,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             required
                         />
 
-                        {/* Editor body */}
                         <textarea
                             ref={contentRef}
                             name="content"
@@ -808,7 +785,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             required
                         />
 
-                        {/* Word count bar */}
                         <div className="writing-footer">
                             <span className="writing-stats">
                                 <span title="Words"><Icon name="pen" size="sm" /> {wordCount} words</span>
@@ -825,7 +801,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         </div>
                     </div>
 
-                    {/* Preview tab */}
                     <div className={`editor-panel preview-panel ${activeTab === 'preview' ? 'active' : ''}`}>
                         {formData.content ? (
                             <div className="preview-content">
@@ -851,7 +826,6 @@ const PostEditor = ({ post, onClose, onSave }) => {
                         )}
                     </div>
 
-                    {/* Meta tab (mobile stats) */}
                     <div className={`editor-panel meta-panel ${activeTab === 'meta' ? 'active' : ''}`}>
                         <div className="meta-panel-stats">
                             <div className="meta-stat-item">
