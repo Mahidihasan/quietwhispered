@@ -9,6 +9,15 @@ import useAuth from '../hooks/useAuth';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
+const escapeHtml = (value) => {
+    return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+};
+
 const buildAbsoluteUrl = (raw) => {
     if (!raw) return null;
     if (/^https?:\/\//i.test(raw)) {
@@ -21,23 +30,15 @@ const buildAbsoluteUrl = (raw) => {
 };
 
 const renderInline = (text) => {
-    const escapeHtml = (raw) => {
-        return raw
-            .replace(/&/g, '&')
-            .replace(/</g, '<')
-            .replace(/>/g, '>')
-            .replace(/"/g, '"')
-            .replace(/'/g, '&#39;');
-    };
     let safe = escapeHtml(text);
     safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
     safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
-        const sanitized = color.trim();
+        const sanitized = escapeHtml(color.trim());
         return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
     });
     safe = safe.replace(/\[\/mark\]/gi, '</span>');
     safe = safe.replace(/\[color=([^\]]+)\]/gi, (match, color) => {
-        const sanitized = color.trim();
+        const sanitized = escapeHtml(color.trim());
         return `<span style="color:${sanitized}">`;
     });
     safe = safe.replace(/\[\/color\]/gi, '</span>');
@@ -48,7 +49,7 @@ const renderInline = (text) => {
     });
     safe = safe.replace(/\[\/size\]/gi, '</span>');
     safe = safe.replace(/\[font=([^\]]+)\]/gi, (match, font) => {
-        const normalized = font.trim();
+        const normalized = escapeHtml(font.trim());
         return `<span style="font-family:${normalized}">`;
     });
     safe = safe.replace(/\[\/font\]/gi, '</span>');

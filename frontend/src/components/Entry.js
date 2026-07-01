@@ -3,6 +3,15 @@ import { format } from 'date-fns';
 import MediaCard from './MediaCard';
 import { getPublicMediaSettings } from '../services/mediaSettingsService';
 
+const escapeHtml = (value) => {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
 const Entry = ({ post, mediaSettings: propSettings }) => {
   const [mediaSettings, setMediaSettings] = useState(propSettings || null);
 
@@ -35,25 +44,16 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   const entryFont = post.font || null;
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter']);
 
-  const escapeHtml = (text) => {
-    return text
-      .replace(/&/g, '&')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"')
-      .replace(/'/g, '&#39;');
-  };
-
   const renderInline = (text) => {
     let safe = escapeHtml(text);
     safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
     safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
-      const sanitized = color.trim();
+      const sanitized = escapeHtml(color.trim());
       return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
     });
     safe = safe.replace(/\[\/mark\]/gi, '</span>');
     safe = safe.replace(/\[color=([^\]]+)\]/gi, (match, color) => {
-      const sanitized = color.trim();
+      const sanitized = escapeHtml(color.trim());
       return `<span style="color:${sanitized}">`;
     });
     safe = safe.replace(/\[\/color\]/gi, '</span>');
@@ -64,7 +64,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
     });
     safe = safe.replace(/\[\/size\]/gi, '</span>');
     safe = safe.replace(/\[font=([^\]]+)\]/gi, (match, font) => {
-      const normalized = font.trim();
+      const normalized = escapeHtml(font.trim());
       if (!allowedFonts.has(normalized)) {
         return '<span>';
       }
