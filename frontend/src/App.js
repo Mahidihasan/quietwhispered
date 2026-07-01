@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/theme.css';
+import './styles/textures.css';
 import Navbar from './components/Navbar';
 import JournalHome from './pages/JournalHome';
 import PostPage from './pages/PostPage';
@@ -14,7 +15,7 @@ const ProtectedRoute = ({ children, user, loading }) => {
     if (loading) {
         return (
             <div className="loading minimal">
-                <div className="minimal-loader"><span></span></div>
+                <div className="loading-spinner"></div>
                 <p>Checking access...</p>
             </div>
         );
@@ -36,27 +37,15 @@ const HashNormalizer = () => {
 
 function App() {
     const { user, loading } = useAuth();
-    const [theme, setTheme] = useState(() => {
-        const stored = localStorage.getItem('theme');
-        return stored || 'light';
-    });
-
-    useEffect(() => {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-    }, [theme]);
-
-    const handleToggleTheme = () => {
-        setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
-    };
+    const [posts, setPosts] = useState([]);
 
     return (
         <Router>
             <div className="App">
                 <HashNormalizer />
-                <Navbar onToggleTheme={handleToggleTheme} theme={theme} />
+                <Navbar posts={posts} />
                 {firebaseInitError && (
-                    <div className="error-state firebase-error">
+                    <div className="error-state">
                         <h3>Firebase configuration issue</h3>
                         <p>{String(firebaseInitError.message || firebaseInitError)}</p>
                     </div>
@@ -64,7 +53,7 @@ function App() {
                 <Routes>
                     <Route
                         path="/"
-                        element={<JournalHome />}
+                        element={<JournalHome onPostsChange={setPosts} />}
                     />
                     <Route
                         path="/post/:id"

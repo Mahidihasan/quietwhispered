@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Entry from '../components/Entry';
-import ArchiveSidebar from '../components/ArchiveSidebar';
 import { getEntriesPage, getPublicEntriesPage } from '../services/journalService';
 import { getQuote, getPublicQuote } from '../services/quoteService';
+import { getPublicMediaSettings } from '../services/mediaSettingsService';
 import useAuth from '../hooks/useAuth';
 import ThinkerLoader from '../components/ThinkerLoader';
 
-const JournalHome = () => {
+const JournalHome = ({ onPostsChange }) => {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -23,6 +23,7 @@ const JournalHome = () => {
     useImageCover: false,
     fontSize: 18
   });
+  const [mediaSettings, setMediaSettings] = useState(null);
 
   const fetchQuote = useCallback(async () => {
     try {
@@ -38,14 +39,25 @@ const JournalHome = () => {
       }
     } catch (err) {
       console.error('Error fetching quote:', err);
-      // Keep default quote on error
     }
   }, [isPrivateMode]);
+
+  const fetchMediaSettings = useCallback(async () => {
+    try {
+      const settings = await getPublicMediaSettings();
+      setMediaSettings(settings);
+    } catch (err) {
+      console.error('Error fetching media settings:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMediaSettings();
+  }, [fetchMediaSettings]);
 
   useEffect(() => {
     fetchQuote();
   }, [fetchQuote]);
-
 
   const fetchPosts = useCallback(async (cursor = null) => {
     try {
@@ -53,17 +65,20 @@ const JournalHome = () => {
       setLoadError('');
       const fetchFn = isPrivateMode ? getEntriesPage : getPublicEntriesPage;
       const { entries, lastDoc: nextLastDoc } = await fetchFn({ pageSize, lastDoc: cursor });
-      setPosts(prev => (cursor ? [...prev, ...entries] : entries));
+      const updatedPosts = cursor ? [...posts, ...entries] : entries;
+      setPosts(updatedPosts);
       setLastDoc(nextLastDoc);
       setHasMore(entries.length === pageSize);
       setIsInitialLoad(false);
+      // Pass posts up to App for the Navbar archive button
+      if (onPostsChange) onPostsChange(updatedPosts);
     } catch (err) {
       console.error('Error fetching posts:', err);
       setLoadError(err?.message ? String(err.message) : 'Failed to load posts.');
     } finally {
       setIsLoading(false);
     }
-  }, [isPrivateMode]);
+  }, [isPrivateMode, posts, onPostsChange]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -73,7 +88,7 @@ const JournalHome = () => {
     setIsInitialLoad(true);
     setLoadError('');
     fetchPosts(null);
-  }, [authLoading, fetchPosts]);
+  }, [authLoading]);
 
   const showInitialLoading = isInitialLoad && isLoading;
   const showEmptyState = !isInitialLoad && !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
@@ -95,7 +110,7 @@ const JournalHome = () => {
         </div>
 
         {loadError && (
-          <div className="error-state pixel-card">
+          <div className="error-state">
             <h3>Could not load entries</h3>
             <p>{loadError}</p>
             {!isPrivateMode && (
@@ -114,14 +129,14 @@ const JournalHome = () => {
         )}
 
         {showEmptyState && (
-          <div className="empty-state pixel-card">
+          <div className="empty-state">
             <h3>No entries yet</h3>
             <p>{isPrivateMode ? 'Create your first entry from the admin dashboard.' : 'No public entries are available yet.'}</p>
           </div>
         )}
 
         {posts.map(post => (
-          <Entry key={post._id} post={post} />
+          <Entry key={post._id} post={post} mediaSettings={mediaSettings} />
         ))}
         <nav className="journal-pager">
           {hasMore && (
@@ -136,13 +151,6 @@ const JournalHome = () => {
           )}
         </nav>
       </main>
-
-      {/* ARCHIVE SIDEBAR */}
-      {posts.length > 0 && (
-        <aside className="quiet-archive">
-          <ArchiveSidebar posts={posts} />
-        </aside>
-      )}
     </div>
   );
 };

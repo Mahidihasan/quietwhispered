@@ -1,34 +1,24 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import MediaCard from './MediaCard';
+import { getPublicMediaSettings } from '../services/mediaSettingsService';
 
-const Entry = ({ post }) => {
-  const entryRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+const Entry = ({ post, mediaSettings: propSettings }) => {
+  const [mediaSettings, setMediaSettings] = useState(propSettings || null);
 
   useEffect(() => {
-    const node = entryRef.current;
-    if (!node) return;
-
-    if (typeof IntersectionObserver === 'undefined') {
-      setIsVisible(true);
+    if (propSettings) {
+      setMediaSettings(propSettings);
       return;
     }
+    // Fetch settings if not provided as prop
+    getPublicMediaSettings().then(setMediaSettings).catch(() => {});
+  }, [propSettings]);
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { root: null, threshold: 0.12, rootMargin: '0px 0px -10% 0px' }
-    );
-
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
+  // Per-entry frame/texture takes priority over global settings
+  const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
+  const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
+  const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
@@ -41,14 +31,16 @@ const Entry = ({ post }) => {
     ? Math.min(2.6, Math.max(1.2, lineHeightValue))
     : null;
 
+  // Per-entry font from post data
+  const entryFont = post.font || null;
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter']);
 
   const escapeHtml = (text) => {
     return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
       .replace(/'/g, '&#39;');
   };
 
@@ -164,12 +156,17 @@ const Entry = ({ post }) => {
 
   return (
     <article
-      ref={entryRef}
       id={`post-${post._id}`}
-      className={`entry scroll-reveal ${isVisible ? 'is-visible' : ''}`.trim()}
+      className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''}`}
     >
+      {activeTexture !== 'none' && (
+        <div className={`entry-texture texture-${activeTexture}`} aria-hidden="true" />
+      )}
       <header className="entry-header">
-        <h2 className="entry-title" style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>
+        <h2 className="entry-title" style={{
+          ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
+          ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
+        }}>
           {post.title}
         </h2>
         <div className="entry-meta">
@@ -183,12 +180,15 @@ const Entry = ({ post }) => {
       </header>
 
       {shouldShowCover && (
-        <div className="entry-media">
-          <MediaCard src={coverImage} alt={post.title} />
+        <div className={`entry-media ${activeTexture !== 'none' ? `texture-${activeTexture}` : ''}`}>
+          <MediaCard src={coverImage} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
         </div>
       )}
 
-      <div className="entry-body" style={lineHeight ? { lineHeight } : undefined}>
+      <div className="entry-body" style={{
+        ...(lineHeight ? { lineHeight } : {}),
+        ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
+      }}>
         {blocks.map(block => {
           if (block.type === 'list') {
             const ListTag = block.listType === 'ol' ? 'ol' : 'ul';

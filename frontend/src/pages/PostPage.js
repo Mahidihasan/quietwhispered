@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../components/MediaCard';
 import { getEntryById, getPublicEntryById } from '../services/journalService';
+import { getPublicMediaSettings } from '../services/mediaSettingsService';
 import useAuth from '../hooks/useAuth';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
@@ -22,10 +23,10 @@ const buildAbsoluteUrl = (raw) => {
 const renderInline = (text) => {
     const escapeHtml = (raw) => {
         return raw
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
+            .replace(/&/g, '&')
+            .replace(/</g, '<')
+            .replace(/>/g, '>')
+            .replace(/"/g, '"')
             .replace(/'/g, '&#39;');
     };
     let safe = escapeHtml(text);
@@ -138,6 +139,11 @@ const PostPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const { user, loading: authLoading } = useAuth();
+    const [mediaSettings, setMediaSettings] = useState(null);
+
+    useEffect(() => {
+        getPublicMediaSettings().then(setMediaSettings).catch(() => {});
+    }, []);
 
     const fetchPost = useCallback(async () => {
         try {
@@ -185,7 +191,7 @@ const PostPage = () => {
     if (loading) {
         return (
             <div className="loading">
-                <div className="pixel-spinner"></div>
+                <div className="doodle-spinner"></div>
                 <p>Loading post...</p>
             </div>
         );
@@ -193,7 +199,7 @@ const PostPage = () => {
 
     if (error) {
         return (
-            <div className="error-state pixel-card">
+            <div className="error-state">
                 <h3>Oops!</h3>
                 <p>{error}</p>
             </div>
@@ -202,12 +208,16 @@ const PostPage = () => {
 
     if (!post) {
         return (
-            <div className="error-state pixel-card">
+            <div className="error-state">
                 <h3>Post Not Found</h3>
                 <p>The post you're looking for doesn't exist.</p>
             </div>
         );
     }
+
+    const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
+    const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
+    const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
     const titleSizeValue = Number(post.titleSize);
@@ -233,7 +243,7 @@ const PostPage = () => {
 
     return (
         <div className="post-page">
-            <button className="back-button pixel-button" onClick={() => window.history.back()}>
+            <button className="back-button" onClick={() => window.history.back()}>
                 <FiArrowLeft /> Back
             </button>
 
@@ -267,22 +277,8 @@ const PostPage = () => {
                 </header>
 
                 {coverUrl && (
-                    <div className="post-media">
-                        <img 
-                            src={coverUrl} 
-                            alt={post.title}
-                            style={{
-                                width: '100%',
-                                height: 'auto',
-                                borderRadius: '8px',
-                                display: 'block',
-                                margin: '0 auto'
-                            }}
-                            onError={(e) => {
-                                console.error('Image failed to load:', coverUrl);
-                                e.target.src = '/images/posts/fallback.svg';
-                            }}
-                        />
+                    <div className={`post-media ${activeTexture !== 'none' ? `texture-${activeTexture}` : ''}`}>
+                        <MediaCard src={coverUrl} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
                     </div>
                 )}
                 {post.youtubeEmbedUrl && (

@@ -6,12 +6,15 @@ const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 /**
  * Modern media card component for images and videos
  * Supports: uploaded images/videos, YouTube, and Vimeo embeds
+ * Supports: frame styles, texture overlays, and custom sizes
  */
-const MediaCard = ({ src, alt, caption, className = '' }) => {
+const MediaCard = ({ src, alt, caption, className = '', 
+  frame = 'polaroid', 
+  frameSize = 'md',
+  texture = 'none' }) => {
   const [safeSrc, setSafeSrc] = useState('');
 
   useEffect(() => {
-    // Process the src URL
     let processedSrc = src;
     
     if (!src) {
@@ -19,7 +22,6 @@ const MediaCard = ({ src, alt, caption, className = '' }) => {
       return;
     }
 
-    // If it's just a filename (no http/https and no /), prepend /uploads/
     if (typeof src === 'string' && 
         !src.startsWith('http') && 
         !src.startsWith('/') && 
@@ -44,7 +46,6 @@ const MediaCard = ({ src, alt, caption, className = '' }) => {
   };
 
   const renderMedia = () => {
-    // YouTube or Vimeo embed
     if (embedUrl) {
       return (
         <iframe
@@ -68,12 +69,14 @@ const MediaCard = ({ src, alt, caption, className = '' }) => {
       );
     }
 
-    // Image (default)
     return <img src={safeSrc} alt={alt || ''} onError={handleError} />;
   };
 
+  const frameClass = frame && frame !== 'none' ? `media-frame-${frame}` : '';
+  const sizeClass = frameSize ? `media-frame-${frameSize}` : '';
+
   return (
-    <div className={`media-card ${className}`}>
+    <div className={`media-card ${className} ${frameClass} ${sizeClass} texture-${texture}`.trim()}>
       {renderMedia()}
       {caption && <div className="media-caption">{caption}</div>}
     </div>

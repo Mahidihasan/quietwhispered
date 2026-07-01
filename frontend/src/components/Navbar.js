@@ -1,15 +1,47 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiSun, FiMoon } from 'react-icons/fi';
+import ArchiveSlideout from './ArchiveSlideout';
 
-const Navbar = ({ onNewPost, onToggleTheme, theme }) => {
+const Navbar = ({ onNewPost, posts = [] }) => {
+    const [isArchiveOpen, setIsArchiveOpen] = useState(false);
+    const archiveRef = useRef(null);
+
+    // Close archive on click outside
+    useEffect(() => {
+        if (!isArchiveOpen) return;
+        const handleClick = (e) => {
+            if (archiveRef.current && !archiveRef.current.contains(e.target)) {
+                setIsArchiveOpen(false);
+            }
+        };
+        const handleKey = (e) => {
+            if (e.key === 'Escape') setIsArchiveOpen(false);
+        };
+        document.addEventListener('mousedown', handleClick);
+        document.addEventListener('keydown', handleKey);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+            document.removeEventListener('keydown', handleKey);
+        };
+    }, [isArchiveOpen]);
+
     return (
         <nav className="navbar">
             <div className="nav-content">
                 <Link to="/" className="logo">
-                    <h1>Quietwhispered</h1>
+                    <h1>quietwhispered</h1>
                 </Link>
                 <div className="nav-links">
+                    {posts.length > 0 && (
+                        <button
+                            className="nav-button-archive"
+                            onClick={() => setIsArchiveOpen(!isArchiveOpen)}
+                            aria-label="Toggle archive"
+                            aria-expanded={isArchiveOpen}
+                        >
+                            Archive
+                        </button>
+                    )}
                     {onNewPost && (
                         <button 
                             className="nav-button" 
@@ -19,27 +51,19 @@ const Navbar = ({ onNewPost, onToggleTheme, theme }) => {
                             Write
                         </button>
                     )}
-                    {onToggleTheme && (
-                        <button
-                            className="theme-switch"
-                            onClick={onToggleTheme}
-                            aria-label="Toggle theme"
-                            type="button"
-                            data-theme={theme}
-                        >
-                            <span className="theme-switch-track">
-                                <span className="theme-switch-icon sun">
-                                    <FiSun />
-                                </span>
-                                <span className="theme-switch-icon moon">
-                                    <FiMoon />
-                                </span>
-                                <span className="theme-switch-thumb" />
-                            </span>
-                        </button>
-                    )}
                 </div>
             </div>
+            {/* Archive slide-out panel */}
+            {posts.length > 0 && (
+                <div ref={archiveRef}>
+                    <ArchiveSlideout 
+                        posts={posts} 
+                        isOpen={isArchiveOpen} 
+                        onClose={() => setIsArchiveOpen(false)}
+                    />
+                </div>
+            )}
+            {isArchiveOpen && <div className="archive-overlay" onClick={() => setIsArchiveOpen(false)} />}
         </nav>
     );
 };

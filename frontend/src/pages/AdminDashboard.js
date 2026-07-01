@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PostEditor from '../components/PostEditor';
+import Icon from '../components/Icon';
 import { getAllEntries, deleteEntry, uploadImage } from '../services/journalService';
 import { getQuote, saveQuote } from '../services/quoteService';
 import { signOutUser } from '../services/authService';
-import { FiLogOut, FiFilter, FiImage, FiX } from 'react-icons/fi';
+import { FiLogOut, FiFilter, FiImage, FiX, FiPlus, FiEdit2, FiTrash2, FiGrid, FiList, FiChevronDown, FiSearch } from 'react-icons/fi';
 import { format } from 'date-fns';
 import useAuth from '../hooks/useAuth';
 
@@ -21,6 +22,9 @@ const AdminDashboard = () => {
     const [isQuoteUploading, setIsQuoteUploading] = useState(false);
     const [loadError, setLoadError] = useState('');
     const [showFilters, setShowFilters] = useState(false);
+    const [viewMode, setViewMode] = useState('list');
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     const filtersRef = useRef(null);
     const { user, loading: authLoading } = useAuth();
     const [filters, setFilters] = useState({
@@ -60,14 +64,13 @@ const AdminDashboard = () => {
             }
         } catch (error) {
             console.error('Error loading quote:', error);
-            // Set default quote on error
-                setQuote({
-                    text: 'The pen is mightier than the sword.',
-                    author: '- Edward Bulwer-Lytton',
-                    imageUrl: '',
-                    useImageCover: false
-                });
-                setQuoteFontSize(18);
+            setQuote({
+                text: 'The pen is mightier than the sword.',
+                author: '- Edward Bulwer-Lytton',
+                imageUrl: '',
+                useImageCover: false
+            });
+            setQuoteFontSize(18);
         }
     }, []);
 
@@ -83,6 +86,14 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         let filtered = [...posts];
+
+        if (searchQuery) {
+            filtered = filtered.filter(post =>
+                post.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                post.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                post.mood?.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+        }
 
         if (filters.year) {
             filtered = filtered.filter(post => 
@@ -109,7 +120,7 @@ const AdminDashboard = () => {
         }
 
         setFilteredPosts(filtered);
-    }, [filters, posts]);
+    }, [filters, posts, searchQuery]);
 
     useEffect(() => {
         if (!showFilters) return;
@@ -141,6 +152,7 @@ const AdminDashboard = () => {
 
     const handleClearFilters = () => {
         setFilters({ year: '', month: '', title: '', mood: '' });
+        setSearchQuery('');
     };
 
     const getUniqueYears = () => {
@@ -217,32 +229,48 @@ const AdminDashboard = () => {
         }));
     };
 
+
     const publishedCount = posts.filter((post) => post.isPublished).length;
     const draftCount = posts.filter((post) => !post.isPublished).length;
     const mediaCount = posts.filter((post) => post.media).length;
 
+    const activeFiltersCount = [filters.year, filters.month, filters.title, filters.mood].filter(Boolean).length;
+
     return (
         <div className="admin-dashboard">
+            {/* Header */}
             <header className="admin-hero">
                 <div className="admin-hero-left">
-                    <div className="admin-kicker">Dashboard</div>
                     <h1>Journal Studio</h1>
+                    <p className="admin-hero-subtitle">Manage your writing</p>
                 </div>
                 <div className="admin-hero-actions">
-                    <button type="button" className="btn-secondary" onClick={handleLogout}>
-                        <FiLogOut />
-                        Log out
-                    </button>
                     <button 
-                        type="button"
-                        className="btn-primary"
-                        onClick={() => {
-                            setEditingPost(null);
-                            setShowEditor(true);
-                        }}
+                        type="button" 
+                        className="btn-secondary btn-mobile-toggle"
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        aria-label="Toggle menu"
                     >
-                        + New Entry
+                        <FiChevronDown className={`menu-arrow ${mobileMenuOpen ? 'open' : ''}`} />
                     </button>
+                    <div className={`admin-hero-actions-inner ${mobileMenuOpen ? 'visible' : ''}`}>
+                        <button type="button" className="btn-secondary" onClick={handleLogout}>
+                            <FiLogOut />
+                            <span className="btn-label">Log out</span>
+                        </button>
+                        <button 
+                            type="button"
+                            className="btn-primary"
+                            onClick={() => {
+                                setEditingPost(null);
+                                setShowEditor(true);
+                                setMobileMenuOpen(false);
+                            }}
+                        >
+                            <FiPlus />
+                            <span className="btn-label">New Entry</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
@@ -252,146 +280,244 @@ const AdminDashboard = () => {
                 </div>
             )}
 
+            {/* Stats Grid */}
             <section className="admin-stats">
                 <div className="stat-card">
-                    <div className="stat-label">Total posts</div>
+                    <div className="stat-icon"><Icon name="paper" size="lg" /></div>
+                    <div className="stat-label">Total</div>
                     <div className="stat-value">{posts.length}</div>
                 </div>
                 <div className="stat-card">
+                    <div className="stat-icon"><Icon name="published" size="lg" /></div>
                     <div className="stat-label">Published</div>
                     <div className="stat-value">{publishedCount}</div>
                 </div>
                 <div className="stat-card">
+                    <div className="stat-icon"><Icon name="draft" size="lg" /></div>
                     <div className="stat-label">Drafts</div>
                     <div className="stat-value">{draftCount}</div>
                 </div>
                 <div className="stat-card">
+                    <div className="stat-icon"><Icon name="image" size="lg" /></div>
                     <div className="stat-label">With media</div>
                     <div className="stat-value">{mediaCount}</div>
                 </div>
             </section>
 
+            {/* Main Grid */}
             <section className="admin-grid">
                 <div className="admin-left-column">
+                    {/* Posts List */}
                     <div className="posts-list">
                         <div className="posts-header" ref={filtersRef}>
-                            <div>
-                                <h3>All Posts ({filteredPosts.length})</h3>
-                                <span className="panel-note">Sorted newest first.</span>
-                            </div>
-                            <div className="filter-popover">
-                                <button
-                                    type="button"
-                                    className="filter-icon-only"
-                                    onClick={() => setShowFilters(!showFilters)}
-                                    aria-label={showFilters ? 'Hide filters' : 'Show filters'}
-                                    aria-expanded={showFilters}
-                                >
-                                    <FiFilter />
-                                </button>
-                                {showFilters && (
-                                    <div className="filter-panel" role="dialog" aria-label="Filter posts">
-                                        <div className="filter-grid">
-                                            <div className="filter-field">
-                                                <label>Year</label>
-                                                <select 
-                                                    value={filters.year} 
-                                                    onChange={(e) => handleFilterChange('year', e.target.value)}
-                                                >
-                                                    <option value="">All years</option>
-                                                    {getUniqueYears().map(year => (
-                                                        <option key={year} value={year}>{year}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="filter-field">
-                                                <label>Month</label>
-                                                <select 
-                                                    value={filters.month} 
-                                                    onChange={(e) => handleFilterChange('month', e.target.value)}
-                                                >
-                                                    <option value="">All months</option>
-                                                    {['January', 'February', 'March', 'April', 'May', 'June', 
-                                                      'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
-                                                        <option key={month} value={month}>{month}</option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                            <div className="filter-field">
-                                                <label>Title</label>
-                                                <input
-                                                    type="text"
-                                                    value={filters.title}
-                                                    onChange={(e) => handleFilterChange('title', e.target.value)}
-                                                    placeholder="Search by title"
-                                                />
-                                            </div>
-                                            <div className="filter-field">
-                                                <label>Mood</label>
-                                                <input
-                                                    type="text"
-                                                    value={filters.mood}
-                                                    onChange={(e) => handleFilterChange('mood', e.target.value)}
-                                                    placeholder="Calm, reflective..."
-                                                />
-                                            </div>
-                                        </div>
-                                        {(filters.year || filters.month || filters.title || filters.mood) && (
-                                            <button className="filter-clear" onClick={handleClearFilters}>
-                                                Clear filters
-                                            </button>
-                                        )}
-                                    </div>
+                            <div className="posts-header-left">
+                                <h3>Posts ({filteredPosts.length})</h3>
+                                {activeFiltersCount > 0 && (
+                                    <span className="filter-badge">{activeFiltersCount} active</span>
                                 )}
                             </div>
+                            <div className="posts-header-right">
+                                {/* Search */}
+                                <div className="search-box">
+                                    <FiSearch className="search-icon" />
+                                    <input
+                                        type="text"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        placeholder="Search posts..."
+                                        className="search-input"
+                                    />
+                                    {searchQuery && (
+                                        <button className="search-clear" onClick={() => setSearchQuery('')}>
+                                            <FiX />
+                                        </button>
+                                    )}
+                                </div>
+                                {/* View toggle */}
+                                <div className="view-toggle">
+                                    <button
+                                        type="button"
+                                        className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                                        onClick={() => setViewMode('list')}
+                                        aria-label="List view"
+                                    >
+                                        <FiList />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                                        onClick={() => setViewMode('grid')}
+                                        aria-label="Grid view"
+                                    >
+                                        <FiGrid />
+                                    </button>
+                                </div>
+                                {/* Filter */}
+                                <div className="filter-popover">
+                                    <button
+                                        type="button"
+                                        className={`filter-icon-only ${activeFiltersCount > 0 ? 'has-filters' : ''}`}
+                                        onClick={() => setShowFilters(!showFilters)}
+                                        aria-label={showFilters ? 'Hide filters' : 'Show filters'}
+                                        aria-expanded={showFilters}
+                                    >
+                                        <FiFilter />
+                                    </button>
+                                    {showFilters && (
+                                        <div className="filter-panel" role="dialog" aria-label="Filter posts">
+                                            <div className="filter-panel-header">
+                                                <h4>Filters</h4>
+                                                <button className="filter-panel-close" onClick={() => setShowFilters(false)}>
+                                                    <FiX />
+                                                </button>
+                                            </div>
+                                            <div className="filter-grid">
+                                                <div className="filter-field">
+                                                    <label>Year</label>
+                                                    <select 
+                                                        value={filters.year} 
+                                                        onChange={(e) => handleFilterChange('year', e.target.value)}
+                                                    >
+                                                        <option value="">All years</option>
+                                                        {getUniqueYears().map(year => (
+                                                            <option key={year} value={year}>{year}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="filter-field">
+                                                    <label>Month</label>
+                                                    <select 
+                                                        value={filters.month} 
+                                                        onChange={(e) => handleFilterChange('month', e.target.value)}
+                                                    >
+                                                        <option value="">All months</option>
+                                                        {['January', 'February', 'March', 'April', 'May', 'June', 
+                                                          'July', 'August', 'September', 'October', 'November', 'December'].map(month => (
+                                                            <option key={month} value={month}>{month}</option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                                <div className="filter-field">
+                                                    <label>Title</label>
+                                                    <input
+                                                        type="text"
+                                                        value={filters.title}
+                                                        onChange={(e) => handleFilterChange('title', e.target.value)}
+                                                        placeholder="Search by title"
+                                                    />
+                                                </div>
+                                                <div className="filter-field">
+                                                    <label>Mood</label>
+                                                    <input
+                                                        type="text"
+                                                        value={filters.mood}
+                                                        onChange={(e) => handleFilterChange('mood', e.target.value)}
+                                                        placeholder="Calm, reflective..."
+                                                    />
+                                                </div>
+                                            </div>
+                                            {(activeFiltersCount > 0) && (
+                                                <button className="filter-clear" onClick={handleClearFilters}>
+                                                    Clear all filters
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
-                        <div className="posts-scroll">
+
+                        <div className={`posts-scroll view-${viewMode}`}>
                             {loading ? (
                                 <div className="loading minimal">
-                                <div className="minimal-loader"><span></span></div>
+                                    <div className="minimal-loader"><span></span></div>
                                     <p>Loading posts...</p>
                                 </div>
                             ) : filteredPosts.length === 0 ? (
                                 <div className="empty-state">
+                                    <div className="empty-state-icon"><Icon name="book" size="xl" /></div>
                                     <p>No posts found.</p>
+                                    {activeFiltersCount > 0 && (
+                                        <button className="filter-clear" onClick={handleClearFilters}>
+                                            Clear filters
+                                        </button>
+                                    )}
                                 </div>
-                            ) : (
+                            ) : viewMode === 'list' ? (
                                 filteredPosts.map(post => (
                                     <div key={post._id} className="admin-post-item">
                                         <div className="post-info">
                                             <h4>{post.title}</h4>
                                             <div className="post-meta">
-                                                <span>{format(new Date(post.date || post.createdAt), 'MMMM d, yyyy')}</span>
-                                                {post.mood && <span>{post.mood}</span>}
-                                                <span>{post.isPublished ? 'Published' : 'Draft'}</span>
+                                                <span className="post-date">{format(new Date(post.date || post.createdAt), 'MMM d, yyyy')}</span>
+                                                {post.mood && <span className="post-mood">· {post.mood}</span>}
+                                                <span className={`post-status ${post.isPublished ? 'published' : 'draft'}`}>
+                                                    · {post.isPublished ? 'Published' : 'Draft'}
+                                                </span>
                                                 {post.media && (
-                                                    <span>{post.type === 'video' ? 'Video' : 'Image'}</span>
+                                                    <span className="post-media-type">· {post.type === 'video' ? 'Video' : 'Image'}</span>
                                                 )}
                                             </div>
                                         </div>
                                         <div className="post-actions">
                                             <button 
+                                                className="post-action-btn edit"
                                                 onClick={() => {
                                                     setEditingPost(post);
                                                     setShowEditor(true);
                                                 }}
+                                                aria-label="Edit post"
                                             >
-                                                Edit
+                                                <FiEdit2 />
                                             </button>
                                             <button 
-                                                className="delete"
+                                                className="post-action-btn delete"
                                                 onClick={() => handleDelete(post._id)}
+                                                aria-label="Delete post"
                                             >
-                                                Delete
+                                                <FiTrash2 />
                                             </button>
                                         </div>
                                     </div>
                                 ))
+                            ) : (
+                                <div className="posts-grid-view">
+                                    {filteredPosts.map(post => (
+                                        <div key={post._id} className="post-grid-card">
+                                            <div className="post-grid-header">
+                                                <span className={`post-status-dot ${post.isPublished ? 'published' : 'draft'}`}></span>
+                                                <span className="post-grid-date">{format(new Date(post.date || post.createdAt), 'MMM d')}</span>
+                                            </div>
+                                            <h4 className="post-grid-title">{post.title}</h4>
+                                            {post.mood && <span className="post-grid-mood">{post.mood}</span>}
+                                            <div className="post-grid-actions">
+                                                <button 
+                                                    className="post-action-btn edit"
+                                                    onClick={() => {
+                                                        setEditingPost(post);
+                                                        setShowEditor(true);
+                                                    }}
+                                                    aria-label="Edit post"
+                                                >
+                                                    <FiEdit2 />
+                                                </button>
+                                                <button 
+                                                    className="post-action-btn delete"
+                                                    onClick={() => handleDelete(post._id)}
+                                                    aria-label="Delete post"
+                                                >
+                                                    <FiTrash2 />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>
                 </div>
 
+                {/* Quote Panel - Sidebar */}
                 <div className="admin-panel admin-quote-panel">
                     <div className="panel-header">
                         <h3>Homepage Quote</h3>
@@ -408,6 +534,7 @@ const AdminDashboard = () => {
                             />
                             <label className="quote-attach" htmlFor="quote-image-upload" title="Attach image">
                                 <FiImage />
+                                <span>Add Image</span>
                             </label>
                             {isQuoteUploading && (
                                 <span className="quote-upload-status">
@@ -429,7 +556,7 @@ const AdminDashboard = () => {
                         {!quote.useImageCover && (
                             <>
                                 <label className="quote-size-row">
-                                    Quote Size
+                                    <span>Quote Size</span>
                                     <input
                                         type="range"
                                         min="14"
@@ -440,7 +567,7 @@ const AdminDashboard = () => {
                                     <span className="quote-size-value">{quoteFontSize}px</span>
                                 </label>
                                 <label>
-                                    Quote Text
+                                    <span>Quote Text</span>
                                     <textarea
                                         value={quote.text}
                                         onChange={(e) => setQuote({ ...quote, text: e.target.value })}
@@ -449,7 +576,7 @@ const AdminDashboard = () => {
                                     />
                                 </label>
                                 <label>
-                                    Author
+                                    <span>Author</span>
                                     <input
                                         type="text"
                                         value={quote.author}
@@ -467,21 +594,31 @@ const AdminDashboard = () => {
                 </div>
             </section>
 
-            {showEditor && (
-                <PostEditor 
-                    post={editingPost}
-                    onClose={() => {
-                        setShowEditor(false);
-                        setEditingPost(null);
-                    }}
-                    onSave={() => {
-                        setShowEditor(false);
-                        setEditingPost(null);
-                        fetchAllPosts();
-                    }}
-                />
-            )}
 
+            {/* Post Editor Modal */}
+            {showEditor && (
+                <div className="editor-overlay" onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                        setShowEditor(false);
+                        setEditingPost(null);
+                    }
+                }}>
+                    <div className="editor-modal">
+                        <PostEditor 
+                            post={editingPost}
+                            onClose={() => {
+                                setShowEditor(false);
+                                setEditingPost(null);
+                            }}
+                            onSave={() => {
+                                setShowEditor(false);
+                                setEditingPost(null);
+                                fetchAllPosts();
+                            }}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
