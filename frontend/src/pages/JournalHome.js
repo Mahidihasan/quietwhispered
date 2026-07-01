@@ -65,20 +65,25 @@ const JournalHome = ({ onPostsChange }) => {
       setLoadError('');
       const fetchFn = isPrivateMode ? getEntriesPage : getPublicEntriesPage;
       const { entries, lastDoc: nextLastDoc } = await fetchFn({ pageSize, lastDoc: cursor });
-      const updatedPosts = cursor ? [...posts, ...entries] : entries;
-      setPosts(updatedPosts);
+
+      setPosts(prevPosts => {
+        const updatedPosts = cursor ? [...prevPosts, ...entries] : entries;
+
+        // Pass posts up to App for the Navbar archive button
+        if (onPostsChange) onPostsChange(updatedPosts);
+
+        return updatedPosts;
+      });
       setLastDoc(nextLastDoc);
       setHasMore(entries.length === pageSize);
       setIsInitialLoad(false);
-      // Pass posts up to App for the Navbar archive button
-      if (onPostsChange) onPostsChange(updatedPosts);
     } catch (err) {
       console.error('Error fetching posts:', err);
       setLoadError(err?.message ? String(err.message) : 'Failed to load posts.');
     } finally {
       setIsLoading(false);
     }
-  }, [isPrivateMode, posts, onPostsChange]);
+  }, [isPrivateMode, onPostsChange]);
 
   useEffect(() => {
     if (authLoading) return;
@@ -88,7 +93,7 @@ const JournalHome = ({ onPostsChange }) => {
     setIsInitialLoad(true);
     setLoadError('');
     fetchPosts(null);
-  }, [authLoading]);
+  }, [authLoading, fetchPosts]);
 
   const showInitialLoading = isInitialLoad && isLoading;
   const showEmptyState = !isInitialLoad && !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
