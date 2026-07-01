@@ -1609,29 +1609,60 @@ a:hover {
   margin-top: 12px;
 }
 
-/* Simple spinner animation — like a turning book page */
-.loading-spinner {
-  width: 32px;
-  height: 32px;
-  position: relative;
+.thinker-loader {
+  width: 34px;
+  height: 34px;
+  overflow: visible;
 }
 
-.loading-spinner::before,
-.loading-spinner::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 2px solid var(--cg-light);
+.thinker-loader--lg {
+  width: 48px;
+  height: 48px;
 }
 
-.loading-spinner::before {
-  border-color: var(--accent) transparent transparent transparent;
-  animation: spin 800ms linear infinite;
+.thinker-loader__stroke {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform-origin: center;
+  animation: thinker-draw 2.2s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+.thinker-loader__dot,
+.thinker-loader__sparkle {
+  fill: var(--accent-light);
+  transform-origin: center;
+  animation: thinker-bob 1.6s ease-in-out infinite;
+}
+
+.thinker-loader__sparkle {
+  animation-delay: 180ms;
+  opacity: 0.9;
+}
+
+@keyframes thinker-draw {
+  0%,
+  100% {
+    stroke-dasharray: 0 40;
+    stroke-dashoffset: 0;
+    opacity: 0.8;
+  }
+  50% {
+    stroke-dasharray: 24 40;
+    stroke-dashoffset: -8;
+    opacity: 1;
+  }
+}
+
+@keyframes thinker-bob {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-1px) scale(1.06);
   }
 }
 
@@ -2637,6 +2668,7 @@ a:hover {
   color: var(--text-primary);
   line-height: 1.3;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;

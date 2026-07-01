@@ -664,28 +664,6 @@
   position: relative;
   z-index: 1;
 }
-/* ══════════════════════════════════════════════════════════
-   TEXTURE ON ENTRIES
-   ══════════════════════════════════════════════════════════ */
-/* Texture overlay div sits inside the entry, above the background */
-.entry.texture-applied {
-  position: relative;
-  isolation: auto;
-}
-
-.entry-texture {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  border-radius: inherit;
-  background-color: transparent;
-}
-
-.entry.texture-applied > *:not(.entry-texture) {
-  position: relative;
-  z-index: 1;
-}
 
 /* ══════════════════════════════════════════════════════════
    RESPONSIVE

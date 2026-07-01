@@ -3,6 +3,7 @@ import { createEntry, updateEntry, uploadImage } from '../services/journalServic
 import MediaCard from './MediaCard';
 import ThinkerLoader from './ThinkerLoader';
 import Icon from './Icon';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const MOOD_OPTIONS = [
   { icon: 'smile', label: 'Calm' },
@@ -106,7 +107,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
         if (post) {
             setFormData({
                 ...post,
-                date: post.date ? new Date(post.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                date: resolvePostDate(post) ? resolvePostDate(post).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                 coverImage: post.media || post.imageUrls?.[0] || '',
                 youtubeEmbedUrl: post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '') || '',
                 mood: post.mood || '',
@@ -381,7 +382,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
 
     const buildShareUrl = (postId) => {
         if (!postId || typeof window === 'undefined') return '';
-        return `${window.location.origin}${window.location.pathname}#/post/${postId}`;
+        return new URL(`/post/${postId}`, window.location.origin).href;
     };
 
     const handleCopyShareUrl = async () => {

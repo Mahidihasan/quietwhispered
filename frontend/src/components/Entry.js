@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import MediaCard from './MediaCard';
 import { getPublicMediaSettings } from '../services/mediaSettingsService';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const escapeHtml = (value) => {
   return String(value || '')
@@ -31,6 +32,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
+  const postDate = resolvePostDate(post);
   const titleSizeValue = Number(post.titleSize);
   const titleSize = Number.isFinite(titleSizeValue)
     ? Math.min(56, Math.max(20, titleSizeValue))
@@ -170,7 +172,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
           {post.title}
         </h2>
         <div className="entry-meta">
-          <span className="entry-date">{format(new Date(post.date || post.createdAt), 'MMMM d, yyyy')}</span>
+          {postDate && <span className="entry-date">{format(postDate, 'MMMM d, yyyy')}</span>}
           {moodLabel && <span className="entry-sep">•</span>}
           {moodLabel && <span className="entry-mood">{moodLabel}</span>}
           {post.tags?.length ? (

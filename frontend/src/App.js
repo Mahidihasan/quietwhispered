@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './styles/theme.css';
 import './styles/textures.css';
 import Navbar from './components/Navbar';
+import ThinkerLoader from './components/ThinkerLoader';
 import JournalHome from './pages/JournalHome';
 import PostPage from './pages/PostPage';
 import AdminLogin from './pages/AdminLogin';
@@ -15,24 +16,12 @@ const ProtectedRoute = ({ children, user, loading }) => {
     if (loading) {
         return (
             <div className="loading minimal">
-                <div className="loading-spinner"></div>
+                <ThinkerLoader className="thinker-loader thinker-loader--lg" />
                 <p>Checking access...</p>
             </div>
         );
     }
-    return user ? children : <Navigate to="/admin/login" />;
-};
-
-// Ensure direct hits to /admin/login or other paths normalize to hash URLs
-const HashNormalizer = () => {
-    useEffect(() => {
-        const { hash, pathname, search } = window.location;
-        const hasHash = hash && hash !== '#' && hash !== '#/';
-        if (!hasHash && pathname && pathname !== '/') {
-            window.location.hash = `#${pathname}${search || ''}`;
-        }
-    }, []);
-    return null;
+    return user ? children : <Navigate to="/admin/login" replace />;
 };
 
 function App() {
@@ -42,7 +31,6 @@ function App() {
     return (
         <Router>
             <div className="App">
-                <HashNormalizer />
                 <Navbar posts={posts} />
                 {firebaseInitError && (
                     <div className="error-state">

@@ -120,7 +120,7 @@ const JournalHome = ({ onPostsChange }) => {
             <p>{loadError}</p>
             {!isPrivateMode && (
               <p>
-                If these entries are private, sign in via <a href="#/admin/login">Admin Login</a>.
+                If these entries are private, sign in via <a href="/admin/login">Admin Login</a>.
               </p>
             )}
           </div>

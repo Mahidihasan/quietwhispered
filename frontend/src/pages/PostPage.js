@@ -3,9 +3,11 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../components/MediaCard';
+import ThinkerLoader from '../components/ThinkerLoader';
 import { getEntryById, getPublicEntryById } from '../services/journalService';
 import { getPublicMediaSettings } from '../services/mediaSettingsService';
 import useAuth from '../hooks/useAuth';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
@@ -192,7 +194,7 @@ const PostPage = () => {
     if (loading) {
         return (
             <div className="loading">
-                <div className="doodle-spinner"></div>
+                <ThinkerLoader className="thinker-loader thinker-loader--lg" />
                 <p>Loading post...</p>
             </div>
         );
@@ -219,6 +221,7 @@ const PostPage = () => {
     const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
     const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
     const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
+    const postDate = resolvePostDate(post);
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
     const titleSizeValue = Number(post.titleSize);
@@ -255,7 +258,7 @@ const PostPage = () => {
                     <div className="post-page-meta">
                         <div className="meta-item">
                             <FiCalendar />
-                        <span>{format(new Date(post.date || post.createdAt), 'MMMM dd, yyyy')}</span>
+                        <span>{postDate ? format(postDate, 'MMMM dd, yyyy') : 'Undated'}</span>
                         </div>
 
                         {post.location && (

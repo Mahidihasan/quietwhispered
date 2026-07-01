@@ -8,6 +8,7 @@ import { signOutUser } from '../services/authService';
 import { FiLogOut, FiFilter, FiImage, FiX, FiPlus, FiEdit2, FiTrash2, FiGrid, FiList, FiChevronDown, FiSearch } from 'react-icons/fi';
 import { format } from 'date-fns';
 import useAuth from '../hooks/useAuth';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const AdminDashboard = () => {
     const [posts, setPosts] = useState([]);
@@ -97,13 +98,13 @@ const AdminDashboard = () => {
 
         if (filters.year) {
             filtered = filtered.filter(post => 
-                new Date(post.date || post.createdAt).getFullYear() === parseInt(filters.year)
+                resolvePostDate(post)?.getFullYear() === parseInt(filters.year)
             );
         }
 
         if (filters.month) {
             filtered = filtered.filter(post => 
-                new Date(post.date || post.createdAt).toLocaleString('default', { month: 'long' }) === filters.month
+                resolvePostDate(post)?.toLocaleString('default', { month: 'long' }) === filters.month
             );
         }
 
@@ -156,7 +157,9 @@ const AdminDashboard = () => {
     };
 
     const getUniqueYears = () => {
-        const years = posts.map(post => new Date(post.date || post.createdAt).getFullYear());
+        const years = posts
+            .map(post => resolvePostDate(post)?.getFullYear())
+            .filter(Boolean);
         return [...new Set(years)].sort((a, b) => b - a);
     };
 
@@ -449,7 +452,7 @@ const AdminDashboard = () => {
                                         <div className="post-info">
                                             <h4>{post.title}</h4>
                                             <div className="post-meta">
-                                                <span className="post-date">{format(new Date(post.date || post.createdAt), 'MMM d, yyyy')}</span>
+                                                <span className="post-date">{resolvePostDate(post) ? format(resolvePostDate(post), 'MMM d, yyyy') : 'Undated'}</span>
                                                 {post.mood && <span className="post-mood">· {post.mood}</span>}
                                                 <span className={`post-status ${post.isPublished ? 'published' : 'draft'}`}>
                                                     · {post.isPublished ? 'Published' : 'Draft'}
@@ -486,7 +489,7 @@ const AdminDashboard = () => {
                                         <div key={post._id} className="post-grid-card">
                                             <div className="post-grid-header">
                                                 <span className={`post-status-dot ${post.isPublished ? 'published' : 'draft'}`}></span>
-                                                <span className="post-grid-date">{format(new Date(post.date || post.createdAt), 'MMM d')}</span>
+                                                <span className="post-grid-date">{resolvePostDate(post) ? format(resolvePostDate(post), 'MMM d') : 'Undated'}</span>
                                             </div>
                                             <h4 className="post-grid-title">{post.title}</h4>
                                             {post.mood && <span className="post-grid-mood">{post.mood}</span>}
