@@ -7,6 +7,7 @@ import {
 import { auth, db } from '../firebase';
 
 const SETTINGS_DOC_ID = 'global-media-settings';
+let cachedPublicMediaSettings = null;
 
 const ensureFirebase = () => {
   if (!auth || !db) {
@@ -47,6 +48,11 @@ export const saveMediaSettings = async (settings) => {
     updatedAt: serverTimestamp()
   };
   await setDoc(ref, payload, { merge: true });
+  cachedPublicMediaSettings = {
+    ...DEFAULT_SETTINGS,
+    ...payload,
+    updatedAt: payload.updatedAt
+  };
   return payload;
 };
 
@@ -71,7 +77,13 @@ export const getMediaSettings = async () => {
  * Get public media settings (no auth required).
  */
 export const getPublicMediaSettings = async () => {
-  return getMediaSettings();
+  if (cachedPublicMediaSettings) {
+    return cachedPublicMediaSettings;
+  }
+
+  const settings = await getMediaSettings();
+  cachedPublicMediaSettings = settings;
+  return settings;
 };
 
 export { DEFAULT_SETTINGS };

@@ -712,6 +712,25 @@ a:hover {
   /* Creates new stacking context */
 }
 
+.quiet-page.texture-applied {
+  position: relative;
+  isolation: auto;
+}
+
+.quiet-page-texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 0;
+  background-color: transparent;
+}
+
+.quiet-page.texture-applied > *:not(.quiet-page-texture) {
+  position: relative;
+  z-index: 1;
+}
+
 /* Inner flex column stack for entries, quotes, pager */
 .quiet-main {
   display: flex;
@@ -1778,6 +1797,25 @@ a:hover {
   isolation: isolate;
   box-shadow: 4px 4px 0 var(--cg-shadow-med);
   transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.post-content.texture-applied {
+  position: relative;
+  isolation: auto;
+}
+
+.post-texture {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: inherit;
+  background-color: transparent;
+}
+
+.post-content.texture-applied > *:not(.post-texture) {
+  position: relative;
+  z-index: 1;
 }
 
 /* Left doodle border (dashed accent dots) — shared with .entry */

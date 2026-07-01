@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './styles/theme.css';
 import './styles/textures.css';
 import Navbar from './components/Navbar';
-import ThinkerLoader from './components/ThinkerLoader';
 import JournalHome from './pages/JournalHome';
 import PostPage from './pages/PostPage';
 import AdminLogin from './pages/AdminLogin';
@@ -14,12 +13,7 @@ import { firebaseInitError } from './firebase';
 // Protected Route Component
 const ProtectedRoute = ({ children, user, loading }) => {
     if (loading) {
-        return (
-            <div className="loading minimal">
-                <ThinkerLoader className="thinker-loader thinker-loader--lg" />
-                <p>Checking access...</p>
-            </div>
-        );
+        return null;
     }
     return user ? children : <Navigate to="/admin/login" replace />;
 };

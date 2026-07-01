@@ -251,7 +251,10 @@ const PostPage = () => {
                 <FiArrowLeft /> Back
             </button>
 
-            <article className="post-content">
+            <article className={`post-content ${activeTexture !== 'none' ? 'texture-applied' : ''}`.trim()}>
+                {activeTexture !== 'none' && (
+                    <div className={`post-texture texture-${activeTexture}`} aria-hidden="true" />
+                )}
                 <header className="post-page-header">
                     <h1 style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>{post.title}</h1>
                     
@@ -281,7 +284,7 @@ const PostPage = () => {
                 </header>
 
                 {coverUrl && (
-                    <div className={`post-media ${activeTexture !== 'none' ? `texture-${activeTexture}` : ''}`}>
+                    <div className="post-media">
                         <MediaCard src={coverUrl} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
                     </div>
                 )}

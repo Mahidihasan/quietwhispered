@@ -1,6 +1,8 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
+let cachedPublicQuote = null;
+
 const ensureFirebase = () => {
   if (!auth || !db) {
     throw new Error('Firebase is not initialized. Check environment configuration.');
@@ -33,12 +35,17 @@ export const getQuote = async () => {
 
 export const getPublicQuote = async () => {
   ensureFirebase();
+  if (cachedPublicQuote) {
+    return cachedPublicQuote;
+  }
+
   const quoteDocRef = getQuoteDocRef();
   const snap = await getDoc(quoteDocRef);
   if (!snap.exists()) {
     return null;
   }
-  return snap.data();
+  cachedPublicQuote = snap.data();
+  return cachedPublicQuote;
 };
 
 export const saveQuote = async (quote) => {
@@ -53,5 +60,7 @@ export const saveQuote = async (quote) => {
     ownerId: user.uid,
     updatedAt: serverTimestamp()
   };
-  return setDoc(quoteDocRef, payload, { merge: true });
+  await setDoc(quoteDocRef, payload, { merge: true });
+  cachedPublicQuote = payload;
+  return payload;
 };

@@ -8,6 +8,7 @@ import { signOutUser } from '../services/authService';
 import { FiLogOut, FiFilter, FiImage, FiX, FiPlus, FiEdit2, FiTrash2, FiGrid, FiList, FiChevronDown, FiSearch } from 'react-icons/fi';
 import { format } from 'date-fns';
 import useAuth from '../hooks/useAuth';
+import { getPublicMediaSettings } from '../services/mediaSettingsService';
 import { resolvePostDate } from '../utils/dateUtils';
 
 const AdminDashboard = () => {
@@ -22,6 +23,7 @@ const AdminDashboard = () => {
     const [quoteUploadProgress, setQuoteUploadProgress] = useState(0);
     const [isQuoteUploading, setIsQuoteUploading] = useState(false);
     const [loadError, setLoadError] = useState('');
+    const [mediaSettings, setMediaSettings] = useState(null);
     const [showFilters, setShowFilters] = useState(false);
     const [viewMode, setViewMode] = useState('list');
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -75,6 +77,15 @@ const AdminDashboard = () => {
         }
     }, []);
 
+    const loadMediaSettings = useCallback(async () => {
+        try {
+            const settings = await getPublicMediaSettings();
+            setMediaSettings(settings);
+        } catch (error) {
+            console.error('Error loading media settings:', error);
+        }
+    }, []);
+
     useEffect(() => {
         if (authLoading) return;
         if (!user) {
@@ -83,7 +94,8 @@ const AdminDashboard = () => {
         }
         fetchAllPosts();
         loadQuote();
-    }, [authLoading, user, fetchAllPosts, loadQuote, navigate]);
+        loadMediaSettings();
+    }, [authLoading, user, fetchAllPosts, loadQuote, loadMediaSettings, navigate]);
 
     useEffect(() => {
         let filtered = [...posts];
@@ -240,7 +252,7 @@ const AdminDashboard = () => {
     const activeFiltersCount = [filters.year, filters.month, filters.title, filters.mood].filter(Boolean).length;
 
     return (
-        <div className="admin-dashboard">
+        <div className={`admin-dashboard ${mediaSettings?.paperTexture && mediaSettings.paperTexture !== 'none' ? `texture-${mediaSettings.paperTexture}` : ''}`.trim()}>
             {/* Header */}
             <header className="admin-hero">
                 <div className="admin-hero-left">
@@ -432,10 +444,7 @@ const AdminDashboard = () => {
 
                         <div className={`posts-scroll view-${viewMode}`}>
                             {loading ? (
-                                <div className="loading minimal">
-                                    <div className="minimal-loader"><span></span></div>
-                                    <p>Loading posts...</p>
-                                </div>
+                                null
                             ) : filteredPosts.length === 0 ? (
                                 <div className="empty-state">
                                     <div className="empty-state-icon"><Icon name="book" size="xl" /></div>

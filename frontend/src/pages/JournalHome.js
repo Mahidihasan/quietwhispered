@@ -4,7 +4,6 @@ import { getEntriesPage, getPublicEntriesPage } from '../services/journalService
 import { getQuote, getPublicQuote } from '../services/quoteService';
 import { getPublicMediaSettings } from '../services/mediaSettingsService';
 import useAuth from '../hooks/useAuth';
-import ThinkerLoader from '../components/ThinkerLoader';
 
 const JournalHome = ({ onPostsChange }) => {
   const [posts, setPosts] = useState([]);
@@ -97,9 +96,13 @@ const JournalHome = ({ onPostsChange }) => {
 
   const showInitialLoading = isInitialLoad && isLoading;
   const showEmptyState = !isInitialLoad && !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
+  const activeTexture = mediaSettings?.paperTexture || 'none';
 
   return (
-    <div className="quiet-page">
+    <div className={`quiet-page ${activeTexture !== 'none' ? 'texture-applied' : ''}`.trim()}>
+      {activeTexture !== 'none' && (
+        <div className={`quiet-page-texture texture-${activeTexture}`} aria-hidden="true" />
+      )}
       {/* MAIN READING AREA */}
       <main className="quiet-main">
         <div
@@ -127,10 +130,7 @@ const JournalHome = ({ onPostsChange }) => {
         )}
 
         {showInitialLoading && (
-          <div className="loading minimal" role="status" aria-live="polite">
-            <ThinkerLoader className="thinker-loader thinker-loader--lg" />
-            <p>Loading journal...</p>
-          </div>
+          null
         )}
 
         {showEmptyState && (
