@@ -2,8 +2,11 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createEntry, updateEntry, uploadImage } from '../shared/services/journalService';
 import MediaCard from '../shared/components/MediaCard.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
+import EntryPreview from '../shared/components/EntryPreview.jsx';
 import Icon from './Icon';
 import { resolvePostDate } from '../shared/utils/dateUtils';
+import { FiCalendar, FiSmile, FiMapPin, FiTag, FiImage, FiSettings, FiVideo, FiShare2, FiCheck, FiX, FiEye, FiEdit } from 'react-icons/fi';
+
 
 const MOOD_OPTIONS = [
   { icon: 'smile', label: 'Calm' },
@@ -21,12 +24,16 @@ const MOOD_OPTIONS = [
 ];
 
 const FONT_OPTIONS = [
-  { value: 'Newsreader', label: 'Serif' },
+  { value: 'Newsreader', label: 'Newsreader (Serif)' },
   { value: 'Source Serif 4', label: 'Source Serif' },
   { value: 'Lora', label: 'Lora' },
-  { value: 'Inter', label: 'Sans' },
-  { value: 'Caveat', label: 'Handwriting' },
-  { value: 'Playfair Display', label: 'Display' },
+  { value: 'Playfair Display', label: 'Playfair Display' },
+  { value: 'DM Serif Display', label: 'DM Serif Display' },
+  { value: 'Inter', label: 'Inter (Sans)' },
+  { value: 'JetBrains Mono', label: 'JetBrains Mono (Mono)' },
+  { value: 'Caveat', label: 'Caveat (Cursive)' },
+  { value: 'Kalam', label: 'Kalam (Script)' },
+  { value: 'Patrick Hand', label: 'Patrick Hand (Print)' },
 ];
 
 const PostEditor = ({ post, onClose, onSave }) => {
@@ -54,6 +61,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const [markColor, setMarkColor] = useState('#d7c7a5');
     const [fontColor, setFontColor] = useState('#1f1b16');
     const [titleSize, setTitleSize] = useState('32');
+    const [bodySize, setBodySize] = useState('18');
     const [savedImageCaption] = useState('');
     const [isImageCaptionSaved] = useState(false);
     const [lineHeight, setLineHeight] = useState('1.75');
@@ -62,8 +70,14 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const [isUploading, setIsUploading] = useState(false);
     const [lastSaved, setLastSaved] = useState(null);
     const [activeTab, setActiveTab] = useState('write');
+    const [sidebarTab, setSidebarTab] = useState('meta'); // 'meta', 'appearance', 'media'
     const [showMoodPicker, setShowMoodPicker] = useState(false);
     const [showFontPanel, setShowFontPanel] = useState(false);
+    const [showRestoreBackup, setShowRestoreBackup] = useState(false);
+    const [backupData, setBackupData] = useState(null);
+    const [focusMode, setFocusMode] = useState(false);
+    const [writingGoal, setWritingGoal] = useState(0);
+    const [showGoalInput, setShowGoalInput] = useState(false);
     const contentRef = useRef(null);
     const autoSaveRef = useRef(null);
     const dropRef = useRef(null);
@@ -71,6 +85,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const wordCount = formData.content.trim() ? formData.content.trim().split(/\s+/).length : 0;
     const charCount = formData.content.length;
     const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+    const goalProgress = writingGoal > 0 ? Math.min(100, (wordCount / writingGoal) * 100) : 0;
 
     const TEXTURE_OPTIONS = [
         { value: 'none', label: 'None' },
@@ -103,6 +118,46 @@ const PostEditor = ({ post, onClose, onSave }) => {
         { value: 'xl', label: 'Full width' },
     ];
 
+    // Check for backup on mount
+    useEffect(() => {
+        const backup = localStorage.getItem('journal_draft_backup');
+        if (backup) {
+            try {
+                const parsed = JSON.parse(backup);
+                // Only show if the backup content is different from current/loaded post content
+                if (parsed && parsed.content && parsed.content !== formData.content && parsed.content !== post?.content) {
+                    setBackupData(parsed);
+                    setShowRestoreBackup(true);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+    }, [post]);
+
+    const handleRestoreBackup = () => {
+        if (backupData) {
+            setFormData(prev => ({
+                ...prev,
+                title: backupData.title || prev.title,
+                content: backupData.content || prev.content,
+                tags: backupData.tags || prev.tags,
+                location: backupData.location || prev.location,
+                mood: backupData.mood || prev.mood
+            }));
+            if (backupData.titleSize) setTitleSize(String(backupData.titleSize));
+            if (backupData.bodySize) setBodySize(String(backupData.bodySize));
+            if (backupData.lineHeight) setLineHeight(String(backupData.lineHeight));
+            if (backupData.font) setSelectedFont(backupData.font);
+        }
+        setShowRestoreBackup(false);
+    };
+
+    const handleDiscardBackup = () => {
+        localStorage.removeItem('journal_draft_backup');
+        setShowRestoreBackup(false);
+    };
+
     useEffect(() => {
         if (post) {
             setFormData({
@@ -119,21 +174,38 @@ const PostEditor = ({ post, onClose, onSave }) => {
             });
             setImageUrls(post.imageUrls || []);
             setTitleSize(String(post.titleSize || 32));
+            setBodySize(String(post.bodySize || 18));
             setLineHeight(String(Number(post.lineHeight) || 1.75));
             if (post.font) setSelectedFont(post.font);
         }
     }, [post]);
 
+    // Local Auto-save backup hook
     useEffect(() => {
         if (!formData.title && !formData.content) return;
-        if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
-        autoSaveRef.current = setTimeout(() => {
+        
+        const saveBackup = () => {
+            localStorage.setItem('journal_draft_backup', JSON.stringify({
+                title: formData.title,
+                content: formData.content,
+                tags: formData.tags,
+                location: formData.location,
+                mood: formData.mood,
+                titleSize,
+                bodySize,
+                lineHeight,
+                font: selectedFont
+            }));
             setLastSaved(new Date());
-        }, 30000);
+        };
+
+        if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
+        autoSaveRef.current = setTimeout(saveBackup, 10000); // Back up every 10 seconds
+
         return () => {
             if (autoSaveRef.current) clearTimeout(autoSaveRef.current);
         };
-    }, [formData.title, formData.content]);
+    }, [formData.title, formData.content, formData.tags, formData.location, formData.mood, titleSize, bodySize, lineHeight, selectedFont]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -444,7 +516,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     };
 
     return (
-        <div className="writing-editor" ref={dropRef} onDragOver={handleDragOver} onDrop={handleDrop}>
+        <div className={`writing-editor${focusMode ? ' focus-mode' : ''}`} ref={dropRef} onDragOver={handleDragOver} onDrop={handleDrop}>
             <div className="editor-header">
                 <div className="editor-header-left">
                     <span className="editor-kicker">
@@ -474,168 +546,206 @@ const PostEditor = ({ post, onClose, onSave }) => {
 
             <form onSubmit={handleSubmit} className="writing-layout">
                 <aside className="writing-sidebar">
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="calendar" size="sm" /> Date</label>
-                        <input type="date" name="date" value={formData.date} onChange={handleChange} className="sidebar-input" />
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="smile" size="sm" /> Mood</label>
-                        <div className="mood-trigger" onClick={() => setShowMoodPicker(!showMoodPicker)}>
-                            {formData.mood ? (
-                                <span className="mood-selected">
-                                    <span className="mood-emoji"><Icon name={getMoodIcon(formData.mood)} /></span>
-                                    <span>{formData.mood}</span>
-                                    <span className="mood-change"><Icon name="close" /></span>
-                                </span>
-                            ) : (
-                                <span className="mood-placeholder">Tap to set mood...</span>
-                            )}
-                        </div>
-                        {showMoodPicker && (
-                            <div className="mood-picker">
-                                <div className="mood-picker-header">
-                                    <span><Icon name="smile" size="sm" /> Choose your mood</span>
-                                    <button type="button" onClick={() => setShowMoodPicker(false)}><Icon name="close" /></button>
-                                </div>
-                                <div className="mood-grid">
-                                    {MOOD_OPTIONS.map(m => (
-                                        <button
-                                            key={m.label}
-                                            type="button"
-                                            className={`mood-option ${formData.mood === m.label.toLowerCase() ? 'active' : ''}`}
-                                            onClick={() => handleMoodSelect(m.label.toLowerCase())}
-                                            title={m.label}
-                                        >
-                                            <span className="mood-emoji"><Icon name={m.icon} size="lg" /></span>
-                                            <span className="mood-label">{m.label}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="mapPin" size="sm" /> Location</label>
-                        <input type="text" name="location" value={formData.location} onChange={handleChange} className="sidebar-input" placeholder="Where are you?" />
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="tag" size="sm" /> Tags</label>
-                        <div className="sidebar-tags-input">
-                            <input
-                                type="text"
-                                value={tagInput}
-                                onChange={(e) => setTagInput(e.target.value)}
-                                className="sidebar-input"
-                                placeholder="Add tag..."
-                                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
-                            />
-                            <button type="button" className="sidebar-tag-add" onClick={handleTagAdd}>+</button>
-                        </div>
-                        {formData.tags.length > 0 && (
-                            <div className="sidebar-tags-display">
-                                {formData.tags.map(tag => (
-                                    <span key={tag} className="sidebar-tag">
-                                        <span>#</span>{tag}
-                                        <button type="button" onClick={() => handleTagRemove(tag)} className="sidebar-tag-remove"><Icon name="close" /></button>
-                                    </span>
-                                ))}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="image" size="sm" /> Cover</label>
-                        <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverFileChange} className="sidebar-file-input" id="coverUpload" />
-                        <label htmlFor="coverUpload" className="sidebar-upload-btn">
-                            {coverFile ? <><Icon name="check" size="sm" /> Image set</> : <><Icon name="image" size="sm" /> Upload cover...</>}
-                        </label>
-                        {isUploading && <div className="sidebar-upload-status">Uploading... {uploadProgress}%</div>}
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="paper" size="sm" /> Paper Texture</label>
-                        <div className="texture-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
-                            {TEXTURE_OPTIONS.map(opt => (
-                                <button
-                                    key={opt.value}
-                                    type="button"
-                                    className={`texture-option ${formData.paperTexture === opt.value ? 'active' : ''}`}
-                                    onClick={() => setFormData(prev => ({ ...prev, paperTexture: opt.value }))}
-                                    style={{ padding: '2px 6px', fontSize: '10px', border: '1px solid var(--border-light)', borderRadius: '3px', background: formData.paperTexture === opt.value ? 'var(--accent)' : 'transparent', color: formData.paperTexture === opt.value ? '#fff' : 'inherit', cursor: 'pointer' }}
-                                >
-                                    {opt.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="image" size="sm" /> Media Frame</label>
-                        <select
-                            name="mediaFrame"
-                            value={formData.mediaFrame}
-                            onChange={handleChange}
-                            className="sidebar-input"
+                    <div className="sidebar-tabs">
+                        <button
+                            type="button"
+                            className={`sidebar-tab-btn ${sidebarTab === 'meta' ? 'active' : ''}`}
+                            onClick={() => setSidebarTab('meta')}
                         >
-                            {FRAME_OPTIONS.map(opt => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="image" size="sm" /> Frame Size</label>
-                        <select
-                            name="frameSize"
-                            value={formData.frameSize}
-                            onChange={handleChange}
-                            className="sidebar-input"
+                            <FiCalendar />
+                            <span>Info</span>
+                        </button>
+                        <button
+                            type="button"
+                            className={`sidebar-tab-btn ${sidebarTab === 'appearance' ? 'active' : ''}`}
+                            onClick={() => setSidebarTab('appearance')}
                         >
-                            {FRAME_SIZE_OPTIONS.map(opt => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
+                            <FiSettings />
+                            <span>Style</span>
+                        </button>
+                        <button
+                            type="button"
+                            className={`sidebar-tab-btn ${sidebarTab === 'media' ? 'active' : ''}`}
+                            onClick={() => setSidebarTab('media')}
+                        >
+                            <FiImage />
+                            <span>Media</span>
+                        </button>
                     </div>
 
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="video" size="sm" /> YouTube</label>
-                        <input type="url" name="youtubeEmbedUrl" value={formData.youtubeEmbedUrl} onChange={handleChange} className="sidebar-input" placeholder="https://youtube.com/watch?v=..." />
-                        {formData.youtubeEmbedUrl && (
-                            <div className="video-preview">
-                                <div className="preview-label">Preview:</div>
-                                <MediaCard src={formData.youtubeEmbedUrl} alt="YouTube preview" />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="sidebar-section">
-                        <label className="sidebar-label"><Icon name="share" size="sm" /> Share</label>
-                        {post?._id ? (
+                    <div className="sidebar-tab-content">
+                        {sidebarTab === 'meta' && (
                             <>
-                                <input type="text" readOnly className="sidebar-input" value={buildShareUrl(post._id)} onFocus={(e) => e.target.select()} />
-                                <div className="sidebar-share-actions">
-                                    <button type="button" className="sidebar-btn" onClick={handleCopyShareUrl}><Icon name="copy" size="sm" /> Copy</button>
-                                    <a className="sidebar-btn" href={buildShareUrl(post._id)} target="_blank" rel="noreferrer"><Icon name="externalLink" size="sm" /> Open</a>
-                                    {typeof navigator !== 'undefined' && navigator.share && (
-                                        <button type="button" className="sidebar-btn" onClick={handleNativeShare}><Icon name="share" size="sm" /> Share</button>
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiCalendar /> Date</label>
+                                    <input type="date" name="date" value={formData.date} onChange={handleChange} className="sidebar-input" />
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiSmile /> Mood</label>
+                                    <div className="mood-trigger" onClick={() => setShowMoodPicker(!showMoodPicker)}>
+                                        {formData.mood ? (
+                                            <span className="mood-selected">
+                                                <span className="mood-emoji"><Icon name={getMoodIcon(formData.mood)} /></span>
+                                                <span>{formData.mood}</span>
+                                                <span className="mood-change" onClick={(e) => { e.stopPropagation(); setFormData(prev => ({ ...prev, mood: '' })); }}><FiX /></span>
+                                            </span>
+                                        ) : (
+                                            <span className="mood-placeholder">Tap to set mood...</span>
+                                        )}
+                                    </div>
+                                    {showMoodPicker && (
+                                        <div className="mood-picker">
+                                            <div className="mood-picker-header">
+                                                <span><FiSmile /> Choose your mood</span>
+                                                <button type="button" onClick={() => setShowMoodPicker(false)}><FiX /></button>
+                                            </div>
+                                            <div className="mood-grid">
+                                                {MOOD_OPTIONS.map(m => (
+                                                    <button
+                                                        key={m.label}
+                                                        type="button"
+                                                        className={`mood-option ${formData.mood === m.label.toLowerCase() ? 'active' : ''}`}
+                                                        onClick={() => handleMoodSelect(m.label.toLowerCase())}
+                                                        title={m.label}
+                                                    >
+                                                        <span className="mood-emoji"><Icon name={m.icon} size="lg" /></span>
+                                                        <span className="mood-label">{m.label}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
-                                {!formData.isPublished && (
-                                    <div className="sidebar-hint">Only visible after publishing.</div>
-                                )}
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiMapPin /> Location</label>
+                                    <input type="text" name="location" value={formData.location} onChange={handleChange} className="sidebar-input" placeholder="Where are you?" />
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiTag /> Tags</label>
+                                    <div className="sidebar-tags-input">
+                                        <input
+                                            type="text"
+                                            value={tagInput}
+                                            onChange={(e) => setTagInput(e.target.value)}
+                                            className="sidebar-input"
+                                            placeholder="Add tag..."
+                                            onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleTagAdd())}
+                                        />
+                                        <button type="button" className="sidebar-tag-add" onClick={handleTagAdd}>+</button>
+                                    </div>
+                                    {formData.tags.length > 0 && (
+                                        <div className="sidebar-tags-display">
+                                            {formData.tags.map(tag => (
+                                                <span key={tag} className="sidebar-tag">
+                                                    <span>#</span>{tag}
+                                                    <button type="button" onClick={() => handleTagRemove(tag)} className="sidebar-tag-remove"><FiX /></button>
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </>
-                        ) : (
-                            <div className="sidebar-hint">Save first to get a share link.</div>
+                        )}
+
+                        {sidebarTab === 'appearance' && (
+                            <>
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiSettings /> Paper Texture</label>
+                                    <div className="texture-preview" style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '4px' }}>
+                                        {TEXTURE_OPTIONS.map(opt => (
+                                            <button
+                                                key={opt.value}
+                                                type="button"
+                                                className={`texture-option ${formData.paperTexture === opt.value ? 'active' : ''}`}
+                                                onClick={() => setFormData(prev => ({ ...prev, paperTexture: opt.value }))}
+                                                style={{ padding: '2px 6px', fontSize: '10px', border: '1px solid var(--border-light)', borderRadius: '3px', background: formData.paperTexture === opt.value ? 'var(--accent)' : 'transparent', color: formData.paperTexture === opt.value ? '#fff' : 'inherit', cursor: 'pointer' }}
+                                            >
+                                                {opt.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiImage /> Media Frame</label>
+                                    <select
+                                        name="mediaFrame"
+                                        value={formData.mediaFrame}
+                                        onChange={handleChange}
+                                        className="sidebar-input"
+                                    >
+                                        {FRAME_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiImage /> Frame Size</label>
+                                    <select
+                                        name="frameSize"
+                                        value={formData.frameSize}
+                                        onChange={handleChange}
+                                        className="sidebar-input"
+                                    >
+                                        {FRAME_SIZE_OPTIONS.map(opt => (
+                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </>
+                        )}
+
+                        {sidebarTab === 'media' && (
+                            <>
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiImage /> Cover Image</label>
+                                    <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverFileChange} className="sidebar-file-input" id="coverUpload" />
+                                    <label htmlFor="coverUpload" className="sidebar-upload-btn">
+                                        {coverFile ? <><FiCheck /> Image set</> : <><FiImage /> Upload cover...</>}
+                                    </label>
+                                    {isUploading && <div className="sidebar-upload-status">Uploading... {uploadProgress}%</div>}
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiVideo /> YouTube Video</label>
+                                    <input type="url" name="youtubeEmbedUrl" value={formData.youtubeEmbedUrl} onChange={handleChange} className="sidebar-input" placeholder="https://youtube.com/watch?v=..." />
+                                    {formData.youtubeEmbedUrl && (
+                                        <div className="video-preview">
+                                            <div className="preview-label">Preview:</div>
+                                            <MediaCard src={formData.youtubeEmbedUrl} alt="YouTube preview" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiShare2 /> Share Options</label>
+                                    {post?._id ? (
+                                        <>
+                                            <input type="text" readOnly className="sidebar-input" value={buildShareUrl(post._id)} onFocus={(e) => e.target.select()} style={{ fontSize: '11px' }} />
+                                            <div className="sidebar-share-actions" style={{ display: 'flex', gap: '4px', marginTop: '6px' }}>
+                                                <button type="button" className="sidebar-btn" onClick={handleCopyShareUrl} style={{ flex: 1, padding: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}><FiShare2 size={12} /> Copy</button>
+                                                <a className="sidebar-btn" href={buildShareUrl(post._id)} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>Open</a>
+                                            </div>
+                                            {!formData.isPublished && (
+                                                <div className="sidebar-hint" style={{ fontSize: '11px', marginTop: '4px' }}>Only visible after publishing.</div>
+                                            )}
+                                        </>
+                                    ) : (
+                                        <div className="sidebar-hint" style={{ fontSize: '11px' }}>Save first to get a share link.</div>
+                                    )}
+                                </div>
+                            </>
                         )}
                     </div>
 
                     <div className="sidebar-section sidebar-publish">
                         <label className="sidebar-publish-label">
                             <input type="checkbox" name="isPublished" checked={formData.isPublished} onChange={handleChange} />
-                            <span>{formData.isPublished ? <><Icon name="published" size="sm" /> Published</> : <><Icon name="draft" size="sm" /> Draft</>}</span>
+                            <span>{formData.isPublished ? <><FiCheck /> Published</> : <><FiX /> Draft</>}</span>
                         </label>
                     </div>
 
@@ -649,7 +759,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                                     <ThinkerLoader />
                                     <span>Saving</span>
                                 </span>
-                            ) : (post ? <><Icon name="edit" size="sm" /> Update</> : <><Icon name="save" size="sm" /> Save</>)}
+                            ) : (post ? <><FiEdit /> Update</> : <><FiCheck /> Save</>)}
                         </button>
                     </div>
                 </aside>
@@ -753,6 +863,48 @@ const PostEditor = ({ post, onClose, onSave }) => {
                                 {isUploading && <span className="toolbar-upload-status">{uploadProgress}%</span>}
                                 <button type="button" className="toolbar-btn" onClick={handleEmbedInsert} title="Embed video"><Icon name="play" size="sm" /></button>
                             </div>
+                            <div className="toolbar-group toolbar-extras">
+                                <button
+                                    type="button"
+                                    className={`toolbar-btn ${focusMode ? 'is-active' : ''}`}
+                                    onClick={() => setFocusMode(!focusMode)}
+                                    title="Focus mode"
+                                >
+                                    <span className="focus-icon">{focusMode ? '◉' : '◯'}</span>
+                                </button>
+                                {showGoalInput ? (
+                                    <div className="goal-input-popup">
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="10000"
+                                            placeholder="Word goal"
+                                            className="toolbar-input"
+                                            style={{ width: '80px' }}
+                                            value={writingGoal || ''}
+                                            onChange={(e) => setWritingGoal(Math.max(0, parseInt(e.target.value) || 0))}
+                                            onKeyDown={(e) => e.key === 'Enter' && setShowGoalInput(false)}
+                                            autoFocus
+                                        />
+                                        <button type="button" className="toolbar-btn" onClick={() => setShowGoalInput(false)} title="Set goal">
+                                            <FiCheck size={12} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <button
+                                        type="button"
+                                        className={`toolbar-btn ${writingGoal > 0 ? 'is-active' : ''}`}
+                                        onClick={() => setShowGoalInput(true)}
+                                        title={writingGoal > 0 ? `${wordCount}/${writingGoal} words` : 'Set writing goal'}
+                                    >
+                                        {writingGoal > 0 ? (
+                                            <span className="goal-badge">{Math.round(goalProgress)}%</span>
+                                        ) : (
+                                            <span className="goal-icon">🎯</span>
+                                        )}
+                                    </button>
+                                )}
+                            </div>
                         </div>
 
                         <input
@@ -785,6 +937,17 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             required
                         />
 
+                        {writingGoal > 0 && (
+                            <div className="writing-progress-row">
+                                <div className="writing-progress-bar">
+                                    <div className="writing-progress-fill" style={{ width: `${Math.min(100, goalProgress)}%` }} />
+                                </div>
+                                <span className={`writing-progress-label ${goalProgress >= 100 ? 'goal-met' : ''}`}>
+                                    {goalProgress >= 100 ? '🎉 Goal met!' : `${wordCount} / ${writingGoal} words`}
+                                </span>
+                            </div>
+                        )}
+
                         <div className="writing-footer">
                             <span className="writing-stats">
                                 <span title="Words"><Icon name="pen" size="sm" /> {wordCount} words</span>
@@ -803,20 +966,17 @@ const PostEditor = ({ post, onClose, onSave }) => {
 
                     <div className={`editor-panel preview-panel ${activeTab === 'preview' ? 'active' : ''}`}>
                         {formData.content ? (
-                            <div className="preview-content">
-                                <h3 className="preview-title" style={{ fontSize: `${Number(titleSize) || 32}px`, fontFamily: `'${selectedFont}', serif` }}>
-                                    {formData.title || 'Untitled'}
-                                </h3>
-                                <div className="preview-meta">
-                                    <span><Icon name="calendar" size="sm" /> {formData.date}</span>
-                                    {formData.mood && <span>· <Icon name={getMoodIcon(formData.mood)} size="sm" /> {formData.mood}</span>}
-                                    {formData.location && <span>· <Icon name="mapPin" size="sm" /> {formData.location}</span>}
-                                </div>
-                                <div className="preview-body" style={{ lineHeight: Number(lineHeight) || 1.75, fontFamily: selectedFont === 'Newsreader' ? 'var(--font-body)' : `'${selectedFont}', serif` }}>
-                                    {formData.content.split('\n').map((line, i) => (
-                                        <p key={i}>{line || '\u00A0'}</p>
-                                    ))}
-                                </div>
+                            <div className="preview-content-wrapper" style={{ padding: '20px', background: 'var(--bg-primary)', borderRadius: '5px', border: '2px solid var(--border)' }}>
+                                <EntryPreview 
+                                    post={{
+                                        ...formData,
+                                        titleSize,
+                                        lineHeight,
+                                        font: selectedFont,
+                                        type: formData.youtubeEmbedUrl ? 'video' : (coverFile || formData.coverImage) ? 'image' : 'story'
+                                    }} 
+                                    mediaSettings={null} 
+                                />
                             </div>
                         ) : (
                             <div className="preview-empty">

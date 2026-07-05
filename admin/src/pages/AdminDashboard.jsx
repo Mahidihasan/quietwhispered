@@ -63,6 +63,7 @@ const AdminDashboard = () => {
     const [settingsSaving, setSettingsSaving] = useState(false);
     const [showFilters, setShowFilters] = useState(false);
     const [viewMode, setViewMode] = useState('list');
+    const [settingsTab, setSettingsTab] = useState('styles'); // 'styles' | 'quote'
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const filtersRef = useRef(null);
@@ -294,7 +295,6 @@ const AdminDashboard = () => {
             event.target.value = '';
         }
     };
-
     const handleRemoveQuoteImage = () => {
         setQuote(prev => ({
             ...prev,
@@ -579,129 +579,150 @@ const AdminDashboard = () => {
                         </div>
                     </div>
                 </div>
-
-                <div className="admin-panel admin-quote-panel">
+                <div className="admin-panel admin-settings-panel">
                     <div className="panel-header">
-                        <h3>Homepage Quote</h3>
-                        <span className="panel-note">Updates the front page instantly.</span>
+                        <h3>Dashboard Settings</h3>
+                        <span className="panel-note">Configure styles and quotes here.</span>
                     </div>
-                    <form className="quote-form" onSubmit={handleSaveQuote}>
-                        <div className="quote-media-row">
-                            <input
-                                type="file"
-                                id="quote-image-upload"
-                                accept="image/jpeg,image/png,image/webp"
-                                className="visually-hidden"
-                                onChange={handleQuoteImageUpload}
-                            />
-                            <label className="quote-attach" htmlFor="quote-image-upload" title="Attach image">
-                                <FiImage />
-                                <span>Add Image</span>
+                    <div className="settings-tabs" style={{ display: 'flex', borderBottom: '2px solid var(--border-light)', marginBottom: '16px' }}>
+                        <button
+                            type="button"
+                            className={`settings-tab-btn ${settingsTab === 'styles' ? 'active' : ''}`}
+                            onClick={() => setSettingsTab('styles')}
+                            style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: settingsTab === 'styles' ? '3px solid var(--accent)' : 'none', padding: '10px', fontFamily: 'var(--font-hand)', fontSize: '18px', fontWeight: 'bold', color: settingsTab === 'styles' ? 'var(--accent)' : 'var(--text-muted)', cursor: 'pointer' }}
+                        >
+                            Journal Styles
+                        </button>
+                        <button
+                            type="button"
+                            className={`settings-tab-btn ${settingsTab === 'quote' ? 'active' : ''}`}
+                            onClick={() => setSettingsTab('quote')}
+                            style={{ flex: 1, background: 'transparent', border: 'none', borderBottom: settingsTab === 'quote' ? '3px solid var(--accent)' : 'none', padding: '10px', fontFamily: 'var(--font-hand)', fontSize: '18px', fontWeight: 'bold', color: settingsTab === 'quote' ? 'var(--accent)' : 'var(--text-muted)', cursor: 'pointer' }}
+                        >
+                            Homepage Quote
+                        </button>
+                    </div>
+
+                    {settingsTab === 'styles' && (
+                        <form className="media-settings-form" onSubmit={handleSaveSettings}>
+                            <label>
+                                <span>Global Paper Texture</span>
+                                <div className="texture-preview">
+                                    {TEXTURE_OPTIONS.map(opt => (
+                                        <button
+                                            key={opt.value}
+                                            type="button"
+                                            className={`texture-option ${settingsForm.paperTexture === opt.value ? 'active' : ''}`}
+                                            onClick={() => setSettingsForm(prev => ({ ...prev, paperTexture: opt.value }))}
+                                        >
+                                            <span className="texture-label">{opt.label}</span>
+                                        </button>
+                                    ))}
+                                </div>
                             </label>
-                            {isQuoteUploading && (
-                                <span className="quote-upload-status">
-                                    Uploading... {quoteUploadProgress}%
-                                </span>
-                            )}
-                            {quote.imageUrl && (
-                                <button type="button" className="quote-remove" onClick={handleRemoveQuoteImage}>
-                                    <FiX />
-                                    Remove
-                                </button>
-                            )}
-                        </div>
-                        {quote.imageUrl && (
-                            <div className="quote-image-preview">
-                                <img src={quote.imageUrl} alt="Quote cover preview" />
-                            </div>
-                        )}
-                        {!quote.useImageCover && (
-                            <>
-                                <label className="quote-size-row">
-                                    <span>Quote Size</span>
-                                    <input
-                                        type="range"
-                                        min="14"
-                                        max="28"
-                                        value={quoteFontSize}
-                                        onChange={(e) => setQuoteFontSize(Number(e.target.value))}
-                                    />
-                                    <span className="quote-size-value">{quoteFontSize}px</span>
-                                </label>
-                                <label>
-                                    <span>Quote Text</span>
-                                    <textarea
-                                        value={quote.text}
-                                        onChange={(e) => setQuote({ ...quote, text: e.target.value })}
-                                        placeholder="Enter quote text..."
-                                        required
-                                    />
-                                </label>
-                                <label>
-                                    <span>Author</span>
-                                    <input
-                                        type="text"
-                                        value={quote.author}
-                                        onChange={(e) => setQuote({ ...quote, author: e.target.value })}
-                                        placeholder="- Author Name"
-                                        required
-                                    />
-                                </label>
-                            </>
-                        )}
-                        <button type="submit" className="btn-primary" disabled={quoteSaving}>
-                            {quoteSaving ? 'Saving...' : 'Save Quote'}
-                        </button>
-                    </form>
-                </div>
+                            <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <span>Global Media Frame</span>
+                                <select
+                                    value={settingsForm.mediaFrame}
+                                    onChange={(e) => setSettingsForm(prev => ({ ...prev, mediaFrame: e.target.value }))}
+                                    style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
+                                >
+                                    {FRAME_OPTIONS.map(opt => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                <span>Global Frame Size</span>
+                                <select
+                                    value={settingsForm.frameSize}
+                                    onChange={(e) => setSettingsForm(prev => ({ ...prev, frameSize: e.target.value }))}
+                                    style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
+                                >
+                                    {FRAME_SIZE_OPTIONS.map(opt => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </select>
+                            </label>
+                            <button type="submit" className="btn-primary" style={{ marginTop: '16px', width: '100%' }} disabled={settingsSaving}>
+                                {settingsSaving ? 'Saving...' : 'Save Settings'}
+                            </button>
+                        </form>
+                    )}
 
-                <div className="admin-panel media-settings-panel" style={{ marginTop: '24px' }}>
-                    <div className="panel-header">
-                        <h3>Journal Styles</h3>
-                        <span className="panel-note">Configure global paper texture and media frames.</span>
-                    </div>
-                    <form className="media-settings-form" onSubmit={handleSaveSettings}>
-                        <label>
-                            <span>Global Paper Texture</span>
-                            <div className="texture-preview">
-                                {TEXTURE_OPTIONS.map(opt => (
-                                    <button
-                                        key={opt.value}
-                                        type="button"
-                                        className={`texture-option ${settingsForm.paperTexture === opt.value ? 'active' : ''}`}
-                                        onClick={() => setSettingsForm(prev => ({ ...prev, paperTexture: opt.value }))}
-                                    >
-                                        <span className="texture-label">{opt.label}</span>
+                    {settingsTab === 'quote' && (
+                        <form className="quote-form" onSubmit={handleSaveQuote}>
+                            <div className="quote-media-row">
+                                <input
+                                    type="file"
+                                    id="quote-image-upload"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    className="visually-hidden"
+                                    onChange={handleQuoteImageUpload}
+                                />
+                                <label className="quote-attach" htmlFor="quote-image-upload" title="Attach image">
+                                    <FiImage />
+                                    <span>Add Image</span>
+                                </label>
+                                {isQuoteUploading && (
+                                    <span className="quote-upload-status">
+                                        Uploading... {quoteUploadProgress}%
+                                    </span>
+                                )}
+                                {quote.imageUrl && (
+                                    <button type="button" className="quote-remove" onClick={handleRemoveQuoteImage}>
+                                        <FiX />
+                                        Remove
                                     </button>
-                                ))}
+                                )}
                             </div>
-                        </label>
-                        <label style={{ marginTop: '12px' }}>
-                            <span>Global Media Frame</span>
-                            <select
-                                value={settingsForm.mediaFrame}
-                                onChange={(e) => setSettingsForm(prev => ({ ...prev, mediaFrame: e.target.value }))}
-                            >
-                                {FRAME_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <label style={{ marginTop: '12px' }}>
-                            <span>Global Frame Size</span>
-                            <select
-                                value={settingsForm.frameSize}
-                                onChange={(e) => setSettingsForm(prev => ({ ...prev, frameSize: e.target.value }))}
-                            >
-                                {FRAME_SIZE_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
-                        </label>
-                        <button type="submit" className="btn-primary" style={{ marginTop: '16px' }} disabled={settingsSaving}>
-                            {settingsSaving ? 'Saving...' : 'Save Settings'}
-                        </button>
-                    </form>
+                            {quote.imageUrl && (
+                                <div className="quote-image-preview" style={{ marginTop: '10px' }}>
+                                    <img src={quote.imageUrl} alt="Quote cover preview" style={{ maxWidth: '100%', height: 'auto', borderRadius: '3px' }} />
+                                </div>
+                            )}
+                            {!quote.useImageCover && (
+                                <>
+                                    <label className="quote-size-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+                                        <span>Size</span>
+                                        <input
+                                            type="range"
+                                            min="14"
+                                            max="28"
+                                            value={quoteFontSize}
+                                            onChange={(e) => setQuoteFontSize(Number(e.target.value))}
+                                            style={{ flex: 1 }}
+                                        />
+                                        <span className="quote-size-value">{quoteFontSize}px</span>
+                                    </label>
+                                    <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
+                                        <span>Quote Text</span>
+                                        <textarea
+                                            value={quote.text}
+                                            onChange={(e) => setQuote({ ...quote, text: e.target.value })}
+                                            placeholder="Enter quote text..."
+                                            required
+                                            style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)', minHeight: '80px', fontFamily: 'var(--font-hand)' }}
+                                        />
+                                    </label>
+                                    <label style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '10px' }}>
+                                        <span>Author</span>
+                                        <input
+                                            type="text"
+                                            value={quote.author}
+                                            onChange={(e) => setQuote({ ...quote, author: e.target.value })}
+                                            placeholder="- Author Name"
+                                            required
+                                            style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
+                                        />
+                                    </label>
+                                </>
+                            )}
+                            <button type="submit" className="btn-primary" style={{ marginTop: '16px', width: '100%' }} disabled={quoteSaving}>
+                                {quoteSaving ? 'Saving...' : 'Save Quote'}
+                            </button>
+                        </form>
+                    )}
                 </div>
             </section>
 

@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { format } from 'date-fns';
-import MediaCard from '../shared/components/MediaCard.jsx';
-import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
-import { resolvePostDate } from '../shared/utils/dateUtils';
+import MediaCard from './MediaCard.jsx';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const escapeHtml = (value) => {
   return String(value || '')
@@ -13,19 +12,7 @@ const escapeHtml = (value) => {
     .replace(/'/g, '&#39;');
 };
 
-const Entry = ({ post, mediaSettings: propSettings }) => {
-  const [mediaSettings, setMediaSettings] = useState(propSettings || null);
-
-  useEffect(() => {
-    if (propSettings) {
-      setMediaSettings(propSettings);
-      return;
-    }
-    // Fetch settings if not provided as prop
-    getPublicMediaSettings().then(setMediaSettings).catch(() => {});
-  }, [propSettings]);
-
-  // Per-entry frame/texture takes priority over global settings
+const EntryPreview = ({ post, mediaSettings }) => {
   const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
   const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
   const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
@@ -33,22 +20,32 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
   const postDate = resolvePostDate(post);
+  
   const titleSizeValue = Number(post.titleSize);
   const titleSize = Number.isFinite(titleSizeValue)
     ? Math.min(56, Math.max(20, titleSizeValue))
     : null;
+    
   const lineHeightValue = Number(post.lineHeight);
   const lineHeight = Number.isFinite(lineHeightValue)
     ? Math.min(2.6, Math.max(1.2, lineHeightValue))
     : null;
 
-  // Per-entry font from post data
   const entryFont = post.font || null;
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter', 'Caveat', 'Patrick Hand', 'Kalam', 'Playfair Display', 'Source Serif 4', 'JetBrains Mono', 'Lora', 'DM Serif Display']);
 
   const renderInline = (text) => {
     let safe = escapeHtml(text);
     safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
+    safe = safe.replace(/\[b\]/gi, '<strong>').replace(/\[\/b\]/gi, '</strong>');
+    safe = safe.replace(/\[i\]/gi, '<em>').replace(/\[\/i\]/gi, '</em>');
+    safe = safe.replace(/\[s\]/gi, '<s>').replace(/\[\/s\]/gi, '</s>');
+    safe = safe.replace(/\[quote\]/gi, '<blockquote>').replace(/\[\/quote\]/gi, '</blockquote>');
+    safe = safe.replace(/\[code\]/gi, '<code>').replace(/\[\/code\]/gi, '</code>');
+    safe = safe.replace(/\[link=([^\]]+)\](.*?)\[\/link\]/gi, (match, url, textContent) => {
+      const sanitizedUrl = escapeHtml(url.trim());
+      return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${textContent}</a>`;
+    });
     safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
       const sanitized = escapeHtml(color.trim());
       return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
@@ -158,7 +155,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
 
   return (
     <article
-      id={`post-${post._id}`}
+      id={`preview-${post._id || 'new'}`}
       className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''}`}
     >
       {activeTexture !== 'none' && (
@@ -169,7 +166,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
           ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
         }}>
-          {post.title}
+          {post.title || 'Untitled'}
         </h2>
         <div className="entry-meta">
           {postDate && <span className="entry-date">{format(postDate, 'MMMM d, yyyy')}</span>}
@@ -183,7 +180,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
 
       {shouldShowCover && (
         <div className={`entry-media ${activeTexture !== 'none' ? `texture-${activeTexture}` : ''}`}>
-          <MediaCard src={coverImage} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
+          <MediaCard src={coverImage} alt={post.title || 'Preview cover'} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
         </div>
       )}
 
@@ -213,7 +210,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
               <div key={block.key} className={`entry-media inline-media ${isVideo ? 'is-video' : ''}`.trim()}>
                 <MediaCard
                   src={block.src}
-                  alt={block.caption || post.title}
+                  alt={block.caption || post.title || 'inline media'}
                   caption={!isVideo ? block.caption : undefined}
                   className={!isVideo ? 'polaroid-card' : 'dotted-frame'}
                 />
@@ -233,11 +230,11 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
 
       {videoUrl && post.type === 'video' && (
         <div className="entry-media">
-          <MediaCard src={videoUrl} alt={post.title} />
+          <MediaCard src={videoUrl} alt={post.title || 'video preview'} />
         </div>
       )}
     </article>
   );
 };
 
-export default Entry;
+export default EntryPreview;

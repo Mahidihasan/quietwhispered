@@ -1,5 +1,5 @@
 /* ============================================================
-   THEME: Cozy Game Journal
+   THEME: Cozy Game Journal editor-close
    ────────────────────────────────────────────────────────────
    A pixel-perfect, black & white aesthetic with warm paper
    tones, illustrated borders, and a cozy game style.
@@ -2869,25 +2869,73 @@ a:hover {
   font-size: 11px;
 }
 
-/* Editor overlay & modal */
+/* ══════════════════════════════════════════════════════════
+   EDITOR OVERLAY & MODAL (Modern Cozy Redesign)
+   ══════════════════════════════════════════════════════════ */
 .editor-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(13, 12, 10, 0.5);
+  background: rgba(13, 12, 10, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 200;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 20px;
+  padding: 24px;
   overflow-y: auto;
-  animation: fade-in 200ms ease;
+  animation: overlay-fade-in 250ms ease;
+}
+
+@keyframes overlay-fade-in {
+  from { opacity: 0; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+  to { opacity: 1; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
 }
 
 .editor-modal {
   width: 100%;
-  max-width: 1200px;
-  margin: 20px auto;
-  animation: float-up 300ms ease-out;
+  max-width: 1280px;
+  margin: 16px auto;
+  animation: modal-float-up 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+@keyframes modal-float-up {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal corner decoration accent */
+.editor-modal::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 40px;
+  height: 40px;
+  border-top: 3px solid var(--accent);
+  border-left: 3px solid var(--accent);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.editor-modal::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 40px;
+  height: 40px;
+  border-bottom: 3px solid var(--accent);
+  border-right: 3px solid var(--accent);
+  opacity: 0.4;
+  pointer-events: none;
 }
 
 /* Editor header right */
@@ -3322,7 +3370,7 @@ a:hover {
 }
 
 /* ══════════════════════════════════════════════════════════
-   WRITING EDITOR (Admin compose post page)
+   WRITING EDITOR (Modern Cozy Admin Post Editor)
    ══════════════════════════════════════════════════════════ */
 .writing-editor {
   position: relative;
@@ -3332,65 +3380,85 @@ a:hover {
   padding: 0;
 }
 
+/* Minimal compact editor header — absolute positioned close button, no spacing */
 .editor-header {
-  position: static;
-  z-index: auto;
-  background: transparent;
-  border-bottom: 2px solid var(--border);
-  padding: 0 0 12px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  padding: 0;
+  margin: 0;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
+  pointer-events: none;
 }
 
 .editor-header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+  display: none;
 }
 
-.editor-kicker {
-  font-family: var(--font-hand);
-  font-size: 14px;
-  color: var(--text-muted);
-  opacity: 0.7;
+.editor-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  pointer-events: auto;
+}
+
+.editor-autosave {
+  display: none;
 }
 
 .editor-title {
-  margin: 0;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text-primary);
-  font-family: var(--font-hand);
+  display: none;
+}
+
+.editor-kicker {
+  display: none;
 }
 
 .editor-close {
   background: transparent;
-  border: 2px solid var(--border);
-  color: var(--text-primary);
-  font-size: 16px;
+  border: none;
+  color: var(--text-muted);
+  font-size: 22px;
   cursor: pointer;
-  padding: 6px 14px;
+  padding: 0;
   line-height: 1;
-  transition: all 150ms ease;
-  font-family: var(--font-hand);
-  font-weight: 600;
-  box-shadow: 2px 2px 0 var(--cg-shadow);
+  transition: color 200ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  position: relative;
+  opacity: 0.35;
+}
+
+.editor-close::before {
+  content: '×';
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1;
 }
 
 .editor-close:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--text-primary);
+  opacity: 0.8;
 }
 
 .editor-error {
-  margin: 0;
-  padding: 10px 28px;
-  background: var(--cg-light);
-  border: 2px solid var(--border);
+  margin: 0 0 8px 0;
+  padding: 10px 16px;
+  background: rgba(200, 80, 60, 0.06);
+  border: 2px solid rgba(200, 80, 60, 0.3);
+  border-radius: 6px;
   color: var(--cg-dark);
-  font-size: 14px;
-  font-family: var(--font-hand);
+  font-size: 13px;
+  font-family: var(--font-sans);
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* Two-column layout: sidebar (metadata) + content (editor) */
@@ -3670,22 +3738,28 @@ a:hover {
   gap: 8px;
 }
 
-/* ── Main Content Area (Rich Text Editor) ── */
+/* ── Main Content Area (Rich Text Editor) — Modern Compact ── */
 .writing-content {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   min-height: 100%;
   width: 100%;
   margin: 0;
   background: var(--bg-secondary);
   color: var(--text-primary);
   border: 2px solid var(--border);
-  padding: 22px 24px 26px;
+  padding: 18px 22px 22px;
   box-shadow: 4px 4px 0 var(--cg-shadow-med);
   font-family: var(--font-body);
   line-height: 1.75;
   position: relative;
+  border-radius: 5px;
+  transition: box-shadow 200ms ease;
+}
+
+.writing-content:hover {
+  box-shadow: 5px 5px 0 var(--cg-shadow-med);
 }
 
 .writing-content::before {
@@ -3700,25 +3774,26 @@ a:hover {
       var(--accent) 10px,
       transparent 10px,
       transparent 18px);
-  opacity: 0.3;
+  opacity: 0.25;
   pointer-events: none;
 }
 
-/* Toolbar above the editor */
+/* Toolbar above the editor — compact cozy modern */
 .writing-toolbar {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 4px;
   align-items: center;
   padding-bottom: 10px;
   border-bottom: 2px solid var(--cg-light);
+  position: relative;
 }
 
 .toolbar-group {
   display: inline-flex;
-  gap: 6px;
+  gap: 3px;
   align-items: center;
-  padding-right: 8px;
+  padding-right: 6px;
   border-right: 2px solid var(--cg-light);
 }
 
@@ -3732,53 +3807,224 @@ a:hover {
   border: 2px solid var(--border);
   background: transparent;
   color: var(--text-primary);
-  font-family: var(--font-hand);
-  font-size: 13px;
-  padding: 5px 10px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 8px;
   cursor: pointer;
   transition: all 150ms ease;
-  box-shadow: 2px 2px 0 var(--cg-shadow);
-}
-
-.toolbar-color {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 2px solid var(--border);
-  background: transparent;
-  cursor: pointer;
-}
-
-.toolbar-input {
-  border: 2px solid var(--border);
-  background: transparent;
-  color: var(--text-primary);
-  font-family: var(--font-hand);
-  font-size: 13px;
-  padding: 5px 10px;
-  min-width: 140px;
-}
-
-.toolbar-select {
-  text-transform: none;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  line-height: 1;
+  min-height: 28px;
 }
 
 .toolbar-btn:hover,
 .toolbar-select:hover {
   border-color: var(--accent);
   color: var(--accent);
+  background: rgba(106, 138, 122, 0.06);
+  transform: translateY(-1px);
+}
+
+.toolbar-btn:active {
+  transform: translateY(0px);
+  background: rgba(106, 138, 122, 0.12);
+}
+
+.toolbar-btn.is-active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(106, 138, 122, 0.1);
+}
+
+.toolbar-color {
+  width: 24px;
+  height: 24px;
+  padding: 1px;
+  border: 2px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: border-color 150ms ease;
+}
+
+.toolbar-color:hover {
+  border-color: var(--accent);
+  transform: scale(1.1);
+}
+
+.toolbar-input {
+  border: 2px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  padding: 4px 8px;
+  min-width: 100px;
+  border-radius: 4px;
+}
+
+.toolbar-select {
+  text-transform: none;
 }
 
 .toolbar-btn.is-saved {
   border-color: var(--accent);
   color: var(--accent);
-  background: var(--cg-light);
+  background: rgba(106, 138, 122, 0.1);
 }
 
 .toolbar-attach {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Toolbar info chip for writing stats inline */
+.toolbar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-left: auto;
+}
+
+/* Toolbar extras — focus mode & goal input */
+.toolbar-extras {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  padding-left: 6px;
+  border-left: 2px solid var(--cg-light);
+}
+
+.focus-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.goal-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.goal-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 26px;
+}
+
+.goal-input-popup {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  animation: float-up 150ms ease-out;
+}
+
+.goal-input-popup input {
+  width: 70px;
+  padding: 3px 6px !important;
+  font-size: 11px !important;
+  min-width: auto !important;
+}
+
+/* Focus mode styles */
+.writing-editor.focus-mode .writing-sidebar {
+  opacity: 0.3;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.writing-editor.focus-mode .writing-sidebar:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.writing-editor.focus-mode .editor-header-left .editor-kicker {
+  opacity: 0.4;
+}
+
+.writing-editor.focus-mode .writing-toolbar .toolbar-group:not(.toolbar-extras) {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+.writing-editor.focus-mode .writing-toolbar .toolbar-group:not(.toolbar-extras):hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.writing-editor.focus-mode .writing-footer {
+  opacity: 0.3;
+}
+
+.writing-editor.focus-mode .writing-footer:hover {
+  opacity: 0.7;
+}
+
+.writing-editor.focus-mode .editor-header-right {
+  opacity: 0.3;
+}
+
+.writing-editor.focus-mode .writing-title,
+.writing-editor.focus-mode .writing-textarea {
+  transition: all 300ms ease;
+}
+
+/* Goal progress indicator row */
+.writing-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0 2px;
+}
+
+.writing-progress-row .writing-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--cg-light);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.writing-progress-row .writing-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-light));
+  border-radius: 3px;
+  transition: width 300ms ease;
+  opacity: 0.7;
+}
+
+.writing-progress-row .writing-progress-label {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  opacity: 0.6;
+  min-width: 60px;
+  text-align: right;
+}
+
+.writing-progress-row .writing-progress-label.goal-met {
+  color: var(--accent);
+  opacity: 0.9;
+  font-weight: 600;
 }
 
 /* Editor title input */
@@ -3790,9 +4036,9 @@ a:hover {
   font-family: var(--font-hand);
   font-size: 32px;
   font-weight: 600;
-  padding: 8px 0 14px;
+  padding: 6px 0 12px;
   outline: none;
-  transition: border-color 150ms ease;
+  transition: border-color 150ms ease, padding 200ms ease;
   line-height: 1.2;
 }
 
@@ -3803,6 +4049,35 @@ a:hover {
 
 .writing-title:focus {
   border-bottom-color: var(--accent);
+  padding-bottom: 10px;
+}
+
+/* Writing progress indicator */
+.writing-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.6;
+  padding: 2px 0;
+}
+
+.writing-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--cg-light);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.writing-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 300ms ease;
+  opacity: 0.6;
 }
 
 /* Editor body textarea */
@@ -3817,11 +4092,26 @@ a:hover {
   outline: none;
   resize: none;
   min-height: 300px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--cg-light) transparent;
 }
 
 .writing-textarea::placeholder {
   color: var(--text-muted);
   opacity: 0.25;
+}
+
+.writing-textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.writing-textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.writing-textarea::-webkit-scrollbar-thumb {
+  background: var(--cg-light);
+  border-radius: 2px;
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -4328,33 +4618,56 @@ a:hover {
     width: 100%;
     justify-content: space-between;
   }
+}
 
-  .editor-close {
-    align-self: flex-end;
-  }
+/* Sidebar and settings tabs for optimized/minimal dashboard and editor layout */
+.sidebar-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--border-light);
+  margin-bottom: 16px;
+  gap: 4px;
+}
 
-  .mood-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.sidebar-tab-btn {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 8px 4px;
+  font-family: var(--font-hand);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 150ms ease;
+}
 
-  .font-panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 280px;
-    z-index: 100;
-  }
+.sidebar-tab-btn:hover {
+  color: var(--accent);
+}
 
-  .login-box {
-    padding: 24px 20px;
-  }
+.sidebar-tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
 
-  .post-content {
-    padding: 1.5rem 1.2rem;
-  }
+.sidebar-tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 14px;
+}
 
-  .entry {
-    padding: 16px 14px;
-  }
+.settings-tabs button {
+  transition: all 150ms ease;
+}
+.settings-tabs button:hover {
+  color: var(--accent) !important;
+}
+.settings-tabs button.active {
+  border-bottom-color: var(--accent) !important;
 }
