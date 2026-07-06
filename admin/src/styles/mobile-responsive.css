@@ -203,6 +203,8 @@
 
   .editor-modal {
     margin: 10px auto;
+    width: 95% !important;
+    max-width: none !important;
   }
 
   .admin-panel {
@@ -210,41 +212,298 @@
   }
 
   .writing-layout {
-    padding: 24px 16px;
+    padding: 12px 8px;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .writing-sidebar {
+    padding: 12px 10px !important;
+    order: 2 !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .writing-content {
+    order: 1 !important;
+    padding: 14px 12px !important;
   }
 
   .writing-title {
-    font-size: 24px;
+    font-size: 20px !important;
+    padding: 8px 0 12px !important;
   }
 
   .writing-textarea {
-    font-size: 16px;
+    font-size: 15px !important;
+    min-height: 250px !important;
   }
 
   .writing-toolbar {
-    gap: 6px;
-    padding-bottom: 8px;
+    gap: 4px !important;
+    padding-bottom: 6px !important;
+    flex-wrap: wrap !important;
+    overflow-x: auto !important;
   }
 
   .toolbar-group {
-    gap: 4px;
-    padding-right: 6px;
+    gap: 3px !important;
+    padding-right: 4px !important;
+    white-space: nowrap !important;
   }
 
   .toolbar-btn,
   .toolbar-select {
-    font-size: 11px;
-    padding: 4px 8px;
+    font-size: 10px !important;
+    padding: 3px 6px !important;
+    min-height: 24px !important;
   }
 
   .toolbar-input {
-    min-width: 100px;
-    font-size: 11px;
-    padding: 4px 8px;
+    min-width: 80px !important;
+    font-size: 10px !important;
+    padding: 3px 6px !important;
   }
 
   .editor-title {
-    font-size: 18px;
+    font-size: 16px !important;
+  }
+
+  /* Editor sidebar sections for mobile */
+  .sidebar-section {
+    margin-bottom: 12px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid var(--cg-light) !important;
+  }
+
+  .sidebar-label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .sidebar-input {
+    font-size: 13px !important;
+    padding: 5px 8px !important;
+  }
+
+  .sidebar-btn {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+  }
+
+  .sidebar-tag {
+    font-size: 11px !important;
+    padding: 3px 8px !important;
+  }
+
+  .mood-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+  }
+
+  .mood-option {
+    padding: 6px 2px !important;
+  }
+
+  .mood-option .mood-label {
+    font-size: 9px !important;
+  }
+
+  /* Writing footer for mobile */
+  .writing-footer {
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding-top: 10px !important;
+  }
+
+  .writing-actions {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+
+  .writing-btn {
+    flex: 1 !important;
+    max-width: 48% !important;
+  }
+
+  /* Preview panel mobile adjustments */
+  .preview-panel {
+    padding: 10px 8px !important;
+  }
+
+  .preview-title {
+    font-size: 20px !important;
+  }
+
+  .preview-meta {
+    font-size: 11px !important;
+    gap: 4px !important;
+  }
+
+  /* Meta panel adjustments */
+  .meta-panel-stats {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  /* Focus mode adjustments for mobile */
+  .writing-editor.focus-mode .writing-sidebar {
+    display: none !important;
+  }
+
+  .writing-editor.focus-mode .writing-content {
+    width: 100% !important;
+  }
+
+  /* Editor modal compact layout for mobile */
+  .editor-modal {
+    width: 95% !important;
+    max-width: none !important;
+    margin: 10px auto !important;
+  }
+
+  /* Writing layout mobile compact */
+  .writing-layout {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 8px 6px !important;
+  }
+
+  /* Sidebar reordering for mobile */
+  .writing-sidebar {
+    order: 2 !important;
+    padding: 8px 6px !important;
+    background: var(--bg-primary) !important;
+    border: 1px solid var(--border-light) !important;
+    border-radius: 4px !important;
+  }
+
+  .writing-content {
+    order: 1 !important;
+    padding: 10px 8px !important;
+  }
+
+  /* Mobile toolbar optimizations */
+  .writing-toolbar {
+    padding-bottom: 8px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .toolbar-group {
+    white-space: nowrap !important;
+  }
+
+  /* Mobile sidebar sections */
+  .sidebar-section {
+    margin-bottom: 10px !important;
+    padding-bottom: 8px !important;
+  }
+
+  /* Mobile tag display */
+  .sidebar-tags-display {
+    gap: 4px !important;
+  }
+
+  .sidebar-tag {
+    font-size: 10px !important;
+    padding: 2px 6px !important;
+  }
+
+  /* Mobile mood picker */
+  .mood-picker {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+
+  /* Mobile font panel */
+  .font-panel {
+    width: 100% !important;
+    max-width: 280px !important;
+  }
+
+  /* Mobile preview adjustments */
+  .preview-content {
+    padding: 6px 4px !important;
+  }
+
+  /* Mobile meta stats */
+  .meta-stat-item {
+    padding: 8px 6px !important;
+  }
+
+  /* Mobile writing stats */
+  .writing-stats {
+    font-size: 9px !important;
+  }
+
+  /* Mobile progress bar */
+  .writing-progress-bar {
+    height: 3px !important;
+  }
+
+  /* Mobile toolbar chip */
+  .toolbar-chip {
+    font-size: 9px !important;
+    padding: 1px 6px !important;
+  }
+
+  /* Mobile goal input */
+  .goal-input-popup input {
+    width: 60px !important;
+  }
+
+  /* Mobile color picker */
+  .toolbar-color {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  /* Mobile upload status */
+  .toolbar-upload-status {
+    font-size: 9px !important;
+  }
+
+  /* Mobile error message */
+  .editor-error {
+    font-size: 11px !important;
+    padding: 8px 10px !important;
+  }
+
+  /* Mobile sidebar actions */
+  .sidebar-actions {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+  }
+
+  .sidebar-share-actions {
+    gap: 4px !important;
+  }
+
+  /* Mobile tag input */
+  .sidebar-tags-input {
+    gap: 4px !important;
+  }
+
+  .sidebar-tag-add {
+    padding: 3px 6px !important;
+    font-size: 10px !important;
+  }
+
+  /* Mobile publish section */
+  .sidebar-publish {
+    margin-top: 8px !important;
+    padding-top: 8px !important;
+  }
+
+  .sidebar-publish-label {
+    font-size: 12px !important;
+  }
+
+  /* Mobile hint text */
+  .sidebar-hint {
+    font-size: 10px !important;
   }
 
   .entry-title {

@@ -67,8 +67,8 @@ export const getMediaSettings = async () => {
   };
 };
 
-export const getPublicMediaSettings = async () => {
-  if (cachedPublicMediaSettings) {
+export const getPublicMediaSettings = async (forceRefresh = false) => {
+  if (cachedPublicMediaSettings && !forceRefresh) {
     return cachedPublicMediaSettings;
   }
 

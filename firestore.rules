@@ -10,8 +10,12 @@ service cloud.firestore {
 
     match /settings/{docId} {
       allow read: if docId == "quote";
-      allow read, write: if request.auth != null
-                         && request.auth.uid == "P8XDi8J7v1ffk8Cd882QFsPw5fh2";
+      allow write: if request.auth != null;
+    }
+
+    match /appSettings/{docId} {
+      allow read: if true;
+      allow write: if request.auth != null;
     }
   }
 }

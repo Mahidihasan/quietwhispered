@@ -605,20 +605,17 @@ const AdminDashboard = () => {
 
                     {settingsTab === 'styles' && (
                         <form className="media-settings-form" onSubmit={handleSaveSettings}>
-                            <label>
+                            <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 <span>Global Paper Texture</span>
-                                <div className="texture-preview">
+                                <select
+                                    value={settingsForm.paperTexture}
+                                    onChange={(e) => setSettingsForm(prev => ({ ...prev, paperTexture: e.target.value }))}
+                                    style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
+                                >
                                     {TEXTURE_OPTIONS.map(opt => (
-                                        <button
-                                            key={opt.value}
-                                            type="button"
-                                            className={`texture-option ${settingsForm.paperTexture === opt.value ? 'active' : ''}`}
-                                            onClick={() => setSettingsForm(prev => ({ ...prev, paperTexture: opt.value }))}
-                                        >
-                                            <span className="texture-label">{opt.label}</span>
-                                        </button>
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
                                     ))}
-                                </div>
+                                </select>
                             </label>
                             <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                 <span>Global Media Frame</span>

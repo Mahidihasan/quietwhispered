@@ -42,9 +42,9 @@ const JournalHome = ({ onPostsChange }) => {
     }
   }, [isPrivateMode]);
 
-  const fetchMediaSettings = useCallback(async () => {
+  const fetchMediaSettings = useCallback(async (forceRefresh = false) => {
     try {
-      const settings = await getPublicMediaSettings();
+      const settings = await getPublicMediaSettings(forceRefresh);
       setMediaSettings(settings);
     } catch (err) {
       console.error('Error fetching media settings:', err);
@@ -53,6 +53,17 @@ const JournalHome = ({ onPostsChange }) => {
 
   useEffect(() => {
     fetchMediaSettings();
+  }, [fetchMediaSettings]);
+
+  // Re-fetch media settings when the page becomes visible (e.g. switching back from admin)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchMediaSettings(true);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [fetchMediaSettings]);
 
   useEffect(() => {
