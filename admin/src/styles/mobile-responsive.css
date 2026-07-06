@@ -1,0 +1,381 @@
+/* Enhanced Mobile Responsive Styles for Admin Dashboard */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 24px 16px 40px;
+    width: 100%;
+  }
+
+  .btn-mobile-toggle {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px !important;
+  }
+
+  .admin-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .admin-hero-left {
+    width: 100%;
+  }
+
+  .admin-hero-actions {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    position: relative;
+  }
+
+  .admin-hero-actions-inner {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    position: static;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .admin-hero-actions-inner.visible {
+    display: flex !important;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-label {
+    display: inline;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 12px 14px;
+  }
+
+  .stat-value {
+    font-size: 24px;
+  }
+
+  .stat-icon {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  .admin-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .admin-left-column {
+    order: 2;
+  }
+
+  .admin-panel {
+    order: 1;
+    margin-bottom: 20px;
+  }
+
+  .posts-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .posts-header-left {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .posts-header-right {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-start;
+  }
+
+  .search-input {
+    width: 120px;
+    font-size: 11px;
+  }
+
+  .filter-panel {
+    position: fixed;
+    top: auto;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    min-width: auto;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px var(--cg-shadow-med);
+  }
+
+  .posts-scroll {
+    max-height: 450px;
+  }
+
+  .admin-post-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .post-info {
+    width: 100%;
+  }
+
+  .post-actions {
+    align-self: flex-end;
+  }
+
+  .post-info h4 {
+    font-size: 14px;
+  }
+
+  .post-meta {
+    font-size: 10px;
+  }
+
+  .posts-grid-view {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .post-grid-card {
+    padding: 12px;
+  }
+
+  .post-grid-title {
+    font-size: 14px;
+  }
+
+  .settings-tabs {
+    flex-direction: column;
+  }
+
+  .settings-tab-btn {
+    width: 100%;
+    border-bottom: none !important;
+    border: 2px solid var(--border-light);
+    margin-bottom: 8px;
+    border-radius: 5px;
+  }
+
+  .settings-tab-btn.active {
+    border-color: var(--accent);
+    background: rgba(106, 138, 122, 0.08);
+  }
+
+  .media-settings-form,
+  .quote-form {
+    padding: 0;
+  }
+
+  .texture-preview {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .texture-option {
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+
+  .editor-overlay {
+    padding: 10px;
+  }
+
+  .editor-modal {
+    margin: 10px auto;
+  }
+
+  .admin-panel {
+    padding: 14px 16px;
+  }
+
+  .writing-layout {
+    padding: 24px 16px;
+  }
+
+  .writing-title {
+    font-size: 24px;
+  }
+
+  .writing-textarea {
+    font-size: 16px;
+  }
+
+  .writing-toolbar {
+    gap: 6px;
+    padding-bottom: 8px;
+  }
+
+  .toolbar-group {
+    gap: 4px;
+    padding-right: 6px;
+  }
+
+  .toolbar-btn,
+  .toolbar-select {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .toolbar-input {
+    min-width: 100px;
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+
+  .editor-title {
+    font-size: 18px;
+  }
+
+  .entry-title {
+    font-size: 24px;
+  }
+
+  .journal-quote p {
+    font-size: 18px;
+  }
+
+  .journal-hero h1 {
+    font-size: 2rem;
+  }
+
+  .admin-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stat-card {
+    padding: 12px 14px;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .admin-dashboard {
+    padding: 16px 12px 32px;
+  }
+
+  .admin-hero h1 {
+    font-size: 22px;
+  }
+
+  .admin-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .stat-card {
+    padding: 10px 8px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+  }
+
+  .posts-header-left h3 {
+    font-size: 16px;
+  }
+
+  .search-input {
+    width: 100px;
+  }
+
+  .posts-header-right {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admin-post-item {
+    padding: 8px 12px;
+  }
+
+  .post-grid-card {
+    padding: 10px;
+  }
+
+  .posts-grid-view {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .post-grid-title {
+    font-size: 13px;
+  }
+
+  .filter-panel {
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+  }
+
+  .admin-panel {
+    padding: 12px 14px;
+  }
+
+  .quote-form textarea {
+    min-height: 60px;
+  }
+
+  .editor-modal {
+    margin: 5px auto;
+  }
+
+  .writing-layout {
+    padding: 16px 12px;
+  }
+
+  .writing-title {
+    font-size: 20px;
+    padding: 6px 0 10px;
+  }
+
+  .writing-textarea {
+    font-size: 15px;
+    min-height: 200px;
+  }
+
+  .writing-content {
+    padding: 16px 14px 20px;
+  }
+
+  .editor-tabs {
+    display: flex;
+  }
+
+  .editor-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .editor-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
