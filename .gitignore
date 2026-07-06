@@ -11,6 +11,10 @@ pnpm-debug.log*
 .env.*.local
 .env.production
 
+# Allow example env files to be tracked
+!.env.example
+!.env.sample
+
 # Secrets
 serviceAccount.json
 quietwhispered-firebase-adminsdk-fbsvc-71fdbb9587.json

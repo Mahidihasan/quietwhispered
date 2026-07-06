@@ -12,22 +12,14 @@ export default defineConfig(({ mode }) => {
   };
 
   // Convert keys starting with REACT_APP_ or VITE_ to process.env definitions
+  // Only define individual variables — do NOT define process.env as a whole object
+  // to avoid conflicts with Vite's built-in process.env handling.
   const envDefinitions = {};
   for (const key of Object.keys(mergedEnv)) {
     if (key.startsWith('REACT_APP_') || key.startsWith('VITE_') || key === 'NODE_ENV') {
       envDefinitions[`process.env.${key}`] = JSON.stringify(mergedEnv[key]);
     }
   }
-
-  // Also define the process.env object itself as a fallback
-  envDefinitions['process.env'] = JSON.stringify(
-    Object.keys(mergedEnv).reduce((acc, key) => {
-      if (key.startsWith('REACT_APP_') || key.startsWith('VITE_') || key === 'NODE_ENV') {
-        acc[key] = mergedEnv[key];
-      }
-      return acc;
-    }, {})
-  );
 
   return {
     plugins: [react()],
