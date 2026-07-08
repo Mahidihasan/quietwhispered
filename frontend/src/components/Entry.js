@@ -25,10 +25,11 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
     getPublicMediaSettings().then(setMediaSettings).catch(() => {});
   }, [propSettings]);
 
-  // Per-entry frame/texture takes priority over global settings
+  // Per-entry frame/texture/color takes priority over global settings
   const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
   const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
   const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
+  const activePaperColor = post.paperColor || mediaSettings?.paperColor || '#f8f5f0';
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
@@ -160,11 +161,12 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
     <article
       id={`post-${post._id}`}
       className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''}`}
+      style={activeTexture !== 'none' && activePaperColor ? { backgroundColor: activePaperColor } : undefined}
     >
       {activeTexture !== 'none' && (
         <div className={`entry-texture texture-${activeTexture}`} aria-hidden="true" />
       )}
-      <header className="entry-header">
+      <header className="entry-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
         <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
           ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})

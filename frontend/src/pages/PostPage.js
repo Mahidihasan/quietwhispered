@@ -5,7 +5,7 @@ import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../shared/components/MediaCard.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
 import { getEntryById, getPublicEntryById } from '../shared/services/journalService';
-import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
+import { subscribeToMediaSettings } from '../shared/services/mediaSettingsService';
 import useAuth from '../shared/hooks/useAuth';
 import { resolvePostDate } from '../shared/utils/dateUtils';
 
@@ -145,7 +145,10 @@ const PostPage = () => {
     const [mediaSettings, setMediaSettings] = useState(null);
 
     useEffect(() => {
-        getPublicMediaSettings().then(setMediaSettings).catch(() => {});
+        const unsubscribe = subscribeToMediaSettings((settings) => {
+            setMediaSettings(settings);
+        });
+        return () => unsubscribe();
     }, []);
 
     const fetchPost = useCallback(async () => {
@@ -221,6 +224,7 @@ const PostPage = () => {
     const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
     const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
     const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
+    const activePaperColor = post.paperColor || mediaSettings?.paperColor || '#f8f5f0';
     const postDate = resolvePostDate(post);
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
@@ -251,11 +255,13 @@ const PostPage = () => {
                 <FiArrowLeft /> Back
             </button>
 
-            <article className={`post-content ${activeTexture !== 'none' ? 'texture-applied' : ''}`.trim()}>
+            <article className={`post-content ${activeTexture !== 'none' ? 'texture-applied' : ''}`.trim()}
+                style={activeTexture !== 'none' && activePaperColor ? { backgroundColor: activePaperColor } : undefined}
+            >
                 {activeTexture !== 'none' && (
                     <div className={`post-texture texture-${activeTexture}`} aria-hidden="true" />
                 )}
-                <header className="post-page-header">
+                <header className="post-page-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
                     <h1 style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>{post.title}</h1>
                     
                     <div className="post-page-meta">

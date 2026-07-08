@@ -24,16 +24,11 @@ const MOOD_OPTIONS = [
 ];
 
 const FONT_OPTIONS = [
-  { value: 'Newsreader', label: 'Newsreader (Serif)' },
-  { value: 'Source Serif 4', label: 'Source Serif' },
-  { value: 'Lora', label: 'Lora' },
-  { value: 'Playfair Display', label: 'Playfair Display' },
-  { value: 'DM Serif Display', label: 'DM Serif Display' },
-  { value: 'Inter', label: 'Inter (Sans)' },
-  { value: 'JetBrains Mono', label: 'JetBrains Mono (Mono)' },
-  { value: 'Caveat', label: 'Caveat (Cursive)' },
-  { value: 'Kalam', label: 'Kalam (Script)' },
-  { value: 'Patrick Hand', label: 'Patrick Hand (Print)' },
+  { value: 'Special Elite', label: 'Special Elite (Typewriter)' },
+  { value: 'Caveat', label: 'Caveat (Handwritten)' },
+  { value: 'Libre Baskerville', label: 'Libre Baskerville (Cozy)' },
+  { value: 'AdorNoirrit', label: 'AdorNoirrit (বাংলা)' },
+  { value: 'Galada', label: 'Galada (বাংলা হাতের লেখা)' },
 ];
 
 const PostEditor = ({ post, onClose, onSave }) => {
@@ -50,6 +45,8 @@ const PostEditor = ({ post, onClose, onSave }) => {
         imageUrls: [],
         lineHeight: 1.75,
         paperTexture: 'none',
+        paperColor: '#f8f5f0',
+        dividerColor: '#c8c4bc',
         mediaFrame: 'polaroid',
         frameSize: 'md'
     });
@@ -57,7 +54,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [coverFile, setCoverFile] = useState(null);
-    const [selectedFont, setSelectedFont] = useState('Newsreader');
+    const [selectedFont, setSelectedFont] = useState('Libre Baskerville');
     const [markColor, setMarkColor] = useState('#d7c7a5');
     const [fontColor, setFontColor] = useState('#1f1b16');
     const [titleSize, setTitleSize] = useState('32');
@@ -91,13 +88,18 @@ const PostEditor = ({ post, onClose, onSave }) => {
         { value: 'none', label: 'None' },
         { value: 'vellum', label: 'Vellum' },
         { value: 'linen', label: 'Linen' },
-        { value: 'laid', label: 'Laid' },
-        { value: 'wove', label: 'Wove' },
-        { value: 'parchment', label: 'Parchment' },
         { value: 'canvas', label: 'Canvas' },
-        { value: 'grid', label: 'Grid' },
         { value: 'lines', label: 'Lines' },
-        { value: 'marble', label: 'Marble' },
+        { value: 'vintage', label: 'Vintage' },
+        { value: 'cotton', label: 'Cotton' },
+        { value: 'coffee', label: 'Coffee Stain' },
+        { value: 'tears', label: 'Tears' },
+        { value: 'worn', label: 'Worn' },
+        { value: 'lace', label: 'Lace' },
+        { value: 'fibers', label: 'Fibers' },
+        { value: 'wax', label: 'Wax Seal' },
+        { value: 'stucco', label: 'Stucco' },
+        { value: 'grain', label: 'Grain' },
     ];
 
     const FRAME_OPTIONS = [
@@ -169,6 +171,8 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 imageUrls: post.imageUrls || [],
                 lineHeight: Number(post.lineHeight) || 1.75,
                 paperTexture: post.paperTexture || 'none',
+                paperColor: post.paperColor || '#f8f5f0',
+                dividerColor: post.dividerColor || '#c8c4bc',
                 mediaFrame: post.mediaFrame || 'polaroid',
                 frameSize: post.frameSize || 'md'
             });
@@ -278,6 +282,8 @@ const PostEditor = ({ post, onClose, onSave }) => {
                 lineHeight: Number(lineHeight) || 1.75,
                 font: selectedFont,
                 paperTexture: formData.paperTexture || 'none',
+                paperColor: formData.paperColor || '#f8f5f0',
+                dividerColor: formData.dividerColor || '#c8c4bc',
                 mediaFrame: formData.mediaFrame || 'polaroid',
                 frameSize: formData.frameSize || 'md'
             };
@@ -670,6 +676,65 @@ const PostEditor = ({ post, onClose, onSave }) => {
                                 </div>
 
                                 <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiSettings /> Paper Color</label>
+                                    <input
+                                        type="color"
+                                        value={formData.paperColor}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, paperColor: e.target.value }))}
+                                        className="sidebar-input"
+                                        style={{ height: '36px', padding: '2px', cursor: 'pointer' }}
+                                        title="Choose a paper tint color"
+                                    />
+                                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
+                                        {['#f8f5f0','#f5efe6','#efe6d8','#f0ead6','#e8dcc8','#e6dbc8','#f0e8d8','#d9d2c0','#edf0e8','#e8ebe4'].map(color => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ ...prev, paperColor: color }))}
+                                                style={{
+                                                    width: '20px', height: '20px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: color,
+                                                    border: formData.paperColor === color ? '2px solid var(--accent)' : '1px solid var(--border-light)',
+                                                    cursor: 'pointer',
+                                                    outline: 'none'
+                                                }}
+                                                aria-label={`Paper color ${color}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiSettings /> Divider Color</label>
+                                    <input
+                                        type="color"
+                                        value={formData.dividerColor}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, dividerColor: e.target.value }))}
+                                        className="sidebar-input"
+                                        style={{ height: '36px', padding: '2px', cursor: 'pointer' }}
+                                        title="Choose a divider/border color"
+                                    />
+                                    <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap', marginTop: '2px' }}>
+                                        {['#c8c4bc','#b8b4ac','#a8a49c','#98948c','#88847c','#78746c','#68645c','#58544c','#48443c','#38342c'].map(color => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({ ...prev, dividerColor: color }))}
+                                                style={{
+                                                    width: '20px', height: '20px',
+                                                    borderRadius: '50%',
+                                                    backgroundColor: color,
+                                                    border: formData.dividerColor === color ? '2px solid var(--accent)' : '1px solid var(--border-light)',
+                                                    cursor: 'pointer'
+                                                }}
+                                                aria-label={`Divider color ${color}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="sidebar-section">
                                     <label className="sidebar-label"><FiImage /> Media Frame</label>
                                     <select
                                         name="mediaFrame"
@@ -826,7 +891,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             </div>
                             <div className={`toolbar-group font-selector ${showFontPanel ? 'active' : ''}`}>
                                 <button type="button" className="toolbar-btn" onClick={() => setShowFontPanel(!showFontPanel)} title="Font settings">
-                                    {selectedFont === 'Newsreader' ? 'Aa' : 'Tt'}
+                                    {selectedFont === 'Libre Baskerville' ? 'Aa' : 'Tt'}
                                 </button>
                                 {showFontPanel && (
                                     <div className="font-panel">
@@ -916,7 +981,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             placeholder="Your story begins with a title..."
                             style={{
                                 fontSize: `${Number(titleSize) || 32}px`,
-                                fontFamily: selectedFont === 'Newsreader' ? 'var(--font-body)' : `'${selectedFont}', serif`
+                                fontFamily: selectedFont === 'Libre Baskerville' ? 'var(--font-body)' : `'${selectedFont}', serif`
                             }}
                             required
                         />
@@ -930,7 +995,7 @@ const PostEditor = ({ post, onClose, onSave }) => {
                             className="writing-textarea"
                             style={{
                                 lineHeight: Number(lineHeight) || 1.75,
-                                fontFamily: selectedFont === 'Newsreader' ? 'var(--font-body)' : `'${selectedFont}', serif`
+                                fontFamily: selectedFont === 'Libre Baskerville' ? 'var(--font-body)' : `'${selectedFont}', serif`
                             }}
                             placeholder="Write freely. Your thoughts, your voice..."
                             rows="20"

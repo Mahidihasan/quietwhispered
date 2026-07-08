@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Entry from '../components/Entry';
 import { getEntriesPage, getPublicEntriesPage } from '../shared/services/journalService';
 import { getQuote, getPublicQuote } from '../shared/services/quoteService';
-import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
+import { subscribeToMediaSettings } from '../shared/services/mediaSettingsService';
 import useAuth from '../shared/hooks/useAuth';
 import { buildAdminAppUrl } from '../shared/config';
 
@@ -42,29 +42,13 @@ const JournalHome = ({ onPostsChange }) => {
     }
   }, [isPrivateMode]);
 
-  const fetchMediaSettings = useCallback(async (forceRefresh = false) => {
-    try {
-      const settings = await getPublicMediaSettings(forceRefresh);
+  // Subscribe to real-time media settings so changes from admin sync instantly
+  useEffect(() => {
+    const unsubscribe = subscribeToMediaSettings((settings) => {
       setMediaSettings(settings);
-    } catch (err) {
-      console.error('Error fetching media settings:', err);
-    }
+    });
+    return () => unsubscribe();
   }, []);
-
-  useEffect(() => {
-    fetchMediaSettings();
-  }, [fetchMediaSettings]);
-
-  // Re-fetch media settings when the page becomes visible (e.g. switching back from admin)
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchMediaSettings(true);
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, [fetchMediaSettings]);
 
   useEffect(() => {
     fetchQuote();
@@ -108,13 +92,9 @@ const JournalHome = ({ onPostsChange }) => {
 
   const showInitialLoading = isInitialLoad && isLoading;
   const showEmptyState = !isInitialLoad && !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
-  const activeTexture = mediaSettings?.paperTexture || 'none';
 
   return (
-    <div className={`quiet-page ${activeTexture !== 'none' ? 'texture-applied' : ''}`.trim()}>
-      {activeTexture !== 'none' && (
-        <div className={`quiet-page-texture texture-${activeTexture}`} aria-hidden="true" />
-      )}
+    <div className="quiet-page">
       {/* MAIN READING AREA */}
       <main className="quiet-main">
         <div

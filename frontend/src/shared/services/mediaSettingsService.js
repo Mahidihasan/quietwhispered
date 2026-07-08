@@ -2,7 +2,8 @@ import {
   doc,
   getDoc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  onSnapshot
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
@@ -22,6 +23,8 @@ const getSettingsRef = () => {
 
 const DEFAULT_SETTINGS = {
   paperTexture: 'none',
+  paperColor: '#f8f5f0',
+  dividerColor: '#c8c4bc',
   mediaFrame: 'polaroid',
   frameSize: 'md',
   quoteFont: 'Caveat',
@@ -75,6 +78,30 @@ export const getPublicMediaSettings = async (forceRefresh = false) => {
   const settings = await getMediaSettings();
   cachedPublicMediaSettings = settings;
   return settings;
+};
+
+export const subscribeToMediaSettings = (callback) => {
+  ensureFirebase();
+  const ref = getSettingsRef();
+  const unsubscribe = onSnapshot(ref, (snap) => {
+    if (snap.exists()) {
+      const data = snap.data();
+      const settings = {
+        ...DEFAULT_SETTINGS,
+        ...data,
+        updatedAt: data.updatedAt?.toDate?.() || null
+      };
+      cachedPublicMediaSettings = settings;
+      callback(settings);
+    } else {
+      callback(DEFAULT_SETTINGS);
+    }
+  }, (error) => {
+    console.error('Error subscribing to media settings:', error);
+    // Fall back to cached or default
+    callback(cachedPublicMediaSettings || DEFAULT_SETTINGS);
+  });
+  return unsubscribe;
 };
 
 export { DEFAULT_SETTINGS };

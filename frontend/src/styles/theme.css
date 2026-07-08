@@ -4,7 +4,7 @@
    A pixel-perfect, black & white aesthetic with warm paper
    tones, illustrated borders, and a cozy game style.
    Inspired by Stardew Valley, Night in the Woods, Paper Mario.
-   
+
    For future devs:
    - All colors use CSS custom properties (--cg-*) defined in :root
    - Dark mode uses :root[data-theme="dark"] overrides
@@ -13,10 +13,21 @@
    - Archive slideout is fixed-position on the right
    ============================================================ */
 
-/* ── Google Fonts: hand-written & serif journal fonts ── */
-/* Uses Caveat (handwriting), Kalam (alt hand), Newsreader (body serif) */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Patrick+Hand&family=Kalam:wght@300;400;700&family=Newsreader:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+/* ── Google Fonts: curated selection of fonts ── */
+/* Special Elite (typewriter), Caveat (handwritten), Libre Baskerville (cozy serif), Galada (Bangla handwritten) */
+/* Playfair Display (elegant serif headings), DM Sans (clean sans-serif body), Quicksand (soft cozy sans), Lora (warm serif body) */
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Caveat:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Galada&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Quicksand:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+
+/* ── Self-hosted Bangla Fonts ── */
+/* AdorNoirrit (আদর নৈর্ঋত) from lipighor.com — Bangla display font */
+@font-face {
+  font-family: 'AdorNoirrit';
+  src: url('../fonts/AdorNoirritVR.woff2?V=2.0') format('woff2'),
+       url('../fonts/AdorNoirritVR.woff?V=2.0') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ══════════════════════════════════════════════════════════
    DESIGN TOKENS (CSS Custom Properties)
@@ -82,26 +93,34 @@
   /* Primary borders */
   --border-light: var(--cg-gray);
   /* Subtle borders */
+  --divider-color: var(--cg-gray);
+  /* Customizable divider/border color */
   --shadow-sm: var(--cg-shadow);
   --shadow-md: var(--cg-shadow-med);
 
   /* ── Font Stacks ── */
-  --font-hand: 'Caveat', 'Patrick Hand', cursive;
+  --font-typewriter: 'Special Elite', 'Courier New', monospace;
+  /* Typewriter font */
+  --font-hand: 'Caveat', cursive;
   /* Display/handwriting */
-  --font-hand-alt: 'Kalam', cursive;
+  --font-hand-alt: 'Galada', cursive;
   /* Alternative handwriting */
-  --font-body: 'Newsreader', Georgia, serif;
-  /* Body/reading text */
-  --font-serif: 'Source Serif 4', 'Lora', Georgia, serif;
+  --font-body: 'Libre Baskerville', Georgia, serif;
+  /* Body/reading text — cozy serif */
+  --font-serif: 'Libre Baskerville', Georgia, serif;
   /* Elegant serif for long-form */
-  --font-display: 'Playfair Display', 'DM Serif Display', Georgia, serif;
-  /* Display serif for headings */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  /* Clean sans-serif for UI */
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
-  /* Monospace for code */
-  --font-lora: 'Lora', Georgia, serif;
-  /* Lora as alternative body */
+  --font-sans: 'DM Sans', 'Quicksand', 'Libre Baskerville', Georgia, serif;
+  /* Clean reading font — DM Sans primary, Quicksand fallback */
+
+  /* ── NEW: Additional English Font Families ── */
+  --font-heading-serif: 'Playfair Display', 'Libre Baskerville', Georgia, serif;
+  /* Elegant serif for headings & titles — dramatic contrast */
+  --font-body-serif-alt: 'Lora', 'Libre Baskerville', Georgia, serif;
+  /* Warm serif alternative for long-form reading */
+  --font-body-sans: 'DM Sans', 'Quicksand', 'Helvetica Neue', Arial, sans-serif;
+  /* Clean modern sans-serif for body text */
+  --font-soft-sans: 'Quicksand', 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  /* Soft rounded sans-serif for cozy UI elements */
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -842,7 +861,7 @@ a:hover {
   margin-bottom: 14px;
   position: relative;
   padding-bottom: 10px;
-  border-bottom: 2px solid var(--cg-light);
+  border-bottom: 2px solid var(--divider-color, var(--cg-light));
 }
 
 /* Entry title (handwriting font) */
@@ -1126,7 +1145,7 @@ a:hover {
   max-width: 90vw;
   height: 100vh;
   background: var(--bg-primary);
-  border-left: 1px solid var(--cg-light);
+  border-left: 1px solid var(--divider-color, var(--cg-light));
   box-shadow: -4px 0 20px var(--cg-shadow);
   z-index: 100;
   transform: translateX(100%);
@@ -1147,7 +1166,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--cg-light);
+  border-bottom: 1px solid var(--divider-color, var(--cg-light));
   flex-shrink: 0;
 }
 
@@ -1204,7 +1223,7 @@ a:hover {
   align-items: center;
   gap: 8px;
   padding: 10px 18px;
-  border-bottom: 1px solid var(--cg-light);
+  border-bottom: 1px solid var(--divider-color, var(--cg-light));
   background: var(--bg-primary);
   flex-shrink: 0;
 }
@@ -1298,7 +1317,7 @@ a:hover {
 /* ── Year Timeline Blocks ── */
 /* Each year is a toggleable accordion section. */
 .archive-year-block {
-  border-bottom: 1px solid var(--cg-light);
+  border-bottom: 1px solid var(--divider-color, var(--cg-light));
 }
 
 .archive-year-block:last-child {
@@ -1466,7 +1485,7 @@ a:hover {
   margin-bottom: 6px;
   display: block;
   padding-bottom: 4px;
-  border-bottom: 2px solid var(--cg-light);
+  border-bottom: 2px solid var(--divider-color, var(--cg-light));
   padding-left: 8px;
   border-left: 2px solid var(--accent);
   padding-left: 10px;
@@ -1857,7 +1876,7 @@ a:hover {
 
 /* Post header */
 .post-page-header {
-  border-bottom: 2px solid var(--cg-light);
+  border-bottom: 2px solid var(--divider-color, var(--cg-light));
   padding-bottom: 1.5rem;
   margin-bottom: 1.5rem;
 }
@@ -1955,7 +1974,7 @@ a:hover {
 .post-tags-container {
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 2px solid var(--cg-light);
+  border-top: 2px solid var(--divider-color, var(--cg-light));
 }
 
 .post-tags-container h4 {
@@ -2251,7 +2270,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: 14px 20px;
-  border-bottom: 2px solid var(--cg-light);
+  border-bottom: 2px solid var(--divider-color, var(--cg-light));
   gap: 12px;
   flex-wrap: wrap;
 }
@@ -2428,7 +2447,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
-  border-bottom: 2px solid var(--cg-light);
+  border-bottom: 2px solid var(--divider-color, var(--cg-light));
 }
 
 .filter-panel-header h4 {
@@ -2538,7 +2557,7 @@ a:hover {
   justify-content: space-between;
   align-items: center;
   padding: 12px 20px;
-  border-bottom: 1px solid var(--cg-light);
+  border-bottom: 1px solid var(--divider-color, var(--cg-light));
   transition: background 150ms ease;
   gap: 12px;
 }
@@ -2724,7 +2743,7 @@ a:hover {
   gap: 4px;
   margin-top: auto;
   padding-top: 8px;
-  border-top: 1px solid var(--cg-light);
+  border-top: 1px solid var(--divider-color, var(--cg-light));
 }
 
 /* ── Quote Panel (admin sidebar) ── */
@@ -2742,7 +2761,7 @@ a:hover {
   gap: 4px;
   margin-bottom: 14px;
   padding-bottom: 10px;
-  border-bottom: 2px solid var(--cg-light);
+  border-bottom: 2px solid var(--divider-color, var(--cg-light));
 }
 
 .panel-header h3 {

@@ -15,13 +15,18 @@ const TEXTURE_OPTIONS = [
   { value: 'none', label: 'None' },
   { value: 'vellum', label: 'Vellum' },
   { value: 'linen', label: 'Linen' },
-  { value: 'laid', label: 'Laid' },
-  { value: 'wove', label: 'Wove' },
-  { value: 'parchment', label: 'Parchment' },
   { value: 'canvas', label: 'Canvas' },
-  { value: 'grid', label: 'Grid' },
   { value: 'lines', label: 'Lines' },
-  { value: 'marble', label: 'Marble' },
+  { value: 'vintage', label: 'Vintage' },
+  { value: 'cotton', label: 'Cotton' },
+  { value: 'coffee', label: 'Coffee Stain' },
+  { value: 'tears', label: 'Tears' },
+  { value: 'worn', label: 'Worn' },
+  { value: 'lace', label: 'Lace' },
+  { value: 'fibers', label: 'Fibers' },
+  { value: 'wax', label: 'Wax Seal' },
+  { value: 'stucco', label: 'Stucco' },
+  { value: 'grain', label: 'Grain' },
 ];
 
 const FRAME_OPTIONS = [
@@ -57,6 +62,8 @@ const AdminDashboard = () => {
     const [mediaSettings, setMediaSettings] = useState(null);
     const [settingsForm, setSettingsForm] = useState({
         paperTexture: 'none',
+        paperColor: '#f8f5f0',
+        dividerColor: '#c8c4bc',
         mediaFrame: 'polaroid',
         frameSize: 'md'
     });
@@ -122,6 +129,8 @@ const AdminDashboard = () => {
             if (settings) {
                 setSettingsForm({
                     paperTexture: settings.paperTexture || 'none',
+                    paperColor: settings.paperColor || '#f8f5f0',
+                    dividerColor: settings.dividerColor || '#c8c4bc',
                     mediaFrame: settings.mediaFrame || 'polaroid',
                     frameSize: settings.frameSize || 'md'
                 });
@@ -310,7 +319,7 @@ const AdminDashboard = () => {
     const activeFiltersCount = [filters.year, filters.month, filters.title, filters.mood].filter(Boolean).length;
 
     return (
-        <div className={`admin-dashboard ${mediaSettings?.paperTexture && mediaSettings.paperTexture !== 'none' ? `texture-${mediaSettings.paperTexture}` : ''}`.trim()}>
+            <div className={`admin-dashboard ${mediaSettings?.paperTexture && mediaSettings.paperTexture !== 'none' ? 'texture-' + mediaSettings.paperTexture : ''}`.trim()}>
             <header className="admin-hero">
                 <div className="admin-hero-left">
                     <h1>Journal Studio</h1>
@@ -605,43 +614,86 @@ const AdminDashboard = () => {
 
                     {settingsTab === 'styles' && (
                         <form className="media-settings-form" onSubmit={handleSaveSettings}>
-                            <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label>
                                 <span>Global Paper Texture</span>
                                 <select
                                     value={settingsForm.paperTexture}
                                     onChange={(e) => setSettingsForm(prev => ({ ...prev, paperTexture: e.target.value }))}
-                                    style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
                                 >
                                     {TEXTURE_OPTIONS.map(opt => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                                     ))}
                                 </select>
                             </label>
-                            <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label>
+                                <span>Paper Base Color</span>
+                                <div className="color-picker-group">
+                                    <input
+                                        type="color"
+                                        value={settingsForm.paperColor}
+                                        onChange={(e) => setSettingsForm(prev => ({ ...prev, paperColor: e.target.value }))}
+                                        className="color-picker-input"
+                                    />
+                                    <div className="color-swatches">
+                                        {['#f8f5f0','#f5efe6','#efe6d8','#f0ead6','#e8dcc8','#e6dbc8','#f0e8d8','#d9d2c0','#edf0e8','#e8ebe4'].map(color => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                className={`color-swatch-btn ${settingsForm.paperColor === color ? 'active' : ''}`}
+                                                onClick={() => setSettingsForm(prev => ({ ...prev, paperColor: color }))}
+                                                style={{ backgroundColor: color }}
+                                                aria-label={`Set paper color to ${color}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </label>
+                            <label>
+                                <span>Divider / Border Color</span>
+                                <div className="color-picker-group">
+                                    <input
+                                        type="color"
+                                        value={settingsForm.dividerColor}
+                                        onChange={(e) => setSettingsForm(prev => ({ ...prev, dividerColor: e.target.value }))}
+                                        className="color-picker-input"
+                                    />
+                                    <div className="color-swatches">
+                                        {['#c8c4bc','#b8b4ac','#a8a49c','#98948c','#88847c','#78746c','#68645c','#58544c','#48443c','#38342c'].map(color => (
+                                            <button
+                                                key={color}
+                                                type="button"
+                                                className={`color-swatch-btn ${settingsForm.dividerColor === color ? 'active' : ''}`}
+                                                onClick={() => setSettingsForm(prev => ({ ...prev, dividerColor: color }))}
+                                                style={{ backgroundColor: color }}
+                                                aria-label={`Set divider color to ${color}`}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            </label>
+                            <label>
                                 <span>Global Media Frame</span>
                                 <select
                                     value={settingsForm.mediaFrame}
                                     onChange={(e) => setSettingsForm(prev => ({ ...prev, mediaFrame: e.target.value }))}
-                                    style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
                                 >
                                     {FRAME_OPTIONS.map(opt => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                                     ))}
                                 </select>
                             </label>
-                            <label style={{ marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <label>
                                 <span>Global Frame Size</span>
                                 <select
                                     value={settingsForm.frameSize}
                                     onChange={(e) => setSettingsForm(prev => ({ ...prev, frameSize: e.target.value }))}
-                                    style={{ padding: '6px 10px', background: 'var(--bg-primary)', border: '2px solid var(--border-light)', borderRadius: '3px', color: 'var(--text-primary)' }}
                                 >
                                     {FRAME_SIZE_OPTIONS.map(opt => (
                                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                                     ))}
                                 </select>
                             </label>
-                            <button type="submit" className="btn-primary" style={{ marginTop: '16px', width: '100%' }} disabled={settingsSaving}>
+                            <button type="submit" className="btn-primary" style={{ marginTop: '8px', width: '100%', padding: '6px 12px', fontSize: '12px' }} disabled={settingsSaving}>
                                 {settingsSaving ? 'Saving...' : 'Save Settings'}
                             </button>
                         </form>

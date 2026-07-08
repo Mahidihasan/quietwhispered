@@ -13,10 +13,20 @@
    - Archive slideout is fixed-position on the right
    ============================================================ */
 
-/* ── Google Fonts: hand-written & serif journal fonts ── */
-/* Uses Caveat (handwriting), Kalam (alt hand), Newsreader (body serif) */
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Patrick+Hand&family=Kalam:wght@300;400;700&family=Newsreader:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Source+Serif+4:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+/* ── Google Fonts: curated selection of fonts ── */
+/* Special Elite (typewriter), Caveat (handwritten), Libre Baskerville (cozy serif), Galada (Bangla handwritten) */
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Caveat:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Galada&display=swap');
+
+/* ── Self-hosted Bangla Fonts ── */
+/* AdorNoirrit (আদর নৈর্ঋত) from lipighor.com — Bangla display font */
+@font-face {
+  font-family: 'AdorNoirrit';
+  src: url('/fonts/AdorNoirritVR.woff2?V=2.0') format('woff2'),
+       url('/fonts/AdorNoirritVR.woff?V=2.0') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
 /* ══════════════════════════════════════════════════════════
    DESIGN TOKENS (CSS Custom Properties)
@@ -86,22 +96,18 @@
   --shadow-md: var(--cg-shadow-med);
 
   /* ── Font Stacks ── */
-  --font-hand: 'Caveat', 'Patrick Hand', cursive;
+  --font-typewriter: 'Special Elite', 'Courier New', monospace;
+  /* Typewriter font */
+  --font-hand: 'Caveat', cursive;
   /* Display/handwriting */
-  --font-hand-alt: 'Kalam', cursive;
+  --font-hand-alt: 'Galada', cursive;
   /* Alternative handwriting */
-  --font-body: 'Newsreader', Georgia, serif;
-  /* Body/reading text */
-  --font-serif: 'Source Serif 4', 'Lora', Georgia, serif;
+  --font-body: 'Libre Baskerville', Georgia, serif;
+  /* Body/reading text — cozy serif */
+  --font-serif: 'Libre Baskerville', Georgia, serif;
   /* Elegant serif for long-form */
-  --font-display: 'Playfair Display', 'DM Serif Display', Georgia, serif;
-  /* Display serif for headings */
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  /* Clean sans-serif for UI */
-  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
-  /* Monospace for code */
-  --font-lora: 'Lora', Georgia, serif;
-  /* Lora as alternative body */
+  --font-sans: 'Libre Baskerville', Georgia, serif;
+  /* Clean reading font */
 }
 
 /* ══════════════════════════════════════════════════════════
