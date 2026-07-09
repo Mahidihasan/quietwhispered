@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../shared/components/MediaCard.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
+import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
 import { getEntryById, getPublicEntryById } from '../shared/services/journalService';
 import { subscribeToMediaSettings } from '../shared/services/mediaSettingsService';
@@ -298,7 +299,7 @@ const PostPage = () => {
                 )}
                 {post.youtubeEmbedUrl && (
                     <div className="post-media">
-                        <MediaCard src={post.youtubeEmbedUrl} alt={post.title} />
+                        <YoutubeAudioPlayer url={post.youtubeEmbedUrl} entryId={post._id} />
                     </div>
                 )}
 
@@ -331,6 +332,17 @@ const PostPage = () => {
 
                 {post.spotifyUrl && (
                     <SpotifyPlayer url={post.spotifyUrl} entryId={post._id} />
+                )}
+
+                {post.customAudioUrl && (
+                    <div className="post-media entry-custom-audio" style={{ marginTop: '16px' }}>
+                        <audio controls style={{ width: '100%' }}>
+                            <source src={post.customAudioUrl} type="audio/mpeg" />
+                            <source src={post.customAudioUrl} type="audio/wav" />
+                            <source src={post.customAudioUrl} type="audio/ogg" />
+                            Your browser does not support the audio element.
+                        </audio>
+                    </div>
                 )}
 
                 {post.tags && post.tags.length > 0 && (

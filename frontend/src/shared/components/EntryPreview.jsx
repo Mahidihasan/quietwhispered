@@ -2,6 +2,7 @@ import React from 'react';
 import { format } from 'date-fns';
 import MediaCard from './MediaCard.jsx';
 import SpotifyPlayer from './SpotifyPlayer.jsx';
+import YoutubeAudioPlayer from './YoutubeAudioPlayer.jsx';
 import { resolvePostDate } from '../utils/dateUtils';
 
 const escapeHtml = (value) => {
@@ -233,12 +234,23 @@ const EntryPreview = ({ post, mediaSettings }) => {
 
       {videoUrl && post.type === 'video' && (
         <div className="entry-media">
-          <MediaCard src={videoUrl} alt={post.title || 'video preview'} />
+          <YoutubeAudioPlayer url={videoUrl} entryId={post._id || 'preview'} />
         </div>
       )}
 
       {post.spotifyUrl && (
         <SpotifyPlayer url={post.spotifyUrl} entryId={post._id || 'preview'} />
+      )}
+
+      {post.customAudioUrl && (
+        <div className="entry-media entry-custom-audio" style={{ marginTop: '16px' }}>
+          <audio controls style={{ width: '100%' }}>
+            <source src={post.customAudioUrl} type="audio/mpeg" />
+            <source src={post.customAudioUrl} type="audio/wav" />
+            <source src={post.customAudioUrl} type="audio/ogg" />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
       )}
     </article>
   );

@@ -5,7 +5,7 @@ import ThinkerLoader from '../shared/components/ThinkerLoader';
 import EntryPreview from '../shared/components/EntryPreview.jsx';
 import Icon from './Icon';
 import { resolvePostDate } from '../shared/utils/dateUtils';
-import { FiCalendar, FiSmile, FiMapPin, FiTag, FiImage, FiSettings, FiVideo, FiShare2, FiCheck, FiX, FiEye, FiEdit, FiBold, FiItalic, FiUnderline, FiChevronDown, FiType, FiDroplet } from 'react-icons/fi';
+import { FiCalendar, FiSmile, FiMapPin, FiTag, FiImage, FiSettings, FiVideo, FiShare2, FiCheck, FiX, FiEye, FiEdit, FiBold, FiItalic, FiUnderline, FiChevronDown, FiType, FiDroplet, FiMusic } from 'react-icons/fi';
 
 
 const MOOD_OPTIONS = [
@@ -109,7 +109,8 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
         coverImage: '',
         youtubeEmbedUrl: '',
         spotifyUrl: '',
-        mood: '', // will be comma separated string of moods
+        customAudioUrl: '',
+        mood: '',
         imageUrls: [],
         lineHeight: 1.75,
         paperTexture: 'none',
@@ -164,6 +165,10 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
     const [focusMode, setFocusMode] = useState(false);
     const [writingGoal, setWritingGoal] = useState(0);
     const [showGoalInput, setShowGoalInput] = useState(false);
+    const [audioFile, setAudioFile] = useState(null);
+    const [audioPreviewUrl, setAudioPreviewUrl] = useState('');
+    const [isAudioUploading, setIsAudioUploading] = useState(false);
+    const [audioUploadProgress, setAudioUploadProgress] = useState(0);
     const contentRef = useRef(null);
     const autoSaveRef = useRef(null);
     const dropRef = useRef(null);
@@ -257,6 +262,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
                 date: resolvePostDate(post) ? resolvePostDate(post).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
                 coverImage: post.media || post.imageUrls?.[0] || '',
                 youtubeEmbedUrl: post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '') || '',
+                customAudioUrl: post.customAudioUrl || '',
                 mood: post.mood || '',
                 imageUrls: post.imageUrls || [],
                 lineHeight: Number(post.lineHeight) || 1.75,
@@ -364,6 +370,17 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
                 setIsUploading(false);
             }
 
+            let uploadedAudio = formData.customAudioUrl || '';
+            if (audioFile) {
+                setIsAudioUploading(true);
+                setAudioUploadProgress(0);
+                uploadedAudio = await uploadImage(audioFile, {
+                    folder: 'journal-audio',
+                    onProgress: setAudioUploadProgress
+                });
+                setIsAudioUploading(false);
+            }
+
             const uniqueImages = new Set(imageUrls);
             if (uploadedCover) uniqueImages.add(uploadedCover);
             const finalImageUrls = Array.from(uniqueImages);
@@ -385,6 +402,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
                 imageUrls: finalImageUrls,
                 youtubeEmbedUrl,
                 spotifyUrl: formData.spotifyUrl?.trim() || '',
+                customAudioUrl: uploadedAudio,
                 titleSize: Number(titleSize) || 32,
                 bodySize: Number(bodySize) || 18,
                 lineHeight: Number(lineHeight) || 1.75,
@@ -577,7 +595,8 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
             const captionPart = caption ? ` | ${caption}` : '';
             insertAtCursor(`\n[image: ${url}${captionPart}]\n`);
         } catch (err) {
-            setError('Error uploading image');
+            console.error('Upload error details:', err);
+            setError(`Error uploading image: ${err.message || 'Unknown error'}`);
         } finally {
             setIsUploading(false);
             setUploadProgress(0);
@@ -682,23 +701,12 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
     return (
         <div className={`writing-editor${focusMode ? ' focus-mode' : ''}`} ref={dropRef} onDragOver={handleDragOver} onDrop={handleDrop}>
             <div className="editor-header">
-                <div className="editor-header-left">
-                    <span className="editor-kicker">
-                        {post ? <><Icon name="edit" size="sm" /> Edit entry</> : <><Icon name="write" size="sm" /> New entry</>}
-                    </span>
-                    <h2 className="editor-title">
-                        {post ? 'Refine your story' : 'Write something'}
-                    </h2>
-                </div>
                 <div className="editor-header-right">
                     {lastSaved && (
                         <span className="editor-autosave" title="Auto-saved">
                             <Icon name="check" size="sm" /> just now
                         </span>
                     )}
-                    <button className="editor-close" onClick={onClose} title="Close">
-                        <Icon name="close" />
-                    </button>
                 </div>
             </div>
 
@@ -1083,6 +1091,35 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
                                             </div>
                                         </div>
                                     )}
+                                </div>
+
+                                <div className="sidebar-section">
+                                    <label className="sidebar-label"><FiMusic /> Custom Audio Upload</label>
+                                    <div className="audio-upload-area">
+                                        <input type="file" accept="audio/mpeg,audio/wav,audio/ogg,audio/mp3,audio/*" className="sidebar-file-input" id="customAudioUpload" onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                setAudioFile(file);
+                                                setAudioPreviewUrl(URL.createObjectURL(file));
+                                            }
+                                        }} />
+                                        <label htmlFor="customAudioUpload" className="sidebar-upload-btn" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <FiMusic size={14} />
+                                            {audioFile ? `${audioFile.name}` : 'Upload audio...'}
+                                        </label>
+                                        {audioFile && (
+                                            <div style={{ marginTop: '8px' }}>
+                                                <audio controls style={{ width: '100%', maxHeight: '40px' }}>
+                                                    <source src={audioPreviewUrl} type={audioFile.type} />
+                                                </audio>
+                                                <button type="button" className="btn-secondary" style={{ fontSize: '11px', padding: '2px 8px', marginTop: '4px' }} onClick={() => {
+                                                    setAudioFile(null);
+                                                    setAudioPreviewUrl('');
+                                                }}>Remove</button>
+                                            </div>
+                                        )}
+                                        {isAudioUploading && <div className="sidebar-upload-status">Uploading... {audioUploadProgress}%</div>}
+                                    </div>
                                 </div>
 
                                 <div className="sidebar-section">
@@ -1542,7 +1579,8 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave }) => {
                                         titleFont: selectedTitleFont,
                                         bodyFont: selectedBodyFont,
                                         font: selectedTitleFont,
-                                        type: formData.youtubeEmbedUrl ? 'video' : (coverFile || formData.coverImage) ? 'image' : 'story'
+                                        type: formData.youtubeEmbedUrl ? 'video' : (coverFile || formData.coverImage) ? 'image' : 'story',
+                                        customAudioUrl: audioFile ? audioPreviewUrl : (formData.customAudioUrl || '')
                                     }} 
                                     mediaSettings={mediaSettings} 
                                 />

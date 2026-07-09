@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import MediaCard from '../shared/components/MediaCard.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
+import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
 import { resolvePostDate } from '../shared/utils/dateUtils';
 
@@ -45,8 +46,9 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
     ? Math.min(2.6, Math.max(1.2, lineHeightValue))
     : null;
 
-  // Per-entry font from post data
-  const entryFont = post.font || null;
+  // Per-entry font from post data - separate title and body fonts
+  const titleFont = post.titleFont || post.font || null;
+  const bodyFont = post.bodyFont || post.font || null;
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter', 'Caveat', 'Patrick Hand', 'Kalam', 'Playfair Display', 'Source Serif 4', 'JetBrains Mono', 'Lora', 'DM Serif Display']);
 
   const renderInline = (text) => {
@@ -171,7 +173,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
       <header className="entry-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
         <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
-          ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
+          fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : titleFont === 'Special Elite' ? 'monospace' : 'serif'}` : 'var(--font-hand)'
         }}>
           {post.title}
         </h2>
@@ -194,7 +196,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
       <div className="entry-body" style={{
         ...(lineHeight ? { lineHeight } : {}),
         ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
-        ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
+        fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Libre Baskerville' || bodyFont === 'Georgia' || bodyFont === 'Merriweather' || bodyFont === 'Lora' || bodyFont === 'Source Serif 4' ? 'serif' : bodyFont === 'Caveat' ? 'cursive' : bodyFont === 'Special Elite' ? 'monospace' : 'serif'}` : 'var(--font-body)'
       }}>
         {blocks.map(block => {
           if (block.type === 'list') {
@@ -237,12 +239,23 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
 
       {videoUrl && post.type === 'video' && (
         <div className="entry-media">
-          <MediaCard src={videoUrl} alt={post.title} />
+          <YoutubeAudioPlayer url={videoUrl} entryId={post._id} />
         </div>
       )}
 
       {post.spotifyUrl && (
         <SpotifyPlayer url={post.spotifyUrl} entryId={post._id} />
+      )}
+
+      {post.customAudioUrl && (
+        <div className="entry-media entry-custom-audio" style={{ marginTop: '16px' }}>
+          <audio controls style={{ width: '100%' }}>
+            <source src={post.customAudioUrl} type="audio/mpeg" />
+            <source src={post.customAudioUrl} type="audio/wav" />
+            <source src={post.customAudioUrl} type="audio/ogg" />
+            Your browser does not support the audio element.
+          </audio>
+        </div>
       )}
     </article>
   );

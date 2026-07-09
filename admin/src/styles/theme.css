@@ -36,25 +36,26 @@
    All other rules reference these variables for consistency. */
 :root {
   /* ── White Theme Palette (raw colors) ── */
-  --cg-white: #FFFFFF;
-  --cg-paper: #FFFFFF;
-  /* Main page background (pure white) */
-  --cg-cream: #FFFFFF;
-  /* Card/secondary background (pure white) */
-  --cg-warm: #F8F8F8;
-  /* Hover/tertiary background (very light gray) */
-  --cg-light: #F0F0F0;
-  /* Subtle borders and dividers */
-  --cg-gray: #D0D0D0;
-  /* Disabled or subtle elements */
-  --cg-soft: #A0A0A0;
-  /* Soft muted elements */
-  --cg-mid: #707070;
-  /* Muted text */
-  --cg-dark: #505050;
-  /* Secondary text */
-  --cg-ink: #1A1A1A;
-  /* Primary text (near-black) */
+  --cg-white: #FEFCF8;
+  /* Warm off-white (was pure white) */
+  --cg-paper: #FDFCF9;
+  /* Warm paper (was pure white) */
+  --cg-cream: #FCF9F4;
+  /* Card/secondary bg - warm cream (was pure white) */
+  --cg-warm: #F5F0EA;
+  /* Hover/tertiary bg - warm beige (was #F8F8F8) */
+  --cg-light: #EDE5D9;
+  /* Subtle borders - warm light (was #F0F0F0) */
+  --cg-gray: #D5CBBE;
+  /* Disabled elements - warm gray (was #D0D0D0) */
+  --cg-soft: #A09078;
+  /* Soft muted - warm taupe (was #A0A0A0) */
+  --cg-mid: #7A6B5A;
+  /* Muted text - warm brown (was #707070) */
+  --cg-dark: #5A4C3A;
+  /* Secondary text - coffee (was #505050) */
+  --cg-ink: #1F1B16;
+  /* Primary text - warm near-black (was #1A1A1A) */
   --cg-black: #0D0C0A;
   /* Deepest black used */
   --cg-accent: #6A8A7A;
@@ -63,12 +64,12 @@
   /* Light accent (hover states) */
   --cg-accent-dark: #4A6A5A;
   /* Dark accent (active states) */
-  --cg-shadow: rgba(0, 0, 0, 0.06);
-  /* Subtle shadow */
-  --cg-shadow-med: rgba(0, 0, 0, 0.1);
-  /* Medium shadow */
-  --cg-shadow-strong: rgba(0, 0, 0, 0.15);
-  /* Strong shadow */
+  --cg-shadow: rgba(60, 40, 20, 0.06);
+  /* Warm subtle shadow */
+  --cg-shadow-med: rgba(60, 40, 20, 0.1);
+  /* Warm medium shadow */
+  --cg-shadow-strong: rgba(60, 40, 20, 0.15);
+  /* Warm strong shadow */
 
   /* ── Semantic Theme Mapping ── */
   /* Maps raw colors to logical use-cases. Change these to

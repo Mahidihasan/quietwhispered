@@ -58,10 +58,21 @@ export const uploadImageToCloudinary = async (file, options = {}) => {
 
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) {
-        const res = JSON.parse(xhr.responseText);
-        resolve(res.secure_url);
+        try {
+          const res = JSON.parse(xhr.responseText);
+          resolve(res.secure_url);
+        } catch (e) {
+          reject(new Error(`Upload failed: Invalid response from server`));
+        }
       } else {
-        reject(new Error(`Upload failed: ${xhr.statusText || xhr.status}`));
+        let errorMsg = `Upload failed (${xhr.status})`;
+        try {
+          const errRes = JSON.parse(xhr.responseText);
+          errorMsg = `Upload failed: ${errRes.error?.message || JSON.stringify(errRes)}`;
+        } catch (e) {
+          errorMsg = `Upload failed (${xhr.status}): ${xhr.statusText || 'Unknown error'}`;
+        }
+        reject(new Error(errorMsg));
       }
     };
 

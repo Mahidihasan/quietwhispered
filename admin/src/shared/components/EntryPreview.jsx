@@ -1,6 +1,8 @@
 import React from 'react';
 import { format } from 'date-fns';
 import MediaCard from './MediaCard.jsx';
+import SpotifyPlayer from './SpotifyPlayer.jsx';
+import YoutubeAudioPlayer from './YoutubeAudioPlayer.jsx';
 import { resolvePostDate } from '../utils/dateUtils';
 
 const escapeHtml = (value) => {
@@ -32,8 +34,11 @@ const EntryPreview = ({ post, mediaSettings }) => {
     ? Math.min(2.6, Math.max(1.2, lineHeightValue))
     : null;
 
-  const entryFont = post.font || null;
+  const titleFont = post.titleFont || post.font || null;
+  const bodyFont = post.bodyFont || post.font || null;
   const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter', 'Caveat', 'Patrick Hand', 'Kalam', 'Playfair Display', 'Source Serif 4', 'JetBrains Mono', 'Lora', 'DM Serif Display']);
+  const allowedTitleFonts = new Set(['Special Elite', 'Caveat', 'Libre Baskerville', 'AdorNoirrit', 'Galada', 'Georgia', 'Merriweather', 'EB Garamond', 'Newsreader', 'Inter', 'Patrick Hand', 'Kalam', 'Playfair Display', 'Source Serif 4', 'JetBrains Mono', 'Lora', 'DM Serif Display']);
+  const allowedBodyFonts = new Set(['Libre Baskerville', 'Special Elite', 'Caveat', 'Georgia', 'Merriweather', 'Lora', 'Source Serif 4', 'AdorNoirrit', 'Galada', 'EB Garamond', 'Newsreader', 'Inter', 'Patrick Hand', 'Kalam', 'Playfair Display', 'JetBrains Mono', 'DM Serif Display']);
 
   const renderInline = (text) => {
     let safe = escapeHtml(text);
@@ -166,7 +171,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
       <header className="entry-header">
         <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
-          ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
+          fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : titleFont === 'Special Elite' ? 'monospace' : 'serif'}` : 'var(--font-hand)'
         }}>
           {post.title || 'Untitled'}
         </h2>
@@ -189,7 +194,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
       <div className="entry-body" style={{
         ...(lineHeight ? { lineHeight } : {}),
         ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
-        ...(entryFont ? { fontFamily: `'${entryFont}', serif` } : {})
+        fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Libre Baskerville' || bodyFont === 'Georgia' || bodyFont === 'Merriweather' || bodyFont === 'Lora' || bodyFont === 'Source Serif 4' ? 'serif' : bodyFont === 'Caveat' ? 'cursive' : bodyFont === 'Special Elite' ? 'monospace' : 'serif'}` : 'var(--font-body)'
       }}>
         {blocks.map(block => {
           if (block.type === 'list') {
@@ -232,8 +237,12 @@ const EntryPreview = ({ post, mediaSettings }) => {
 
       {videoUrl && post.type === 'video' && (
         <div className="entry-media">
-          <MediaCard src={videoUrl} alt={post.title || 'video preview'} />
+          <YoutubeAudioPlayer url={videoUrl} entryId={post._id || 'preview'} />
         </div>
+      )}
+
+      {post.spotifyUrl && (
+        <SpotifyPlayer url={post.spotifyUrl} entryId={post._id || 'preview'} />
       )}
     </article>
   );
