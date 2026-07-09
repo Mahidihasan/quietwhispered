@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import MediaCard from '../shared/components/MediaCard.jsx';
+import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
 import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
 import { resolvePostDate } from '../shared/utils/dateUtils';
 
@@ -26,10 +27,11 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   }, [propSettings]);
 
   // Per-entry frame/texture/color takes priority over global settings
-  const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
-  const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
-  const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
-  const activePaperColor = post.paperColor || mediaSettings?.paperColor || '#f8f5f0';
+  const activeFrame = (post.mediaFrame && post.mediaFrame !== 'polaroid') ? post.mediaFrame : (mediaSettings?.mediaFrame || 'polaroid');
+  const activeFrameSize = (post.frameSize && post.frameSize !== 'md') ? post.frameSize : (mediaSettings?.frameSize || 'md');
+  const activeTexture = (post.paperTexture && post.paperTexture !== 'none') ? post.paperTexture : (mediaSettings?.paperTexture || 'none');
+  const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
+  /* Off-white - default entry background color */
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
@@ -237,6 +239,10 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
         <div className="entry-media">
           <MediaCard src={videoUrl} alt={post.title} />
         </div>
+      )}
+
+      {post.spotifyUrl && (
+        <SpotifyPlayer url={post.spotifyUrl} entryId={post._id} />
       )}
     </article>
   );

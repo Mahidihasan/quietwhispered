@@ -319,7 +319,7 @@ const AdminDashboard = () => {
     const activeFiltersCount = [filters.year, filters.month, filters.title, filters.mood].filter(Boolean).length;
 
     return (
-            <div className={`admin-dashboard ${mediaSettings?.paperTexture && mediaSettings.paperTexture !== 'none' ? 'texture-' + mediaSettings.paperTexture : ''}`.trim()}>
+            <div className="admin-dashboard">
             <header className="admin-hero">
                 <div className="admin-hero-left">
                     <h1>Journal Studio</h1>
@@ -785,6 +785,7 @@ const AdminDashboard = () => {
                     <div className="editor-modal">
                         <PostEditor 
                             post={editingPost}
+                            mediaSettings={mediaSettings}
                             onClose={() => {
                                 setShowEditor(false);
                                 setEditingPost(null);

@@ -159,7 +159,7 @@
 
 /* ── Frame: Polaroid (classic white border with tape) ── */
 .media-frame-polaroid {
-  background: var(--cg-white);
+  background: #FFFFFF;
   border: 0.5px solid color-mix(in srgb, var(--border) 30%, transparent);
   padding: 8px 8px 14px;
   max-width: 340px;
@@ -221,7 +221,7 @@
 .media-frame-border {
   border: 2px solid var(--border);
   padding: 4px;
-  background: var(--bg-secondary);
+  background: #FFFFFF;
   border-radius: 3px;
   transition: all 200ms ease;
 }
@@ -237,7 +237,7 @@
 .media-frame-double {
   border: 1px solid var(--border);
   padding: 6px;
-  background: var(--bg-secondary);
+  background: #FFFFFF;
   position: relative;
   transition: all 200ms ease;
 }

@@ -22,9 +22,11 @@ const getSettingsRef = () => {
 };
 
 const DEFAULT_SETTINGS = {
-  paperTexture: 'none',
-  paperColor: '#f8f5f0',
-  dividerColor: '#c8c4bc',
+  paperTexture: 'lines',
+  /* Default texture: ruled paper lines */
+  paperColor: '#FAF8F5',
+  /* Off-white - default entry background color (does not affect UI) */
+  dividerColor: '#D0D0D0',
   mediaFrame: 'polaroid',
   frameSize: 'md',
   quoteFont: 'Caveat',

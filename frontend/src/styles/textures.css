@@ -7,6 +7,8 @@
 
 /* ── Texture: None (default clean paper) ── */
 .texture-none {
+  background-color: #FAF8F5;
+  /* Cream white - default entry color */
   background-image: none;
 }
 
@@ -139,6 +141,8 @@
 
 /* ── Texture: Lines (notebook ruled paper with subtle grain) ── */
 .texture-lines {
+  background-color: #FAF8F5;
+  /* Off-white - matches default entry color */
   background-image: 
     repeating-linear-gradient(
       transparent,
@@ -1167,7 +1171,7 @@
 
 /* ── Frame: Polaroid (classic white border with tape) ── */
 .media-frame-polaroid {
-  background: var(--cg-white);
+  background: #FFFFFF;
   border: 0.5px solid color-mix(in srgb, var(--border) 30%, transparent);
   padding: 8px 8px 14px;
   max-width: 340px;
@@ -1229,7 +1233,7 @@
 .media-frame-border {
   border: 2px solid var(--border);
   padding: 4px;
-  background: var(--bg-secondary);
+  background: #FFFFFF;
   border-radius: 3px;
   transition: all 200ms ease;
 }
@@ -1245,7 +1249,7 @@
 .media-frame-double {
   border: 1px solid var(--border);
   padding: 6px;
-  background: var(--bg-secondary);
+  background: #FFFFFF;
   position: relative;
   transition: all 200ms ease;
 }

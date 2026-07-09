@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../shared/components/MediaCard.jsx';
+import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
 import { getEntryById, getPublicEntryById } from '../shared/services/journalService';
 import { subscribeToMediaSettings } from '../shared/services/mediaSettingsService';
@@ -221,10 +222,11 @@ const PostPage = () => {
         );
     }
 
-    const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
-    const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
-    const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
-    const activePaperColor = post.paperColor || mediaSettings?.paperColor || '#f8f5f0';
+    const activeFrame = (post.mediaFrame && post.mediaFrame !== 'polaroid') ? post.mediaFrame : (mediaSettings?.mediaFrame || 'polaroid');
+    const activeFrameSize = (post.frameSize && post.frameSize !== 'md') ? post.frameSize : (mediaSettings?.frameSize || 'md');
+    const activeTexture = (post.paperTexture && post.paperTexture !== 'none') ? post.paperTexture : (mediaSettings?.paperTexture || 'none');
+    const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
+    /* Off-white - default entry background color */
     const postDate = resolvePostDate(post);
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
@@ -326,6 +328,10 @@ const PostPage = () => {
                         );
                     })}
                 </div>
+
+                {post.spotifyUrl && (
+                    <SpotifyPlayer url={post.spotifyUrl} entryId={post._id} />
+                )}
 
                 {post.tags && post.tags.length > 0 && (
                     <div className="post-tags-container">

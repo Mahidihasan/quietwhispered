@@ -1,6 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import MediaCard from './MediaCard.jsx';
+import SpotifyPlayer from './SpotifyPlayer.jsx';
 import { resolvePostDate } from '../utils/dateUtils';
 
 const escapeHtml = (value) => {
@@ -13,9 +14,10 @@ const escapeHtml = (value) => {
 };
 
 const EntryPreview = ({ post, mediaSettings }) => {
-  const activeFrame = post.mediaFrame || mediaSettings?.mediaFrame || 'polaroid';
-  const activeFrameSize = post.frameSize || mediaSettings?.frameSize || 'md';
-  const activeTexture = post.paperTexture || mediaSettings?.paperTexture || 'none';
+  const activeFrame = (post.mediaFrame && post.mediaFrame !== 'polaroid') ? post.mediaFrame : (mediaSettings?.mediaFrame || 'polaroid');
+  const activeFrameSize = (post.frameSize && post.frameSize !== 'md') ? post.frameSize : (mediaSettings?.frameSize || 'md');
+  const activeTexture = (post.paperTexture && post.paperTexture !== 'none') ? post.paperTexture : (mediaSettings?.paperTexture || 'none');
+  const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
   const moodLabel = post.mood ? post.mood : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
@@ -157,6 +159,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
     <article
       id={`preview-${post._id || 'new'}`}
       className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''}`}
+      style={activeTexture !== 'none' && activePaperColor ? { backgroundColor: activePaperColor } : undefined}
     >
       {activeTexture !== 'none' && (
         <div className={`entry-texture texture-${activeTexture}`} aria-hidden="true" />
@@ -232,6 +235,10 @@ const EntryPreview = ({ post, mediaSettings }) => {
         <div className="entry-media">
           <MediaCard src={videoUrl} alt={post.title || 'video preview'} />
         </div>
+      )}
+
+      {post.spotifyUrl && (
+        <SpotifyPlayer url={post.spotifyUrl} entryId={post._id || 'preview'} />
       )}
     </article>
   );

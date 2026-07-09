@@ -71,7 +71,7 @@ const MediaCard = ({ src, alt, caption, className = '',
   const sizeClass = frameSize ? `media-frame-${frameSize}` : '';
 
   return (
-    <div className={`media-card ${className} ${frameClass} ${sizeClass} texture-${texture}`.trim()}>
+    <div className={`media-card ${className} ${frameClass} ${sizeClass}`.trim()}>
       {renderMedia()}
       {caption && <div className="media-caption">{caption}</div>}
     </div>
