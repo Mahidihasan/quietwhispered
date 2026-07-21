@@ -41,21 +41,48 @@ export const getVimeoId = (url) => {
 };
 
 /**
+ * Detect if a URL is a Spotify link
+ */
+export const getSpotifyId = (url) => {
+  if (!url) return null;
+
+  const patterns = [
+    /spotify\.com\/track\/([a-zA-Z0-9]+)/,
+    /spotify\.com\/playlist\/([a-zA-Z0-9]+)/,
+    /spotify\.com\/album\/([a-zA-Z0-9]+)/,
+    /open\.spotify\.com\/track\/([a-zA-Z0-9]+)/,
+    /open\.spotify\.com\/playlist\/([a-zA-Z0-9]+)/,
+    /open\.spotify\.com\/album\/([a-zA-Z0-9]+)/,
+    /spotify:track:([a-zA-Z0-9]+)/,
+    /spotify:playlist:([a-zA-Z0-9]+)/,
+    /spotify:album:([a-zA-Z0-9]+)/,
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+
+  return null;
+};
+
+/**
  * Determine media type from URL or file path
  */
 export const getMediaType = (mediaUrl) => {
   if (!mediaUrl) return null;
-  
+
   if (getYouTubeId(mediaUrl)) return 'youtube';
   if (getVimeoId(mediaUrl)) return 'vimeo';
-  
+  if (getSpotifyId(mediaUrl)) return 'spotify';
+
   const extension = mediaUrl.split('.').pop().toLowerCase();
   const videoExtensions = ['mp4', 'webm', 'ogg', 'mov'];
   const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
-  
+
   if (videoExtensions.includes(extension)) return 'video';
   if (imageExtensions.includes(extension)) return 'image';
-  
+
   return null;
 };
 

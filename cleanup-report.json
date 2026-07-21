@@ -1,0 +1,645 @@
+{
+  "timestamp": "2026-07-11T15:03:01.163Z",
+  "filesSafeToDelete": [
+    {
+      "path": "analyze-unused.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\analyze-unused.js",
+      "size": 13422
+    },
+    {
+      "path": "improved-analysis.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\improved-analysis.js",
+      "size": 20261
+    },
+    {
+      "path": "unused-code-report.json",
+      "type": "other",
+      "reason": "File not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\unused-code-report.json",
+      "size": 13443
+    }
+  ],
+  "filesToReview": [
+    {
+      "path": "admin\\public\\fonts\\AdorNoirritVR.woff",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\public\\fonts\\AdorNoirritVR.woff",
+      "size": 74640
+    },
+    {
+      "path": "admin\\public\\fonts\\AdorNoirritVR.woff2",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\public\\fonts\\AdorNoirritVR.woff2",
+      "size": 60716
+    },
+    {
+      "path": "admin\\public\\images\\posts\\fallback.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\public\\images\\posts\\fallback.svg",
+      "size": 667
+    },
+    {
+      "path": "admin\\public\\robots.txt",
+      "type": "other",
+      "reason": "File not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\public\\robots.txt",
+      "size": 66
+    },
+    {
+      "path": "admin\\src\\App.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\App.jsx",
+      "size": 1541
+    },
+    {
+      "path": "admin\\src\\components\\Icon.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\components\\Icon.jsx",
+      "size": 9864
+    },
+    {
+      "path": "admin\\src\\components\\LiveMarkdownEditor.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\components\\LiveMarkdownEditor.jsx",
+      "size": 26443
+    },
+    {
+      "path": "admin\\src\\components\\MarkdownToolbar.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\components\\MarkdownToolbar.jsx",
+      "size": 24057
+    },
+    {
+      "path": "admin\\src\\components\\PostEditor.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\components\\PostEditor.jsx",
+      "size": 44342
+    },
+    {
+      "path": "admin\\src\\components\\SlashCommands.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\components\\SlashCommands.jsx",
+      "size": 4793
+    },
+    {
+      "path": "admin\\src\\ErrorBoundary.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\ErrorBoundary.jsx",
+      "size": 55
+    },
+    {
+      "path": "admin\\src\\pages\\AdminDashboard.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\pages\\AdminDashboard.jsx",
+      "size": 42592
+    },
+    {
+      "path": "admin\\src\\pages\\AdminLogin.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\pages\\AdminLogin.jsx",
+      "size": 3425
+    },
+    {
+      "path": "admin\\src\\shared\\components\\EntryPreview.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\components\\EntryPreview.jsx",
+      "size": 11697
+    },
+    {
+      "path": "admin\\src\\shared\\components\\MediaCard.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\components\\MediaCard.js",
+      "size": 2247
+    },
+    {
+      "path": "admin\\src\\shared\\components\\MediaCard.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\components\\MediaCard.jsx",
+      "size": 2228
+    },
+    {
+      "path": "admin\\src\\shared\\components\\SpotifyPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\components\\SpotifyPlayer.jsx",
+      "size": 5856
+    },
+    {
+      "path": "admin\\src\\shared\\components\\ThinkerLoader.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\components\\ThinkerLoader.js",
+      "size": 116
+    },
+    {
+      "path": "admin\\src\\shared\\components\\YoutubeAudioPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\components\\YoutubeAudioPlayer.jsx",
+      "size": 3908
+    },
+    {
+      "path": "admin\\src\\shared\\config.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\config.js",
+      "size": 578
+    },
+    {
+      "path": "admin\\src\\shared\\ErrorBoundary.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\ErrorBoundary.jsx",
+      "size": 641
+    },
+    {
+      "path": "admin\\src\\shared\\firebase.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\firebase.js",
+      "size": 1707
+    },
+    {
+      "path": "admin\\src\\shared\\hooks\\useAuth.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\hooks\\useAuth.js",
+      "size": 464
+    },
+    {
+      "path": "admin\\src\\shared\\services\\authService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\services\\authService.js",
+      "size": 1559
+    },
+    {
+      "path": "admin\\src\\shared\\services\\cloudinaryUpload.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\services\\cloudinaryUpload.js",
+      "size": 2635
+    },
+    {
+      "path": "admin\\src\\shared\\services\\journalService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\services\\journalService.js",
+      "size": 5618
+    },
+    {
+      "path": "admin\\src\\shared\\services\\mediaSettingsService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\services\\mediaSettingsService.js",
+      "size": 1876
+    },
+    {
+      "path": "admin\\src\\shared\\services\\quoteService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\services\\quoteService.js",
+      "size": 1657
+    },
+    {
+      "path": "admin\\src\\shared\\utils\\dateUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\utils\\dateUtils.js",
+      "size": 631
+    },
+    {
+      "path": "admin\\src\\shared\\utils\\markdownUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\utils\\markdownUtils.js",
+      "size": 16768
+    },
+    {
+      "path": "admin\\src\\shared\\utils\\mediaUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\shared\\utils\\mediaUtils.js",
+      "size": 1989
+    },
+    {
+      "path": "admin\\src\\styles\\markdown-editor.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\styles\\markdown-editor.css",
+      "size": 25224
+    },
+    {
+      "path": "admin\\src\\styles\\mobile-responsive.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\styles\\mobile-responsive.css",
+      "size": 11443
+    },
+    {
+      "path": "admin\\src\\styles\\page_img.jpg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\styles\\page_img.jpg",
+      "size": 509742
+    },
+    {
+      "path": "admin\\src\\styles\\textures.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\styles\\textures.css",
+      "size": 18165
+    },
+    {
+      "path": "admin\\src\\styles\\theme.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\src\\styles\\theme.css",
+      "size": 126166
+    },
+    {
+      "path": "frontend\\public\\fonts\\AdorNoirritVR.woff",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\fonts\\AdorNoirritVR.woff",
+      "size": 74640
+    },
+    {
+      "path": "frontend\\public\\fonts\\AdorNoirritVR.woff2",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\fonts\\AdorNoirritVR.woff2",
+      "size": 60716
+    },
+    {
+      "path": "frontend\\public\\images\\posts\\fallback.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\images\\posts\\fallback.svg",
+      "size": 660
+    },
+    {
+      "path": "frontend\\public\\robots.txt",
+      "type": "other",
+      "reason": "File not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\robots.txt",
+      "size": 100
+    },
+    {
+      "path": "frontend\\src\\App.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\App.js",
+      "size": 1229
+    },
+    {
+      "path": "frontend\\src\\components\\ArchiveSidebar.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\components\\ArchiveSidebar.js",
+      "size": 2924
+    },
+    {
+      "path": "frontend\\src\\components\\ArchiveSlideout.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\components\\ArchiveSlideout.js",
+      "size": 5756
+    },
+    {
+      "path": "frontend\\src\\components\\Entry.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\components\\Entry.js",
+      "size": 13420
+    },
+    {
+      "path": "frontend\\src\\components\\Navbar.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\components\\Navbar.js",
+      "size": 2595
+    },
+    {
+      "path": "frontend\\src\\fonts\\AdorNoirritVR.woff",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\fonts\\AdorNoirritVR.woff",
+      "size": 74640
+    },
+    {
+      "path": "frontend\\src\\fonts\\AdorNoirritVR.woff2",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\fonts\\AdorNoirritVR.woff2",
+      "size": 60716
+    },
+    {
+      "path": "frontend\\src\\pages\\JournalHome.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\pages\\JournalHome.js",
+      "size": 5027
+    },
+    {
+      "path": "frontend\\src\\pages\\PostPage.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\pages\\PostPage.js",
+      "size": 16177
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\EntryPreview.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\EntryPreview.jsx",
+      "size": 11185
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MarkdownRenderer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\MarkdownRenderer.jsx",
+      "size": 5565
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MediaCard.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\MediaCard.js",
+      "size": 2228
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MediaCard.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\MediaCard.jsx",
+      "size": 2228
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MinimalMarkdownTest.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\MinimalMarkdownTest.jsx",
+      "size": 190
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\SpotifyPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\SpotifyPlayer.jsx",
+      "size": 3933
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\ThinkerLoader.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\ThinkerLoader.js",
+      "size": 116
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\YoutubeAudioPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\components\\YoutubeAudioPlayer.jsx",
+      "size": 3638
+    },
+    {
+      "path": "frontend\\src\\shared\\config.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\config.js",
+      "size": 578
+    },
+    {
+      "path": "frontend\\src\\shared\\ErrorBoundary.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\ErrorBoundary.jsx",
+      "size": 641
+    },
+    {
+      "path": "frontend\\src\\shared\\firebase.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\firebase.js",
+      "size": 1707
+    },
+    {
+      "path": "frontend\\src\\shared\\hooks\\useAuth.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\hooks\\useAuth.js",
+      "size": 464
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\authService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\services\\authService.js",
+      "size": 1559
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\cloudinaryUpload.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\services\\cloudinaryUpload.js",
+      "size": 2199
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\journalService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\services\\journalService.js",
+      "size": 5618
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\mediaSettingsService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\services\\mediaSettingsService.js",
+      "size": 2811
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\quoteService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\services\\quoteService.js",
+      "size": 1657
+    },
+    {
+      "path": "frontend\\src\\shared\\utils\\dateUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\utils\\dateUtils.js",
+      "size": 631
+    },
+    {
+      "path": "frontend\\src\\shared\\utils\\mediaUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\utils\\mediaUtils.js",
+      "size": 1989
+    },
+    {
+      "path": "frontend\\src\\shared\\utils\\spotifyUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\shared\\utils\\spotifyUtils.js",
+      "size": 2487
+    },
+    {
+      "path": "frontend\\src\\styles\\markdown.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\styles\\markdown.css",
+      "size": 2575
+    },
+    {
+      "path": "frontend\\src\\styles\\page_img.jpg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\styles\\page_img.jpg",
+      "size": 509742
+    },
+    {
+      "path": "frontend\\src\\styles\\textures.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\styles\\textures.css",
+      "size": 43174
+    },
+    {
+      "path": "frontend\\src\\styles\\theme.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\styles\\theme.css",
+      "size": 98334
+    },
+    {
+      "path": "frontend\\src\\test-markdown-features.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\test-markdown-features.js",
+      "size": 2498
+    },
+    {
+      "path": "frontend\\src\\test-markdown.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\src\\test-markdown.js",
+      "size": 942
+    },
+    {
+      "path": "Readme.md",
+      "type": "other",
+      "reason": "File not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\Readme.md",
+      "size": 994
+    },
+    {
+      "path": "serviceAccount.json",
+      "type": "other",
+      "reason": "File not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\serviceAccount.json",
+      "size": 2382
+    },
+    {
+      "path": "temp_posteditor_css.txt",
+      "type": "other",
+      "reason": "File not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\temp_posteditor_css.txt",
+      "size": 5895
+    },
+    {
+      "path": "tools\\publish-all.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file",
+      "fullPath": "E:\\Project\\Project_journal\\tools\\publish-all.js",
+      "size": 719
+    }
+  ],
+  "filesToKeep": [
+    {
+      "path": "admin\\public\\favicon.svg",
+      "type": "asset",
+      "reason": "Referenced in HTML, CSS, or configuration",
+      "fullPath": "E:\\Project\\Project_journal\\admin\\public\\favicon.svg"
+    },
+    {
+      "path": "frontend\\public\\logo\\favicon.svg",
+      "type": "asset",
+      "reason": "Referenced in HTML, CSS, or configuration",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\logo\\favicon.svg"
+    },
+    {
+      "path": "frontend\\public\\logo\\icon.svg",
+      "type": "asset",
+      "reason": "Referenced in HTML, CSS, or configuration",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\logo\\icon.svg"
+    },
+    {
+      "path": "frontend\\public\\logo\\Journal_logo.png",
+      "type": "asset",
+      "reason": "Referenced in HTML, CSS, or configuration",
+      "fullPath": "E:\\Project\\Project_journal\\frontend\\public\\logo\\Journal_logo.png"
+    }
+  ],
+  "unusedDependencies": [
+    {
+      "package": "react-scripts",
+      "version": "5.0.1",
+      "reason": "Only needed for frontend, check if used"
+    },
+    {
+      "package": "browser-image-compression",
+      "version": "^2.0.2",
+      "reason": "Check if image compression is actually used"
+    },
+    {
+      "package": "date-fns",
+      "version": "^2.29.3",
+      "reason": "Check if date utilities are actually used"
+    },
+    {
+      "package": "prism-react-renderer",
+      "version": "^2.4.1",
+      "reason": "Only in frontend, check if syntax highlighting is used"
+    }
+  ],
+  "duplicateFiles": [
+    {
+      "files": [
+        "admin/src/shared/components/YoutubeAudioPlayer.jsx",
+        "frontend/src/shared/components/YoutubeAudioPlayer.jsx"
+      ],
+      "reason": "Same component in both admin and frontend"
+    },
+    {
+      "files": [
+        "admin/src/shared/components/EntryPreview.jsx",
+        "frontend/src/shared/components/EntryPreview.jsx"
+      ],
+      "reason": "Same component in both admin and frontend"
+    }
+  ]
+}

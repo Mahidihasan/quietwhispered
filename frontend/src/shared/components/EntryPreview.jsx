@@ -5,13 +5,93 @@ import SpotifyPlayer from './SpotifyPlayer.jsx';
 import YoutubeAudioPlayer from './YoutubeAudioPlayer.jsx';
 import { resolvePostDate } from '../utils/dateUtils';
 
-const escapeHtml = (value) => {
-  return String(value || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
+/**
+ * Render inline content with markdown and HTML tag support.
+ * This preserves HTML tags from toolbar (span, mark, u, etc.) while
+ * also supporting standard markdown syntax and BBCode (backward compat).
+ */
+const renderInline = (text) => {
+  let safe = String(text || '');
+  
+  // Step 1: Preserve existing HTML tags by encoding special chars inside them
+  // Replace < and > inside HTML tags with placeholders
+  const htmlTags = [];
+  let tagIndex = 0;
+  safe = safe.replace(/<(\/?)(\w+)([^>]*)>/gi, (match) => {
+    const placeholder = `\x00HTML${tagIndex}\x00`;
+    htmlTags[tagIndex] = match;
+    tagIndex++;
+    return placeholder;
+  });
+
+  // Step 2: Escape HTML entities in the remaining text (but not inside preserved tags)
+  safe = safe
+    .replace(/&(?!amp;|lt;|gt;|quot;|#39;)/g, '&')
+    .replace(/</g, '<')
+    .replace(/>/g, '>')
+    .replace(/"/g, '"')
     .replace(/'/g, '&#39;');
+  
+  // Step 3: Markdown syntax support on the escaped text
+  
+  // Bold: **text** or __text__
+  safe = safe.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  safe = safe.replace(/__(.+?)__/g, '<strong>$1</strong>');
+  
+  // Italic: *text* or _text_ (but not inside bold)
+  safe = safe.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em>$1</em>');
+  safe = safe.replace(/(?<!_)_([^_]+)_(?!_)/g, '<em>$1</em>');
+  
+  // Strikethrough: ~~text~~
+  safe = safe.replace(/~~(.+?)~~/g, '<s>$1</s>');
+  
+  // Inline code: `text`
+  safe = safe.replace(/`([^`]+)`/g, '<code>$1</code>');
+  
+  // Links: [text](url)
+  safe = safe.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (match, textContent, url) => {
+    const sanitizedUrl = String(url || '').trim()
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
+      .replace(/&#39;/g, "'");
+    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${textContent}</a>`;
+  });
+  
+  // BBCode support (backward compatibility)
+  safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
+  safe = safe.replace(/\[b\]/gi, '<strong>').replace(/\[\/b\]/gi, '</strong>');
+  safe = safe.replace(/\[i\]/gi, '<em>').replace(/\[\/i\]/gi, '</em>');
+  safe = safe.replace(/\[s\]/gi, '<s>').replace(/\[\/s\]/gi, '</s>');
+  safe = safe.replace(/\[quote\]/gi, '<blockquote>').replace(/\[\/quote\]/gi, '</blockquote>');
+  safe = safe.replace(/\[code\]/gi, '<code>').replace(/\[\/code\]/gi, '</code>');
+  safe = safe.replace(/\[link=([^\]]+)\](.*?)\[\/link\]/gi, (match, url, textContent) => {
+    const sanitizedUrl = String(url || '').trim()
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>');
+    return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${textContent}</a>`;
+  });
+  safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
+    const sanitized = String(color || '').trim()
+      .replace(/&/g, '&');
+    return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
+  });
+  safe = safe.replace(/\[\/mark\]/gi, '</span>');
+  safe = safe.replace(/\[color=([^\]]+)\]/gi, (match, color) => {
+    const sanitized = String(color || '').trim()
+      .replace(/&/g, '&');
+    return `<span style="color:${sanitized}">`;
+  });
+  safe = safe.replace(/\[\/color\]/gi, '</span>');
+  
+  // Step 4: Restore preserved HTML tags
+  safe = safe.replace(/\x00HTML(\d+)\x00/g, (match, index) => {
+    return htmlTags[parseInt(index)] || match;
+  });
+
+  return safe;
 };
 
 const EntryPreview = ({ post, mediaSettings }) => {
@@ -20,6 +100,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
   const activeTexture = (post.paperTexture && post.paperTexture !== 'none') ? post.paperTexture : (mediaSettings?.paperTexture || 'none');
   const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
   const moodLabel = post.mood ? post.mood : null;
+  const weatherLabel = post.weather ? post.weather : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
   const postDate = resolvePostDate(post);
@@ -35,46 +116,6 @@ const EntryPreview = ({ post, mediaSettings }) => {
     : null;
 
   const entryFont = post.font || null;
-  const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter', 'Caveat', 'Patrick Hand', 'Kalam', 'Playfair Display', 'Source Serif 4', 'JetBrains Mono', 'Lora', 'DM Serif Display']);
-
-  const renderInline = (text) => {
-    let safe = escapeHtml(text);
-    safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
-    safe = safe.replace(/\[b\]/gi, '<strong>').replace(/\[\/b\]/gi, '</strong>');
-    safe = safe.replace(/\[i\]/gi, '<em>').replace(/\[\/i\]/gi, '</em>');
-    safe = safe.replace(/\[s\]/gi, '<s>').replace(/\[\/s\]/gi, '</s>');
-    safe = safe.replace(/\[quote\]/gi, '<blockquote>').replace(/\[\/quote\]/gi, '</blockquote>');
-    safe = safe.replace(/\[code\]/gi, '<code>').replace(/\[\/code\]/gi, '</code>');
-    safe = safe.replace(/\[link=([^\]]+)\](.*?)\[\/link\]/gi, (match, url, textContent) => {
-      const sanitizedUrl = escapeHtml(url.trim());
-      return `<a href="${sanitizedUrl}" target="_blank" rel="noopener noreferrer">${textContent}</a>`;
-    });
-    safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
-      const sanitized = escapeHtml(color.trim());
-      return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
-    });
-    safe = safe.replace(/\[\/mark\]/gi, '</span>');
-    safe = safe.replace(/\[color=([^\]]+)\]/gi, (match, color) => {
-      const sanitized = escapeHtml(color.trim());
-      return `<span style="color:${sanitized}">`;
-    });
-    safe = safe.replace(/\[\/color\]/gi, '</span>');
-    safe = safe.replace(/\[size=([^\]]+)\]/gi, (match, size) => {
-      const numeric = size.trim().replace(/[^\d.]/g, '');
-      const value = numeric ? `${numeric}px` : 'inherit';
-      return `<span style="font-size:${value}">`;
-    });
-    safe = safe.replace(/\[\/size\]/gi, '</span>');
-    safe = safe.replace(/\[font=([^\]]+)\]/gi, (match, font) => {
-      const normalized = escapeHtml(font.trim());
-      if (!allowedFonts.has(normalized)) {
-        return '<span>';
-      }
-      return `<span style="font-family:${normalized}">`;
-    });
-    safe = safe.replace(/\[\/font\]/gi, '</span>');
-    return safe;
-  };
 
   const lines = (post.content || '').split('\n');
   const blocks = [];
@@ -174,6 +215,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
         </h2>
         <div className="entry-meta">
           {postDate && <span className="entry-date">{format(postDate, 'MMMM d, yyyy')}</span>}
+          {weatherLabel && <span className="entry-weather-icon">{weatherLabel}</span>}
           {moodLabel && <span className="entry-sep">•</span>}
           {moodLabel && <span className="entry-mood">{moodLabel}</span>}
           {post.tags?.length ? (
@@ -234,7 +276,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
 
       {videoUrl && post.type === 'video' && (
         <div className="entry-media">
-          <YoutubeAudioPlayer url={videoUrl} entryId={post._id || 'preview'} />
+          <MediaCard src={videoUrl} alt={post.title || 'Video preview'} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
         </div>
       )}
 

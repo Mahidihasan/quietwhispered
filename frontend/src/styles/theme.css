@@ -1374,12 +1374,7 @@ a:hover {
 }
 
 /* Dotted frame style */
-.media-card.dotted-frame {
-  background: var(--cg-cream);
-  border: 2px dashed var(--border);
-  padding: 8px;
-  max-width: 500px;
-}
+
 
 /* Media element defaults */
 .media-card img {

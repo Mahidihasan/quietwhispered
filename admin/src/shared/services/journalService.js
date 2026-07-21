@@ -63,6 +63,21 @@ export const uploadImage = async (file, options = {}) => {
   return uploadImageToCloudinary(file, { folder, onProgress });
 };
 
+/**
+ * Recursively remove undefined values from an object.
+ * Firestore `updateDoc` throws if any field value is `undefined`.
+ */
+const removeUndefined = (obj) => {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(removeUndefined);
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    if (value !== undefined) {
+      acc[key] = removeUndefined(value);
+    }
+    return acc;
+  }, {});
+};
+
 export const createEntry = async (entry) => {
   const user = ensureUser();
   const entriesCollection = getEntriesCollection();
@@ -76,17 +91,18 @@ export const createEntry = async (entry) => {
     updatedAt: serverTimestamp(),
     ownerId: user.uid
   };
-  return addDoc(entriesCollection, payload);
+  return addDoc(entriesCollection, removeUndefined(payload));
 };
 
 export const updateEntry = async (id, updates) => {
   ensureUser();
   ensureFirebase();
   const refDoc = doc(db, 'journalEntries', id);
-  return updateDoc(refDoc, {
+  const cleanUpdates = removeUndefined({
     ...updates,
     updatedAt: serverTimestamp()
   });
+  return updateDoc(refDoc, cleanUpdates);
 };
 
 export const deleteEntry = async (id) => {

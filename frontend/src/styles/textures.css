@@ -14,77 +14,29 @@
 
 /* ── Texture: Vellum (organic grain with fiber speckles) ── */
 .texture-vellum {
-  background-image: 
-    radial-gradient(
-      ellipse at 22% 45%,
-      rgba(106, 138, 122, 0.012) 0%,
-      transparent 40%
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(186,148,96,.08) 0%, transparent 34%),
+    radial-gradient(circle at 82% 28%, rgba(204,171,120,.07) 0%, transparent 38%),
+    radial-gradient(circle at 40% 78%, rgba(193,158,108,.06) 0%, transparent 42%),
+    repeating-linear-gradient(
+      180deg,
+      rgba(130,100,60,.03) 0.2px,
+      rgba(130,100,60,.04) 1.2px,
+      transparent 3px,
+      transparent 4px
     ),
-    radial-gradient(
-      ellipse at 78% 32%,
-      rgba(106, 138, 122, 0.01) 0%,
-      transparent 35%
-    ),
-    radial-gradient(
-      ellipse at 50% 68%,
-      rgba(106, 138, 122, 0.008) 0%,
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 15% 80%,
-      rgba(106, 138, 122, 0.015) 0px,
-      transparent 2px
-    ),
-    radial-gradient(
-      circle at 42% 22%,
-      rgba(106, 138, 122, 0.012) 0px,
-      transparent 1.5px
-    ),
-    radial-gradient(
-      circle at 68% 55%,
-      rgba(106, 138, 122, 0.01) 0px,
-      transparent 2px
-    ),
-    radial-gradient(
-      circle at 88% 78%,
-      rgba(106, 138, 122, 0.013) 0px,
-      transparent 1.5px
-    ),
-    radial-gradient(
-      circle at 35% 60%,
-      rgba(106, 138, 122, 0.011) 0px,
-      transparent 2px
-    ),
-    radial-gradient(
-      circle at 72% 15%,
-      rgba(106, 138, 122, 0.008) 0px,
-      transparent 1px
+    repeating-linear-gradient(
+      180deg,
+      rgba(255,255,255,.0.5) 0px,
+      rgba(255,255,255,.03) 1px,
+      transparent 2px,
+      transparent 5px
     ),
     repeating-linear-gradient(
       0deg,
-      transparent 0px,
-      transparent 1px,
-      rgba(106, 138, 122, 0.006) 1px,
-      rgba(106, 138, 122, 0.006) 2px,
+      rgba(145,118,82,.015) 0px,
       transparent 2px,
-      transparent 3px,
-      rgba(106, 138, 122, 0.004) 3px,
-      rgba(106, 138, 122, 0.004) 4px,
-      transparent 4px,
-      transparent 8px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 1px,
-      rgba(106, 138, 122, 0.005) 1px,
-      rgba(106, 138, 122, 0.005) 2px,
-      transparent 2px,
-      transparent 4px,
-      rgba(106, 138, 122, 0.003) 4px,
-      rgba(106, 138, 122, 0.003) 5px,
-      transparent 5px,
-      transparent 10px
+      rgba(255,255,255,.015) 4px
     );
 }
 
@@ -148,7 +100,7 @@
       transparent,
       transparent 23px,
       rgba(80, 100, 90, 0.08) 23px,
-      rgba(80, 100, 90, 0.08) 24px
+      rgba(80, 100, 90, 0.15) 24px
     ),
     radial-gradient(
       ellipse at 30% 40%,

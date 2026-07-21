@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../shared/components/MediaCard.jsx';
+import MarkdownRenderer from '../shared/components/MarkdownRenderer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
 import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
@@ -13,15 +14,6 @@ import { resolvePostDate } from '../shared/utils/dateUtils';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
-const escapeHtml = (value) => {
-    return String(value || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-};
-
 const buildAbsoluteUrl = (raw) => {
     if (!raw) return null;
     if (/^https?:\/\//i.test(raw)) {
@@ -31,89 +23,6 @@ const buildAbsoluteUrl = (raw) => {
         return `https:${raw}`;
     }
     return raw;
-};
-
-const renderInline = (text) => {
-    let safe = escapeHtml(text);
-    safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
-    safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
-        const sanitized = escapeHtml(color.trim());
-        return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
-    });
-    safe = safe.replace(/\[\/mark\]/gi, '</span>');
-    safe = safe.replace(/\[color=([^\]]+)\]/gi, (match, color) => {
-        const sanitized = escapeHtml(color.trim());
-        return `<span style="color:${sanitized}">`;
-    });
-    safe = safe.replace(/\[\/color\]/gi, '</span>');
-    safe = safe.replace(/\[size=([^\]]+)\]/gi, (match, size) => {
-        const numeric = size.trim().replace(/[^\d.]/g, '');
-        const value = numeric ? `${numeric}px` : 'inherit';
-        return `<span style="font-size:${value}">`;
-    });
-    safe = safe.replace(/\[\/size\]/gi, '</span>');
-    safe = safe.replace(/\[font=([^\]]+)\]/gi, (match, font) => {
-        const normalized = escapeHtml(font.trim());
-        return `<span style="font-family:${normalized}">`;
-    });
-    safe = safe.replace(/\[\/font\]/gi, '</span>');
-    return safe;
-};
-
-const parseContentBlocks = (content) => {
-    const lines = (content || '').split('\n');
-    const blocks = [];
-    let listBlock = null;
-
-    const flushList = () => {
-        if (listBlock) {
-            blocks.push(listBlock);
-            listBlock = null;
-        }
-    };
-
-    lines.forEach((line, index) => {
-        const trimmed = line.trim();
-        if (!trimmed) {
-            flushList();
-            return;
-        }
-
-        const listMatch = line.match(/^(\s*)([-*•]|\d+\.)\s+(.*)$/);
-        if (listMatch) {
-            const indent = Math.floor((listMatch[1] || '').length / 2);
-            const marker = listMatch[2];
-            const listType = /\d+\./.test(marker) ? 'ol' : 'ul';
-            if (!listBlock || listBlock.listType !== listType) {
-                flushList();
-                listBlock = { type: 'list', listType, items: [], key: `list-${index}` };
-            }
-            listBlock.items.push({
-                html: renderInline(listMatch[3]),
-                indent,
-                key: `li-${index}-${listBlock.items.length}`
-            });
-            return;
-        }
-
-        flushList();
-
-        const alignMatch = trimmed.match(/^\[align=(left|center|right)\](.*)\[\/align\]$/i);
-        if (alignMatch) {
-            blocks.push({
-                type: 'text',
-                align: alignMatch[1].toLowerCase(),
-                html: renderInline(alignMatch[2]),
-                key: `txt-${index}`
-            });
-            return;
-        }
-
-        blocks.push({ type: 'text', align: null, html: renderInline(line), key: `txt-${index}` });
-    });
-
-    flushList();
-    return blocks;
 };
 
 const setMetaTag = (attr, name, content) => {
@@ -231,6 +140,8 @@ const PostPage = () => {
     const postDate = resolvePostDate(post);
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
+    const coverInContent = coverUrl && post.content && post.content.includes(post.imageUrls?.[0] || post.media);
+    const shouldShowCover = coverUrl && post.type === 'image' && !coverInContent;
     const titleSizeValue = Number(post.titleSize);
     const titleSize = Number.isFinite(titleSizeValue)
         ? Math.min(56, Math.max(20, titleSizeValue))
@@ -292,42 +203,23 @@ const PostPage = () => {
                     </div>
                 </header>
 
-                {coverUrl && (
+                {shouldShowCover && (
                     <div className="post-media">
                         <MediaCard src={coverUrl} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
                     </div>
                 )}
                 {post.youtubeEmbedUrl && (
                     <div className="post-media">
-                        <YoutubeAudioPlayer url={post.youtubeEmbedUrl} entryId={post._id} />
+                        <MediaCard src={post.youtubeEmbedUrl} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
                     </div>
                 )}
 
                 <div className="post-body" style={lineHeight ? { lineHeight } : undefined}>
-                    {parseContentBlocks(post.content).map((block) => {
-                        if (block.type === 'list') {
-                            const ListTag = block.listType === 'ol' ? 'ol' : 'ul';
-                            return (
-                                <ListTag key={block.key} className={`entry-list ${block.listType}`}>
-                                    {block.items.map((item) => (
-                                        <li
-                                            key={item.key}
-                                            style={{ marginLeft: `${item.indent * 16}px` }}
-                                            dangerouslySetInnerHTML={{ __html: item.html }}
-                                        />
-                                    ))}
-                                </ListTag>
-                            );
-                        }
-                        const alignClass = block.align ? `align-${block.align}` : '';
-                        return (
-                            <p
-                                key={block.key}
-                                className={`entry-paragraph ${alignClass}`.trim()}
-                                dangerouslySetInnerHTML={{ __html: block.html }}
-                            />
-                        );
-                    })}
+                    <MarkdownRenderer 
+                      content={post.content} 
+                      bulletStyle={post.bulletStyle}
+                      quoteStyle={post.quoteStyle}
+                    />
                 </div>
 
                 {post.spotifyUrl && (

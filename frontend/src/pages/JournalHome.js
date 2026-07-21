@@ -54,6 +54,13 @@ const JournalHome = ({ onPostsChange }) => {
     fetchQuote();
   }, [fetchQuote]);
 
+  // Sync posts to parent component for Navbar archive button safely
+  useEffect(() => {
+    if (onPostsChange) {
+      onPostsChange(posts);
+    }
+  }, [posts, onPostsChange]);
+
   const fetchPosts = useCallback(async (cursor = null) => {
     try {
       setIsLoading(true);
@@ -63,10 +70,6 @@ const JournalHome = ({ onPostsChange }) => {
 
       setPosts(prevPosts => {
         const updatedPosts = cursor ? [...prevPosts, ...entries] : entries;
-
-        // Pass posts up to App for the Navbar archive button
-        if (onPostsChange) onPostsChange(updatedPosts);
-
         return updatedPosts;
       });
       setLastDoc(nextLastDoc);
@@ -78,7 +81,7 @@ const JournalHome = ({ onPostsChange }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [isPrivateMode, onPostsChange]);
+  }, [isPrivateMode]);
 
   useEffect(() => {
     if (authLoading) return;

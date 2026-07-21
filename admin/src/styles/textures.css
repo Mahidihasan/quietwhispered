@@ -12,33 +12,88 @@
 
 /* ── Texture: Vellum (subtle grain) ── */
 .texture-vellum {
-  background-image: 
+  background-color: #f7eddc;
+
+  background-image:
+    /* Soft paper clouds */
+    radial-gradient(circle at 18% 22%, rgba(186,148,96,.08) 0%, transparent 34%),
+    radial-gradient(circle at 82% 28%, rgba(204,171,120,.07) 0%, transparent 38%),
+    radial-gradient(circle at 40% 78%, rgba(193,158,108,.06) 0%, transparent 42%),
+
+    /* Fine paper fibers */
+    repeating-linear-gradient(
+      115deg,
+      rgba(130,100,60,.020) 0px,
+      rgba(130,100,60,.020) 1px,
+      transparent 1px,
+      transparent 3px
+    ),
+
+    repeating-linear-gradient(
+      65deg,
+      rgba(255,255,255,.030) 0px,
+      rgba(255,255,255,.030) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+
+    /* Soft vertical grain */
     repeating-linear-gradient(
       0deg,
-      transparent,
+      rgba(145,118,82,.015) 0px,
       transparent 2px,
-      rgba(106, 138, 122, 0.015) 2px,
-      rgba(106, 138, 122, 0.015) 4px
+      rgba(255,255,255,.015) 4px
     );
-}
 
+  background-size:
+    100% 100%,
+    100% 100%,
+    100% 100%,
+    6px 6px,
+    5px 5px,
+    8px 8px;
+}
 /* ── Texture: Linen (crosshatch weave) ── */
 .texture-linen {
-  background-image: 
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(106, 138, 122, 0.03) 3px,
-      rgba(106, 138, 122, 0.03) 4px
-    ),
+  background-color: #f8f6ef;
+
+  background-image:
+    /* Soft vertical fibers */
     repeating-linear-gradient(
       90deg,
-      transparent,
-      transparent 3px,
-      rgba(106, 138, 122, 0.03) 3px,
-      rgba(106, 138, 122, 0.03) 4px
+      transparent 0,
+      transparent 5px,
+      rgba(106, 138, 122, 0.018) 5px,
+      rgba(106, 138, 122, 0.018) 6px,
+      transparent 6px,
+      transparent 11px
+    ),
+
+    /* Gentle horizontal weave */
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 7px,
+      rgba(78, 98, 86, 0.012) 7px,
+      rgba(78, 98, 86, 0.012) 8px,
+      transparent 8px,
+      transparent 14px
+    ),
+
+    /* Soft paper lighting */
+    radial-gradient(
+      circle at top left,
+      rgba(255,255,255,.22),
+      transparent 55%
+    ),
+
+    radial-gradient(
+      circle at bottom right,
+      rgba(0,0,0,.025),
+      transparent 65%
     );
+
+  background-blend-mode: normal;
 }
 
 /* ── Texture: Laid (ribbed lines) ── */
@@ -215,173 +270,6 @@
   font-size: 14px;
   color: var(--text-muted);
   text-align: center;
-}
-
-/* ── Frame: Border (simple thin border) ── */
-.media-frame-border {
-  border: 2px solid var(--border);
-  padding: 4px;
-  background: #FFFFFF;
-  border-radius: 3px;
-  transition: all 200ms ease;
-}
-
-.media-frame-border img,
-.media-frame-border video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ── Frame: Double (double line border) ── */
-.media-frame-double {
-  border: 1px solid var(--border);
-  padding: 6px;
-  background: #FFFFFF;
-  position: relative;
-  transition: all 200ms ease;
-}
-
-.media-frame-double::after {
-  content: '';
-  position: absolute;
-  inset: 3px;
-  border: 1px solid var(--border-light);
-  pointer-events: none;
-}
-
-.media-frame-double img,
-.media-frame-double video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ── Frame: Shadow (elevated shadow box) ── */
-.media-frame-shadow {
-  border: none;
-  box-shadow: 
-    0 2px 4px rgba(13, 12, 10, 0.08),
-    0 4px 8px rgba(13, 12, 10, 0.06),
-    0 8px 16px rgba(13, 12, 10, 0.04);
-  border-radius: 4px;
-  overflow: hidden;
-  transition: all 200ms ease;
-}
-
-.media-frame-shadow img,
-.media-frame-shadow video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ── Frame: Vintage (warm tinted border) ── */
-.media-frame-vintage {
-  border: 3px solid #c4a882;
-  padding: 6px;
-  background: #f5efe6;
-  border-radius: 2px;
-  box-shadow: 
-    inset 0 0 0 1px rgba(196, 168, 130, 0.3),
-    3px 3px 0 rgba(196, 168, 130, 0.15);
-  transition: all 200ms ease;
-}
-
-.media-frame-vintage img,
-.media-frame-vintage video {
-  display: block;
-  width: 100%;
-  height: auto;
-  filter: sepia(0.1) contrast(0.95);
-}
-
-/* ── Frame: Minimal (thin accent border) ── */
-.media-frame-minimal {
-  border: 1px solid var(--accent);
-  padding: 2px;
-  border-radius: 2px;
-  transition: all 200ms ease;
-}
-
-.media-frame-minimal img,
-.media-frame-minimal video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ── Frame: Rounded (soft rounded corners) ── */
-.media-frame-rounded {
-  border: 2px solid var(--border-light);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: all 200ms ease;
-}
-
-.media-frame-rounded img,
-.media-frame-rounded video {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* ── Frame: Filmstrip (sprocket holes top/bottom) ── */
-.media-frame-filmstrip {
-  border: 2px solid var(--cg-dark);
-  padding: 8px 8px 6px;
-  background: var(--cg-dark);
-  position: relative;
-  border-radius: 2px;
-  transition: all 200ms ease;
-}
-
-.media-frame-filmstrip::before {
-  content: '';
-  position: absolute;
-  top: 2px;
-  left: 8px;
-  right: 8px;
-  height: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent 0px,
-    transparent 3px,
-    var(--cg-white) 3px,
-    var(--cg-white) 5px,
-    transparent 5px,
-    transparent 10px
-  );
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-.media-frame-filmstrip::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 8px;
-  right: 8px;
-  height: 4px;
-  background: repeating-linear-gradient(
-    90deg,
-    transparent 0px,
-    transparent 3px,
-    var(--cg-white) 3px,
-    var(--cg-white) 5px,
-    transparent 5px,
-    transparent 10px
-  );
-  opacity: 0.3;
-  pointer-events: none;
-}
-
-.media-frame-filmstrip img,
-.media-frame-filmstrip video {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* ── Frame size modifiers ── */

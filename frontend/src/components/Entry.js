@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import MediaCard from '../shared/components/MediaCard.jsx';
+import MarkdownRenderer from '../shared/components/MarkdownRenderer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
 import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
 import { resolvePostDate } from '../shared/utils/dateUtils';
-
-const escapeHtml = (value) => {
-  return String(value || '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
-};
 
 const Entry = ({ post, mediaSettings: propSettings }) => {
   const [mediaSettings, setMediaSettings] = useState(propSettings || null);
@@ -34,8 +26,14 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
   /* Off-white - default entry background color */
   const moodLabel = post.mood ? post.mood : null;
+  const weatherLabel = post.weather ? post.weather : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
+  // Check if the video URL is already embedded in the content to avoid duplication
+  const videoAlreadyInContent = videoUrl && post.content && (
+    post.content.includes(`[embed:${videoUrl}]`) ||
+    post.content.includes(`[video:${videoUrl}]`)
+  );
   const postDate = resolvePostDate(post);
   const titleSizeValue = Number(post.titleSize);
   const titleSize = Number.isFinite(titleSizeValue)
@@ -49,117 +47,11 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   // Per-entry font from post data - separate title and body fonts
   const titleFont = post.titleFont || post.font || null;
   const bodyFont = post.bodyFont || post.font || null;
-  const allowedFonts = new Set(['EB Garamond', 'Newsreader', 'Inter', 'Caveat', 'Patrick Hand', 'Kalam', 'Playfair Display', 'Source Serif 4', 'JetBrains Mono', 'Lora', 'DM Serif Display']);
 
-  const renderInline = (text) => {
-    let safe = escapeHtml(text);
-    safe = safe.replace(/\[u\]/gi, '<u>').replace(/\[\/u\]/gi, '</u>');
-    safe = safe.replace(/\[mark=([^\]]+)\]/gi, (match, color) => {
-      const sanitized = escapeHtml(color.trim());
-      return `<span style="background:${sanitized};padding:0 2px;border-radius:2px">`;
-    });
-    safe = safe.replace(/\[\/mark\]/gi, '</span>');
-    safe = safe.replace(/\[color=([^\]]+)\]/gi, (match, color) => {
-      const sanitized = escapeHtml(color.trim());
-      return `<span style="color:${sanitized}">`;
-    });
-    safe = safe.replace(/\[\/color\]/gi, '</span>');
-    safe = safe.replace(/\[size=([^\]]+)\]/gi, (match, size) => {
-      const numeric = size.trim().replace(/[^\d.]/g, '');
-      const value = numeric ? `${numeric}px` : 'inherit';
-      return `<span style="font-size:${value}">`;
-    });
-    safe = safe.replace(/\[\/size\]/gi, '</span>');
-    safe = safe.replace(/\[font=([^\]]+)\]/gi, (match, font) => {
-      const normalized = escapeHtml(font.trim());
-      if (!allowedFonts.has(normalized)) {
-        return '<span>';
-      }
-      return `<span style="font-family:${normalized}">`;
-    });
-    safe = safe.replace(/\[\/font\]/gi, '</span>');
-    return safe;
-  };
-
-  const lines = (post.content || '').split('\n');
-  const blocks = [];
-  let listBlock = null;
-
-  const flushList = () => {
-    if (listBlock) {
-      blocks.push(listBlock);
-      listBlock = null;
-    }
-  };
-
-  lines.forEach((line, index) => {
-    const trimmed = line.trim();
-    if (!trimmed) {
-      flushList();
-      return;
-    }
-
-    const listMatch = line.match(/^(\s*)([-*•]|\d+\.)\s+(.*)$/);
-    if (listMatch) {
-      const indent = Math.floor((listMatch[1] || '').length / 2);
-      const marker = listMatch[2];
-      const listType = /\d+\./.test(marker) ? 'ol' : 'ul';
-      if (!listBlock || listBlock.listType !== listType) {
-        flushList();
-        listBlock = { type: 'list', listType, items: [], key: `list-${index}` };
-      }
-      listBlock.items.push({
-        html: renderInline(listMatch[3]),
-        indent,
-        key: `li-${index}-${listBlock.items.length}`
-      });
-      return;
-    }
-
-    flushList();
-
-    const imageMatch = trimmed.match(/^\[image:\s*(.+?)\s*\]$/i);
-    if (imageMatch) {
-      const [rawUrl, rawCaption] = imageMatch[1].split('|');
-      blocks.push({
-        type: 'image',
-        src: rawUrl.trim(),
-        caption: rawCaption ? rawCaption.trim() : '',
-        key: `img-${index}`
-      });
-      return;
-    }
-    const videoMatch = trimmed.match(/^\[video:\s*(.+?)\s*\]$/i);
-    if (videoMatch) {
-      blocks.push({ type: 'video', src: videoMatch[1], key: `vid-${index}` });
-      return;
-    }
-    const embedMatch = trimmed.match(/^\[embed:\s*(.+?)\s*\]$/i);
-    if (embedMatch) {
-      blocks.push({ type: 'embed', src: embedMatch[1], key: `emb-${index}` });
-      return;
-    }
-    const alignMatch = trimmed.match(/^\[align=(left|center|right)\](.*)\[\/align\]$/i);
-    if (alignMatch) {
-      blocks.push({
-        type: 'text',
-        align: alignMatch[1].toLowerCase(),
-        html: renderInline(alignMatch[2]),
-        key: `txt-${index}`
-      });
-      return;
-    }
-    blocks.push({ type: 'text', align: null, html: renderInline(line), key: `txt-${index}` });
-  });
-
-  flushList();
-
-  const inlineImageUrls = new Set(
-    blocks
-      .filter((block) => block.type === 'image' && block.src)
-      .map((block) => block.src)
-  );
-  const shouldShowCover = coverImage && post.type === 'image' && !inlineImageUrls.has(coverImage);
+  // Determine if cover image should be shown (not already rendered inline by MarkdownRenderer)
+  // Check if the cover image URL already appears in the content
+  const coverInContent = coverImage && post.content && post.content.includes(coverImage);
+  const shouldShowCover = coverImage && post.type === 'image' && !coverInContent;
 
   return (
     <article
@@ -179,6 +71,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
         </h2>
         <div className="entry-meta">
           {postDate && <span className="entry-date">{format(postDate, 'MMMM d, yyyy')}</span>}
+          {weatherLabel && <span className="entry-weather-icon">{weatherLabel}</span>}
           {moodLabel && <span className="entry-sep">•</span>}
           {moodLabel && <span className="entry-mood">{moodLabel}</span>}
           {post.tags?.length ? (
@@ -198,48 +91,17 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
         ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
         fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Libre Baskerville' || bodyFont === 'Georgia' || bodyFont === 'Merriweather' || bodyFont === 'Lora' || bodyFont === 'Source Serif 4' ? 'serif' : bodyFont === 'Caveat' ? 'cursive' : bodyFont === 'Special Elite' ? 'monospace' : 'serif'}` : 'var(--font-body)'
       }}>
-        {blocks.map(block => {
-          if (block.type === 'list') {
-            const ListTag = block.listType === 'ol' ? 'ol' : 'ul';
-            return (
-              <ListTag key={block.key} className={`entry-list ${block.listType}`}>
-                {block.items.map((item) => (
-                  <li
-                    key={item.key}
-                    style={{ marginLeft: `${item.indent * 16}px` }}
-                    dangerouslySetInnerHTML={{ __html: item.html }}
-                  />
-                ))}
-              </ListTag>
-            );
-          }
-          if (block.type === 'image' || block.type === 'video' || block.type === 'embed') {
-            const isVideo = block.type === 'video' || block.type === 'embed';
-            return (
-              <div key={block.key} className={`entry-media inline-media ${isVideo ? 'is-video' : ''}`.trim()}>
-                <MediaCard
-                  src={block.src}
-                  alt={block.caption || post.title}
-                  caption={!isVideo ? block.caption : undefined}
-                  className={!isVideo ? 'polaroid-card' : 'dotted-frame'}
-                />
-              </div>
-            );
-          }
-          const alignClass = block.align ? `align-${block.align}` : '';
-          return (
-            <p
-              key={block.key}
-              className={`entry-paragraph ${alignClass}`.trim()}
-              dangerouslySetInnerHTML={{ __html: block.html }}
-            />
-          );
-        })}
+        <MarkdownRenderer 
+          content={post.content} 
+          className="entry-paragraph" 
+          bulletStyle={post.bulletStyle}
+          quoteStyle={post.quoteStyle}
+        />
       </div>
 
-      {videoUrl && post.type === 'video' && (
+      {videoUrl && post.type === 'video' && !videoAlreadyInContent && (
         <div className="entry-media">
-          <YoutubeAudioPlayer url={videoUrl} entryId={post._id} />
+          <MediaCard src={videoUrl} alt={post.title} frame={activeFrame} frameSize={activeFrameSize} texture={activeTexture} />
         </div>
       )}
 

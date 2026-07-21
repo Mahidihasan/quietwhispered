@@ -1,0 +1,505 @@
+{
+  "safeToDelete": [],
+  "probablyUnused": [
+    {
+      "path": "admin\\public\\favicon.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "admin\\public\\fonts\\AdorNoirritVR.woff",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "admin\\public\\fonts\\AdorNoirritVR.woff2",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "admin\\public\\images\\posts\\fallback.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "admin\\public\\robots.txt",
+      "type": "other",
+      "reason": "File not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\App.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\components\\Icon.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\components\\LiveMarkdownEditor.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\components\\MarkdownToolbar.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\components\\PostEditor.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\components\\SlashCommands.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\ErrorBoundary.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\pages\\AdminDashboard.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\pages\\AdminLogin.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\components\\EntryPreview.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\components\\MediaCard.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\components\\MediaCard.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\components\\SpotifyPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\components\\ThinkerLoader.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\components\\YoutubeAudioPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\config.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\ErrorBoundary.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\firebase.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\hooks\\useAuth.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\services\\authService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\services\\cloudinaryUpload.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\services\\journalService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\services\\mediaSettingsService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\services\\quoteService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\utils\\dateUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\utils\\markdownUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\shared\\utils\\mediaUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\styles\\markdown-editor.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\styles\\mobile-responsive.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\styles\\page_img.jpg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\styles\\textures.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "admin\\src\\styles\\theme.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "analyze-unused.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\fonts\\AdorNoirritVR.woff",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\fonts\\AdorNoirritVR.woff2",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\images\\posts\\fallback.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\logo\\favicon.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\logo\\icon.svg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\logo\\Journal_logo.png",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\public\\robots.txt",
+      "type": "other",
+      "reason": "File not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\App.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\components\\ArchiveSidebar.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\components\\ArchiveSlideout.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\components\\Entry.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\components\\Navbar.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\fonts\\AdorNoirritVR.woff",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\fonts\\AdorNoirritVR.woff2",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\pages\\JournalHome.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\pages\\PostPage.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\EntryPreview.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MarkdownRenderer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MediaCard.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MediaCard.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\MinimalMarkdownTest.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\SpotifyPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\ThinkerLoader.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\components\\YoutubeAudioPlayer.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\config.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\ErrorBoundary.jsx",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\firebase.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\hooks\\useAuth.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\authService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\cloudinaryUpload.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\journalService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\mediaSettingsService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\services\\quoteService.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\utils\\dateUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\utils\\mediaUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\shared\\utils\\spotifyUtils.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\styles\\markdown.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\styles\\page_img.jpg",
+      "type": "asset",
+      "reason": "Asset file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\styles\\textures.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\styles\\theme.css",
+      "type": "css",
+      "reason": "CSS file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\test-markdown-features.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "frontend\\src\\test-markdown.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "improved-analysis.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "Readme.md",
+      "type": "other",
+      "reason": "File not imported by any used file"
+    },
+    {
+      "path": "serviceAccount.json",
+      "type": "other",
+      "reason": "File not imported by any used file"
+    },
+    {
+      "path": "temp_posteditor_css.txt",
+      "type": "other",
+      "reason": "File not imported by any used file"
+    },
+    {
+      "path": "tools\\publish-all.js",
+      "type": "javascript",
+      "reason": "JavaScript file not imported by any used file"
+    },
+    {
+      "path": "unused-code-report.json",
+      "type": "other",
+      "reason": "File not imported by any used file"
+    }
+  ],
+  "required": [
+    {
+      "path": "admin\\index.html",
+      "reason": "Required file"
+    },
+    {
+      "path": "admin\\package.json",
+      "reason": "Entry point file"
+    },
+    {
+      "path": "admin\\src\\main.jsx",
+      "reason": "Entry point file"
+    },
+    {
+      "path": "admin\\vite.config.js",
+      "reason": "Entry point file"
+    },
+    {
+      "path": "frontend\\package.json",
+      "reason": "Entry point file"
+    },
+    {
+      "path": "frontend\\public\\index.html",
+      "reason": "Required file"
+    },
+    {
+      "path": "frontend\\src\\index.js",
+      "reason": "Entry point file"
+    }
+  ],
+  "unusedDependencies": [
+    {
+      "package": "react-scripts",
+      "version": "5.0.1",
+      "reason": "Only needed for frontend, check if used"
+    },
+    {
+      "package": "browser-image-compression",
+      "version": "^2.0.2",
+      "reason": "Check if image compression is actually used"
+    },
+    {
+      "package": "date-fns",
+      "version": "^2.29.3",
+      "reason": "Check if date utilities are actually used"
+    },
+    {
+      "package": "prism-react-renderer",
+      "version": "^2.4.1",
+      "reason": "Only in frontend, check if syntax highlighting is used"
+    }
+  ],
+  "unusedAssets": [],
+  "duplicateFiles": [
+    {
+      "files": [
+        "admin/src/shared/components/YoutubeAudioPlayer.jsx",
+        "frontend/src/shared/components/YoutubeAudioPlayer.jsx"
+      ],
+      "reason": "Same component in both admin and frontend"
+    },
+    {
+      "files": [
+        "admin/src/shared/components/EntryPreview.jsx",
+        "frontend/src/shared/components/EntryPreview.jsx"
+      ],
+      "reason": "Same component in both admin and frontend"
+    }
+  ],
+  "deadCode": []
+}

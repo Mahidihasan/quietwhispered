@@ -1,5 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
   // Load environment variables with prefixes REACT_APP_ and VITE_ from local files
@@ -24,6 +25,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: envDefinitions,
+    resolve: {
+      alias: {
+        '@frontend': path.resolve(__dirname, '../frontend/src'),
+      },
+    },
     server: {
       port: 3001
     },

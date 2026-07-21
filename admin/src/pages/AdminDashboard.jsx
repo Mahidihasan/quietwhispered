@@ -786,6 +786,7 @@ const AdminDashboard = () => {
                         <PostEditor 
                             post={editingPost}
                             mediaSettings={mediaSettings}
+                            restoreBackup={!!editingPost}
                             onClose={() => {
                                 setShowEditor(false);
                                 setEditingPost(null);
