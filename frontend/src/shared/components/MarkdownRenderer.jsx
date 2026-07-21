@@ -6,7 +6,6 @@ import { Prism as SyntaxHighlighter } from 'prism-react-renderer';
 import { FiLink, FiCode, FiType } from 'react-icons/fi';
 import { processContent, extractCustomBlocks } from '../utils/markdownPreprocessor';
 import MediaCard from './MediaCard.jsx';
-import YoutubeAudioPlayer from './YoutubeAudioPlayer.jsx';
 import SpotifyPlayer from './SpotifyPlayer.jsx';
 import { getMediaType } from '../utils/mediaUtils';
 

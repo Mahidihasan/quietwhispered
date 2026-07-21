@@ -5,7 +5,6 @@ import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../shared/components/MediaCard.jsx';
 import MarkdownRenderer from '../shared/components/MarkdownRenderer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
-import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
 import { getEntryById, getPublicEntryById } from '../shared/services/journalService';
 import { subscribeToMediaSettings } from '../shared/services/mediaSettingsService';

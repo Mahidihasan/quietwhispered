@@ -3,7 +3,6 @@ import { format } from 'date-fns';
 import MediaCard from '../shared/components/MediaCard.jsx';
 import MarkdownRenderer from '../shared/components/MarkdownRenderer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
-import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
 import { resolvePostDate } from '../shared/utils/dateUtils';
 
