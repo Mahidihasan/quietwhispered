@@ -15,6 +15,7 @@ import {
 import { auth, db } from '../firebase';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { uploadImageToCloudinary } from './cloudinaryUpload';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const ensureFirebase = () => {
   if (!auth || !db) {
@@ -160,9 +161,13 @@ export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
 export const getAllEntries = async () => {
   const user = ensureUser();
   const entriesCollection = getEntriesCollection();
-  const q = query(entriesCollection, where('ownerId', '==', user.uid), orderBy('createdAt', 'desc'));
+  const q = query(entriesCollection, where('ownerId', '==', user.uid));
   const snap = await getDocs(q);
-  return snap.docs.map(normalizeEntry);
+  return snap.docs.map(normalizeEntry).sort((a, b) => {
+    const aDate = resolvePostDate(a)?.getTime() || 0;
+    const bDate = resolvePostDate(b)?.getTime() || 0;
+    return bDate - aDate;
+  });
 };
 
 export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {

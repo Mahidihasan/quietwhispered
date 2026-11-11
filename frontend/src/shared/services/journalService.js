@@ -5,16 +5,15 @@ import {
   doc,
   getDoc,
   getDocs,
-  limit,
   orderBy,
   query,
   serverTimestamp,
-  startAfter,
   updateDoc,
   where
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { uploadImageToCloudinary } from './cloudinaryUpload';
+import { resolvePostDate } from '../utils/dateUtils';
 
 const ensureFirebase = () => {
   if (!auth || !db) {
@@ -49,12 +48,6 @@ const normalizeEntry = (snap) => {
     updatedAt,
     date: normalizedDate
   };
-};
-
-const isMissingIndexError = (err) => {
-  const code = err?.code || err?.name;
-  const message = String(err?.message || '');
-  return code === 'failed-precondition' && /requires an index|index/i.test(message);
 };
 
 export const uploadImage = async (file, options = {}) => {
@@ -134,33 +127,22 @@ export const getPublicEntryById = async (id) => {
 export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   const user = ensureUser();
   const entriesCollection = getEntriesCollection();
-  try {
-    const baseQuery = [where('ownerId', '==', user.uid), orderBy('createdAt', 'desc'), limit(pageSize)];
-    const q = lastDoc
-      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
-      : query(entriesCollection, ...baseQuery);
-    const snap = await getDocs(q);
-    const entries = snap.docs.map(normalizeEntry);
-    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
-    return { entries, lastDoc: nextLast };
-  } catch (err) {
-    if (!isMissingIndexError(err)) throw err;
-
-    const baseQuery = [where('ownerId', '==', user.uid), limit(pageSize)];
-    const q = lastDoc
-      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
-      : query(entriesCollection, ...baseQuery);
-    const snap = await getDocs(q);
-    const entries = snap.docs.map(normalizeEntry);
-    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
-    return { entries, lastDoc: nextLast };
-  }
+  const snap = await getDocs(query(entriesCollection, where('ownerId', '==', user.uid)));
+  const orderedDocs = snap.docs
+    .map((entryDoc) => ({ entryDoc, entry: normalizeEntry(entryDoc) }))
+    .sort((a, b) => (resolvePostDate(b.entry)?.getTime() || 0) - (resolvePostDate(a.entry)?.getTime() || 0));
+  const cursorIndex = lastDoc ? orderedDocs.findIndex(({ entryDoc }) => entryDoc.id === lastDoc.id) : -1;
+  const page = orderedDocs.slice(cursorIndex + 1, cursorIndex + 1 + pageSize);
+  return {
+    entries: page.map(({ entry }) => entry),
+    lastDoc: page.length ? page[page.length - 1].entryDoc : null
+  };
 };
 
 export const getAllEntries = async () => {
   const user = ensureUser();
   const entriesCollection = getEntriesCollection();
-  const q = query(entriesCollection, where('ownerId', '==', user.uid), orderBy('createdAt', 'desc'));
+  const q = query(entriesCollection, where('ownerId', '==', user.uid));
   const snap = await getDocs(q);
   return snap.docs.map(normalizeEntry);
 };
@@ -168,29 +150,15 @@ export const getAllEntries = async () => {
 export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
   ensureFirebase();
   const entriesCollection = getEntriesCollection();
-  try {
-    const baseQuery = [where('isPublished', '==', true), orderBy('createdAt', 'desc'), limit(pageSize)];
-    const q = lastDoc
-      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
-      : query(entriesCollection, ...baseQuery);
-    const snap = await getDocs(q);
-    const entries = snap.docs.map(normalizeEntry);
-    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
-    return { entries, lastDoc: nextLast };
-  } catch (err) {
-    if (!isMissingIndexError(err)) throw err;
-
-    const q = query(entriesCollection, where('isPublished', '==', true));
-    const snap = await getDocs(q);
-    const orderedDocs = [...snap.docs].sort((a, b) => {
-      const aCreated = a.data().createdAt?.toMillis?.() || 0;
-      const bCreated = b.data().createdAt?.toMillis?.() || 0;
-      return bCreated - aCreated;
-    });
-    const cursorIndex = lastDoc ? orderedDocs.findIndex((entryDoc) => entryDoc.id === lastDoc.id) : -1;
-    const pageDocs = orderedDocs.slice(cursorIndex + 1, cursorIndex + 1 + pageSize);
-    const entries = pageDocs.map(normalizeEntry);
-    const nextLast = pageDocs.length ? pageDocs[pageDocs.length - 1] : null;
-    return { entries, lastDoc: nextLast };
-  }
+  const q = query(entriesCollection, where('isPublished', '==', true));
+  const snap = await getDocs(q);
+  const orderedDocs = snap.docs
+    .map((entryDoc) => ({ entryDoc, entry: normalizeEntry(entryDoc) }))
+    .sort((a, b) => (resolvePostDate(b.entry)?.getTime() || 0) - (resolvePostDate(a.entry)?.getTime() || 0));
+  const cursorIndex = lastDoc ? orderedDocs.findIndex(({ entryDoc }) => entryDoc.id === lastDoc.id) : -1;
+  const page = orderedDocs.slice(cursorIndex + 1, cursorIndex + 1 + pageSize);
+  return {
+    entries: page.map(({ entry }) => entry),
+    lastDoc: page.length ? page[page.length - 1].entryDoc : null
+  };
 };
