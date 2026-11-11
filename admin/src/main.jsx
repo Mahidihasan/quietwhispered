@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './styles/theme.css';
 import './styles/textures.css';
+import '@frontend/styles/textures.css';
 import './styles/mobile-responsive.css';
 import './styles/markdown-editor.css';
 import App from './App';

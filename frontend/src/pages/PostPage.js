@@ -137,6 +137,8 @@ const PostPage = () => {
     const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
     /* Off-white - default entry background color */
     const postDate = resolvePostDate(post);
+    const titleFont = post.titleFont || post.font;
+    const bodyFont = post.bodyFont || post.font;
 
     const coverUrl = buildAbsoluteUrl(post.imageUrls?.[0] || post.media);
     const coverInContent = coverUrl && post.content && post.content.includes(post.imageUrls?.[0] || post.media);
@@ -175,7 +177,10 @@ const PostPage = () => {
                     <div className={`post-texture texture-${activeTexture}`} aria-hidden="true" />
                 )}
                 <header className="post-page-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
-                    <h1 style={titleSize ? { fontSize: `${titleSize}px` } : undefined}>{post.title}</h1>
+                    <h1 style={{
+                        ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
+                        ...(titleFont ? { fontFamily: `'${titleFont}', ${['Special Elite', 'Courier Prime', 'VT323'].includes(titleFont) ? 'monospace' : titleFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
+                    }}>{post.title}</h1>
                     
                     <div className="post-page-meta">
                         <div className="meta-item">
@@ -213,7 +218,11 @@ const PostPage = () => {
                     </div>
                 )}
 
-                <div className="post-body" style={lineHeight ? { lineHeight } : undefined}>
+                <div className="post-body" style={{
+                    ...(lineHeight ? { lineHeight } : {}),
+                    ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
+                    ...(bodyFont ? { fontFamily: `'${bodyFont}', ${['Special Elite', 'Courier Prime', 'VT323'].includes(bodyFont) ? 'monospace' : bodyFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
+                }}>
                     <MarkdownRenderer 
                       content={post.content} 
                       bulletStyle={post.bulletStyle}

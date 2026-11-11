@@ -589,17 +589,19 @@
 /* ── Rendered Markdown Elements ── */
 /* Headers */
 .md-header {
-  margin: 1em 0 0.4em;
-  font-weight: 600;
-  line-height: 1.35;
+  margin: 1.1em 0 0.45em;
+  font-family: var(--font-typewriter);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: 0.015em;
   color: var(--text-primary);
 }
 
-.md-h1 { font-size: 2.4em; border-bottom: 1px solid var(--cg-light); padding-bottom: 0.3em; }
-.md-h2 { font-size: 1.9em; }
-.md-h3 { font-size: 1.55em; }
-.md-h4 { font-size: 1.3em; }
-.md-h5 { font-size: 1.15em; }
+.md-h1 { font-size: 2em; border-bottom: 1px dashed var(--divider-color, var(--cg-light)); padding-bottom: 0.22em; }
+.md-h2 { font-size: 1.6em; border-bottom: 1px dotted var(--divider-color, var(--cg-light)); padding-bottom: 0.18em; }
+.md-h3 { font-size: 1.35em; }
+.md-h4 { font-size: 1.2em; }
+.md-h5 { font-size: 1.08em; }
 .md-h6 { font-size: 1em; color: var(--text-secondary); }
 
 /* Paragraph */
@@ -651,8 +653,19 @@ ul.bullet-style-branch li::marker { content: '🌿 '; }
 }
 
 .md-blockquote.quote-style-minimal {
-  border-left: 3px solid var(--accent);
-  background: none;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.md-blockquote.quote-style-minimal p {
+  font-size: inherit;
+  font-weight: inherit;
 }
 
 .md-blockquote.quote-style-paper-margin {
@@ -742,11 +755,11 @@ ul.bullet-style-branch li::marker { content: '🌿 '; }
 /* Dividers */
 .md-divider {
   border: none;
-  margin: 1.8em 0;
+  margin: 1.5em 0;
   height: 0;
 }
 
-.md-divider.divider-style-thin { border-top: 1px solid var(--cg-light); }
+.md-divider.divider-style-thin { border-top: 1px dashed var(--divider-color, var(--cg-light)); opacity: 0.65; }
 .md-divider.divider-style-double { border-top: 3px double var(--cg-light); height: 3px; }
 .md-divider.divider-style-dotted { border-top: 1px dotted var(--cg-light); }
 .md-divider.divider-style-dashed { border-top: 1px dashed var(--cg-light); }
@@ -778,7 +791,7 @@ ul.bullet-style-branch li::marker { content: '🌿 '; }
   letter-spacing: 4px;
 }
 
-.md-divider.divider-style-minimal { border-top: 1px solid var(--cg-light); opacity: 0.3; }
+.md-divider.divider-style-minimal { border-top: 1px dotted var(--divider-color, var(--cg-light)); opacity: 0.5; }
 
 .md-divider.divider-style-vintage {
   border: none;

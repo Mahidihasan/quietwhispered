@@ -51,6 +51,9 @@ const SLEEP_OPTIONS = [
 
 const HEADING_FONT_OPTIONS = [
   { value: 'Special Elite', label: 'Special Elite (Typewriter)' },
+  { value: 'Courier Prime', label: 'Courier Prime (Typewriter)' },
+  { value: 'VT323', label: 'VT323 (Pixel Retro)' },
+  { value: 'IM Fell English', label: 'IM Fell English (Antique)' },
   { value: 'Caveat', label: 'Caveat (Handwritten)' },
   { value: 'Libre Baskerville', label: 'Libre Baskerville (Cozy)' },
   { value: 'AdorNoirrit', label: 'AdorNoirrit (বাংলা)' },
@@ -62,6 +65,8 @@ const HEADING_FONT_OPTIONS = [
 const BODY_FONT_OPTIONS = [
   { value: 'Libre Baskerville', label: 'Libre Baskerville (Cozy)' },
   { value: 'Special Elite', label: 'Special Elite (Typewriter)' },
+  { value: 'Courier Prime', label: 'Courier Prime (Typewriter)' },
+  { value: 'IM Fell English', label: 'IM Fell English (Antique)' },
   { value: 'Caveat', label: 'Caveat (Handwritten)' },
   { value: 'Georgia', label: 'Georgia (Serif)' },
   { value: 'Merriweather', label: 'Merriweather (Warm)' },
@@ -436,7 +441,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                 <div className="writing-canvas">
                                     <input type="text" name="title" value={formData.title} onChange={handleChange}
                                         className="writing-title" placeholder="Your story begins with a title..."
-                                        style={{ fontSize: `${Number(titleSize) || 32}px`, fontFamily: `'${selectedTitleFont}', ${selectedTitleFont === 'Caveat' ? 'cursive' : selectedTitleFont === 'Special Elite' ? 'monospace' : 'serif'}` }}
+                                        style={{ fontSize: `${Number(titleSize) || 32}px`, fontFamily: `'${selectedTitleFont}', ${selectedTitleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(selectedTitleFont) ? 'monospace' : 'serif'}` }}
                                         required />
                                     <LiveMarkdownEditor
                                         value={formData.content}
@@ -449,7 +454,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                         dividerStyle="thin"
                                         checkboxStyle="square"
                                         linkStyle="underline"
-                                        fontFamily={`'${selectedBodyFont}', ${selectedBodyFont === 'Libre Baskerville' || selectedBodyFont === 'Georgia' || selectedBodyFont === 'Merriweather' || selectedBodyFont === 'Lora' || selectedBodyFont === 'Source Serif 4' ? 'serif' : selectedBodyFont === 'Caveat' ? 'cursive' : selectedBodyFont === 'Special Elite' ? 'monospace' : 'serif'}`}
+                                        fontFamily={`'${selectedBodyFont}', ${selectedBodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(selectedBodyFont) ? 'monospace' : 'serif'}`}
                                         fontSize={Number(bodySize) || 18}
                                         lineHeight={Number(lineHeight) || 1.75}
                                         textColor={fontColor}

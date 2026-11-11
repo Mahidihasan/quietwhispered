@@ -104,22 +104,22 @@ const MarkdownContent = ({ content, className, customBlockMap, consumedLines, co
           rehypePlugins={[rehypeRaw]}
           components={{
             h1: ({ node, children, ...props }) => (
-              <h1 {...props} className="markdown-heading-1">{children}</h1>
+              <h1 {...props} className="markdown-heading-1" style={{ textAlign: currentAlign || undefined, ...props.style }}>{children}</h1>
             ),
             h2: ({ node, children, ...props }) => (
-              <h2 {...props} className="markdown-heading-2">{children}</h2>
+              <h2 {...props} className="markdown-heading-2" style={{ textAlign: currentAlign || undefined, ...props.style }}>{children}</h2>
             ),
             h3: ({ node, children, ...props }) => (
-              <h3 {...props} className="markdown-heading-3">{children}</h3>
+              <h3 {...props} className="markdown-heading-3" style={{ textAlign: currentAlign || undefined, ...props.style }}>{children}</h3>
             ),
             h4: ({ node, children, ...props }) => (
-              <h4 {...props} className="markdown-heading-4">{children}</h4>
+              <h4 {...props} className="markdown-heading-4" style={{ textAlign: currentAlign || undefined, ...props.style }}>{children}</h4>
             ),
             h5: ({ node, children, ...props }) => (
-              <h5 {...props} className="markdown-heading-5">{children}</h5>
+              <h5 {...props} className="markdown-heading-5" style={{ textAlign: currentAlign || undefined, ...props.style }}>{children}</h5>
             ),
             h6: ({ node, children, ...props }) => (
-              <h6 {...props} className="markdown-heading-6">{children}</h6>
+              <h6 {...props} className="markdown-heading-6" style={{ textAlign: currentAlign || undefined, ...props.style }}>{children}</h6>
             ),
             p: ({ node, children, ...props }) => {
               const style = currentAlign ? { textAlign: currentAlign } : {};
@@ -174,10 +174,11 @@ const MarkdownContent = ({ content, className, customBlockMap, consumedLines, co
             },
             blockquote: ({ node, children, ...props }) => {
               const styleClass = getQuoteStyleClass(options?.quoteStyle);
+              const isMinimal = styleClass === 'quote-style-minimal';
               return (
                 <blockquote {...props} className={`markdown-blockquote ${styleClass}`.trim()}>
-                  <FiType className="blockquote-icon" />
-                  <div className="blockquote-content">{children}</div>
+                  {!isMinimal && <FiType className="blockquote-icon" />}
+                  {isMinimal ? children : <div className="blockquote-content">{children}</div>}
                 </blockquote>
               );
             },

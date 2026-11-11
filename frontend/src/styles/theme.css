@@ -16,7 +16,7 @@
 /* ── Google Fonts: curated selection of fonts ── */
 /* Special Elite (typewriter), Caveat (handwritten), Libre Baskerville (cozy serif), Galada (Bangla handwritten) */
 /* Playfair Display (elegant serif headings), DM Sans (clean sans-serif body), Quicksand (soft cozy sans), Lora (warm serif body) */
-@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Caveat:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Galada&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Quicksand:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Courier+Prime:wght@400;700&family=VT323&family=IM+Fell+English:ital@0;1&family=Caveat:wght@400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Galada&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=Quicksand:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
 
 /* ── Self-hosted Bangla Fonts ── */
 /* AdorNoirrit (আদর নৈর্ঋত) from lipighor.com — Bangla display font */
@@ -1861,6 +1861,81 @@ a:hover {
   gap: 16px;
   margin-top: 24px;
   padding-top: 14px;
+  min-height: 42px;
+  width: 100%;
+}
+
+.journal-loading-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-secondary);
+  font-family: var(--font-hand);
+  font-size: 16px;
+  padding: 8px 16px;
+}
+
+.journal-loading-more .journal-loading-label {
+  font-family: var(--font-typewriter);
+  font-size: 0.82rem;
+}
+
+.journal-initial-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+}
+
+.journal-loading-card {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 18px;
+  border: 2px solid #d8c4ae;
+  border-radius: 2px;
+  background: var(--bg-secondary);
+  box-shadow: 3px 3px 0 var(--cg-shadow-med);
+  color: var(--text-primary);
+  font-family: var(--font-typewriter);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}
+
+.journal-loading-label {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.journal-loading-dots {
+  display: inline-flex;
+  width: 1.5em;
+}
+
+.journal-loading-dots i {
+  font-style: normal;
+  opacity: 0;
+  animation: journal-dot-appear 1.2s steps(1, end) infinite;
+}
+
+.journal-loading-dots i:nth-child(2) { animation-delay: 0.2s; }
+.journal-loading-dots i:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes journal-dot-appear {
+  0%, 19% { opacity: 0; }
+  20%, 100% { opacity: 1; }
+}
+
+@media (prefers-color-scheme: dark) {
+  .journal-loading-card {
+    border-color: #8b9c90;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal-loading-dots i { animation: none; opacity: 1; }
 }
 
 .pager-link {

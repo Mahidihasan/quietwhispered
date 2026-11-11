@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Entry from '../components/Entry';
 import { getEntriesPage, getPublicEntriesPage } from '../shared/services/journalService';
 import { getQuote, getPublicQuote } from '../shared/services/quoteService';
@@ -13,6 +13,8 @@ const JournalHome = ({ onPostsChange }) => {
   const [loadError, setLoadError] = useState('');
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const loadMoreRef = useRef(null);
+  const loadingRef = useRef(false);
   const pageSize = 5;
   const { user, loading: authLoading } = useAuth();
   const isPrivateMode = Boolean(user);
@@ -62,6 +64,8 @@ const JournalHome = ({ onPostsChange }) => {
   }, [posts, onPostsChange]);
 
   const fetchPosts = useCallback(async (cursor = null) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     try {
       setIsLoading(true);
       setLoadError('');
@@ -79,6 +83,7 @@ const JournalHome = ({ onPostsChange }) => {
       console.error('Error fetching posts:', err);
       setLoadError(err?.message ? String(err.message) : 'Failed to load posts.');
     } finally {
+      loadingRef.current = false;
       setIsLoading(false);
     }
   }, [isPrivateMode]);
@@ -93,7 +98,19 @@ const JournalHome = ({ onPostsChange }) => {
     fetchPosts(null);
   }, [authLoading, fetchPosts]);
 
-  const showInitialLoading = isInitialLoad && isLoading;
+  useEffect(() => {
+    const target = loadMoreRef.current;
+    if (!target || !hasMore || isLoading || loadError || !posts.length) return undefined;
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) fetchPosts(lastDoc);
+    }, { rootMargin: '500px 0px' });
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [fetchPosts, hasMore, isLoading, lastDoc, loadError, posts.length]);
+
+  const showInitialLoading = isInitialLoad && (authLoading || isLoading);
   const showEmptyState = !isInitialLoad && !showInitialLoading && !isLoading && posts.length === 0 && !loadError;
 
   return (
@@ -125,7 +142,11 @@ const JournalHome = ({ onPostsChange }) => {
         )}
 
         {showInitialLoading && (
-          null
+          <div className="journal-initial-loading" role="status" aria-live="polite">
+            <div className="journal-loading-card">
+              <span className="journal-loading-label">Loading<span className="journal-loading-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></span>
+            </div>
+          </div>
         )}
 
         {showEmptyState && (
@@ -138,18 +159,18 @@ const JournalHome = ({ onPostsChange }) => {
         {posts.map(post => (
           <Entry key={post._id} post={post} mediaSettings={mediaSettings} />
         ))}
-        <nav className="journal-pager">
-          {hasMore && (
-            <button
-              type="button"
-              onClick={() => fetchPosts(lastDoc)}
-              className="pager-link"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Loading...' : 'Load more'}
+        <div className="journal-pager" ref={loadMoreRef} aria-live="polite">
+          {isLoading && !isInitialLoad && (
+            <div className="journal-loading-more" role="status">
+              <span className="journal-loading-label">Loading more entries<span className="journal-loading-dots" aria-hidden="true"><i>.</i><i>.</i><i>.</i></span></span>
+            </div>
+          )}
+          {loadError && posts.length > 0 && hasMore && (
+            <button type="button" onClick={() => fetchPosts(lastDoc)} className="pager-link">
+              Retry loading entries
             </button>
           )}
-        </nav>
+        </div>
       </main>
     </div>
   );

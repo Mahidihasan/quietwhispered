@@ -34,22 +34,22 @@ const TEXT_COLORS = [
 // Custom components for Markdown rendering with visual customization
 const createCustomComponents = (options) => ({
   h1: ({ children, ...props }) => (
-    <h1 className="md-header md-h1" style={options?.headingStyles?.[1]} {...props}>{children}</h1>
+    <h1 className="md-header md-h1" style={{ textAlign: options?.textAlign || 'left', ...options?.headingStyles?.[1] }} {...props}>{children}</h1>
   ),
   h2: ({ children, ...props }) => (
-    <h2 className="md-header md-h2" style={options?.headingStyles?.[2]} {...props}>{children}</h2>
+    <h2 className="md-header md-h2" style={{ textAlign: options?.textAlign || 'left', ...options?.headingStyles?.[2] }} {...props}>{children}</h2>
   ),
   h3: ({ children, ...props }) => (
-    <h3 className="md-header md-h3" style={options?.headingStyles?.[3]} {...props}>{children}</h3>
+    <h3 className="md-header md-h3" style={{ textAlign: options?.textAlign || 'left', ...options?.headingStyles?.[3] }} {...props}>{children}</h3>
   ),
   h4: ({ children, ...props }) => (
-    <h4 className="md-header md-h4" style={options?.headingStyles?.[4]} {...props}>{children}</h4>
+    <h4 className="md-header md-h4" style={{ textAlign: options?.textAlign || 'left', ...options?.headingStyles?.[4] }} {...props}>{children}</h4>
   ),
   h5: ({ children, ...props }) => (
-    <h5 className="md-header md-h5" style={options?.headingStyles?.[5]} {...props}>{children}</h5>
+    <h5 className="md-header md-h5" style={{ textAlign: options?.textAlign || 'left', ...options?.headingStyles?.[5] }} {...props}>{children}</h5>
   ),
   h6: ({ children, ...props }) => (
-    <h6 className="md-header md-h6" style={options?.headingStyles?.[6]} {...props}>{children}</h6>
+    <h6 className="md-header md-h6" style={{ textAlign: options?.textAlign || 'left', ...options?.headingStyles?.[6] }} {...props}>{children}</h6>
   ),
   p: ({ children, ...props }) => (
     <p className="md-paragraph" style={{ 

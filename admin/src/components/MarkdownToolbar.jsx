@@ -83,6 +83,9 @@ const LINK_STYLES = [
 const FONT_FAMILIES = [
   { value: 'Libre Baskerville', label: 'Libre Baskerville', css: "'Libre Baskerville', serif" },
   { value: 'Special Elite', label: 'Special Elite', css: "'Special Elite', monospace" },
+  { value: 'Courier Prime', label: 'Courier Prime', css: "'Courier Prime', monospace" },
+  { value: 'VT323', label: 'VT323 (Pixel)', css: "'VT323', monospace" },
+  { value: 'IM Fell English', label: 'IM Fell English', css: "'IM Fell English', serif" },
   { value: 'Caveat', label: 'Caveat', css: "'Caveat', cursive" },
   { value: 'Georgia', label: 'Georgia', css: "Georgia, serif" },
   { value: 'Merriweather', label: 'Merriweather', css: "'Merriweather', serif" },
