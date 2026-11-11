@@ -48,12 +48,6 @@ exports.deleteJournalEntry = onCall({ secrets: [cloudinaryApiSecret] }, async (r
     throw new HttpsError('permission-denied', 'You cannot delete this entry.');
   }
 
-  cloudinary.config({
-    cloud_name: cloudinaryCloudName.value(),
-    api_key: cloudinaryApiKey.value(),
-    api_secret: cloudinaryApiSecret.value()
-  });
-
   const urls = new Set(snapshot.get('imageUrls') || []);
   const body = String(snapshot.get('content') || '');
   for (const match of body.matchAll(/https?:\/\/[^\s)\]"']+/g)) {
@@ -61,11 +55,19 @@ exports.deleteJournalEntry = onCall({ secrets: [cloudinaryApiSecret] }, async (r
   }
 
   const publicIds = [...new Set([...urls].map(getCloudinaryPublicId).filter(Boolean))];
-  try {
-    await Promise.all(publicIds.map((publicId) => cloudinary.uploader.destroy(publicId)));
-  } catch (error) {
-    console.error('Cloudinary deletion failed; Firestore entry was retained.', error);
-    throw new HttpsError('internal', 'Could not remove the entry images. The post was not deleted.');
+  if (publicIds.length) {
+    cloudinary.config({
+      cloud_name: cloudinaryCloudName.value(),
+      api_key: cloudinaryApiKey.value(),
+      api_secret: cloudinaryApiSecret.value()
+    });
+
+    try {
+      await Promise.all(publicIds.map((publicId) => cloudinary.uploader.destroy(publicId)));
+    } catch (error) {
+      console.error('Cloudinary deletion failed; Firestore entry was retained.', error);
+      throw new HttpsError('internal', 'Could not remove the entry images. The post was not deleted.');
+    }
   }
 
   await entryRef.delete();

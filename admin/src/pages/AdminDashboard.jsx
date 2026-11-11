@@ -272,10 +272,10 @@ const AdminDashboard = () => {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
                 await deleteEntry(id);
-                fetchAllPosts();
+                await fetchAllPosts();
             } catch (error) {
                 console.error('Error deleting post:', error);
-                alert('Failed to delete post');
+                alert(error?.message || 'Failed to delete post. Please try again.');
             }
         }
     };
