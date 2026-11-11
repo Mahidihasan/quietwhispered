@@ -213,7 +213,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
       <header className="entry-header">
         <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
-          fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(titleFont) ? 'monospace' : 'serif'}` : 'var(--font-hand)'
+          fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(titleFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
         }}>
           {post.title || 'Untitled'}
         </h2>
@@ -237,7 +237,7 @@ const EntryPreview = ({ post, mediaSettings }) => {
       <div className="entry-body" style={{
         ...(lineHeight ? { lineHeight } : {}),
         ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
-        fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(bodyFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
+        fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(bodyFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
       }}>
         {blocks.map(block => {
           if (block.type === 'list') {

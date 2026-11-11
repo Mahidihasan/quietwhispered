@@ -18,6 +18,7 @@ const TEXTURE_OPTIONS = [
   { value: 'canvas', label: 'Canvas' },
   { value: 'lines', label: 'Lines' },
   { value: 'vintage', label: 'Vintage' },
+  { value: 'typewriter', label: 'Typewriter Paper' },
   { value: 'cotton', label: 'Cotton' },
   { value: 'coffee', label: 'Coffee Stain' },
   { value: 'tears', label: 'Tears' },
@@ -312,8 +313,13 @@ const AdminDashboard = () => {
         }));
     };
 
-    const publishedCount = posts.filter((post) => post.isPublished).length;
-    const draftCount = posts.filter((post) => !post.isPublished).length;
+    const getPostPrivacy = (post) => {
+        if (['public', 'private', 'draft', 'hidden'].includes(post.privacy)) return post.privacy;
+        return post.isPublished ? 'public' : 'draft';
+    };
+    const publishedCount = posts.filter((post) => getPostPrivacy(post) === 'public').length;
+    const privateCount = posts.filter((post) => getPostPrivacy(post) === 'private').length;
+    const draftCount = posts.filter((post) => ['draft', 'hidden'].includes(getPostPrivacy(post))).length;
     const mediaCount = posts.filter((post) => post.media).length;
 
     const activeFiltersCount = [filters.year, filters.month, filters.title, filters.mood].filter(Boolean).length;
@@ -371,6 +377,11 @@ const AdminDashboard = () => {
                     <div className="stat-icon"><Icon name="published" size="lg" /></div>
                     <div className="stat-label">Published</div>
                     <div className="stat-value">{publishedCount}</div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-icon"><Icon name="draft" size="lg" /></div>
+                    <div className="stat-label">Private</div>
+                    <div className="stat-value">{privateCount}</div>
                 </div>
                 <div className="stat-card">
                     <div className="stat-icon"><Icon name="draft" size="lg" /></div>
@@ -523,8 +534,8 @@ const AdminDashboard = () => {
                                             <div className="post-meta">
                                                 <span className="post-date">{resolvePostDate(post) ? format(resolvePostDate(post), 'MMM d, yyyy') : 'Undated'}</span>
                                                 {post.mood && <span className="post-mood">· {post.mood}</span>}
-                                                <span className={`post-status ${post.isPublished ? 'published' : 'draft'}`}>
-                                                    · {post.isPublished ? 'Published' : 'Draft'}
+                                                <span className={`post-status ${getPostPrivacy(post)}`}>
+                                                    · {getPostPrivacy(post) === 'public' ? 'Public' : getPostPrivacy(post).charAt(0).toUpperCase() + getPostPrivacy(post).slice(1)}
                                                 </span>
                                                 {post.media && (
                                                     <span className="post-media-type">· {post.type === 'video' ? 'Video' : 'Image'}</span>
@@ -557,7 +568,7 @@ const AdminDashboard = () => {
                                     {filteredPosts.map(post => (
                                         <div key={post._id} className="post-grid-card">
                                             <div className="post-grid-header">
-                                                <span className={`post-status-dot ${post.isPublished ? 'published' : 'draft'}`}></span>
+                                                <span className={`post-status-dot ${getPostPrivacy(post)}`}></span>
                                                 <span className="post-grid-date">{resolvePostDate(post) ? format(resolvePostDate(post), 'MMM d') : 'Undated'}</span>
                                             </div>
                                             <h4 className="post-grid-title">{post.title}</h4>

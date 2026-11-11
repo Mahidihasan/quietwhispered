@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -109,8 +110,45 @@ export const updateEntry = async (id, updates) => {
 export const deleteEntry = async (id) => {
   ensureUser();
   ensureFirebase();
+
+  const entryRef = doc(db, 'journalEntries', id);
+  const snapshot = await getDoc(entryRef);
+  if (!snapshot.exists()) return { deleted: true };
+
+  const entry = snapshot.data();
+  const content = String(entry.content || '');
+  const contentUrls = [...content.matchAll(/https?:\/\/[^\s)\]"']+/g)].map(([url]) => url.replace(/[.,;]+$/, ''));
+  const mediaUrls = [
+    ...(Array.isArray(entry.imageUrls) ? entry.imageUrls : []),
+    entry.media,
+    entry.coverImage,
+    ...contentUrls
+  ];
+  const hasCloudinaryImages = mediaUrls.some((value) => {
+    if (typeof value !== 'string') return false;
+    try {
+      return new URL(value).hostname.endsWith('cloudinary.com');
+    } catch {
+      return false;
+    }
+  });
+
+  // Firestore rules already authorize the admin to delete their own text-only
+  // entries. Keep Cloudinary asset deletion on the trusted server function.
+  if (!hasCloudinaryImages) {
+    await deleteDoc(entryRef);
+    return { deleted: true, imagesDeleted: 0 };
+  }
+
   const removeEntry = httpsCallable(getFunctions(auth.app), 'deleteJournalEntry');
-  return removeEntry({ id });
+  try {
+    return await removeEntry({ id });
+  } catch (error) {
+    if (error?.code === 'functions/not-found') {
+      throw new Error('The image delete service is not deployed. Deploy the Firebase deleteJournalEntry function and try again.');
+    }
+    throw error;
+  }
 };
 
 export const getEntryById = async (id) => {

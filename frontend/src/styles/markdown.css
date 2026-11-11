@@ -47,6 +47,15 @@
   color: var(--text-secondary, inherit);
 }
 
+.entry-body .markdown-content h1,
+.entry-body .markdown-content h2,
+.entry-body .markdown-content h3,
+.entry-body .markdown-content h4,
+.entry-body .markdown-content h5,
+.entry-body .markdown-content h6 {
+  font-family: inherit;
+}
+
 .markdown-content p {
   margin: 1em 0;
 }

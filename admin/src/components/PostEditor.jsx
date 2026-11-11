@@ -50,8 +50,11 @@ const SLEEP_OPTIONS = [
 ];
 
 const HEADING_FONT_OPTIONS = [
-  { value: 'Special Elite', label: 'Special Elite (Typewriter)' },
-  { value: 'Courier Prime', label: 'Courier Prime (Typewriter)' },
+  { value: 'Special Elite', label: 'Special Elite (Old Mechanical Typewriter)' },
+  { value: 'Courier Prime', label: 'Courier Prime (Classic Typewriter)' },
+  { value: 'Cutive Mono', label: 'Cutive Mono (Typewriter)' },
+  { value: 'Inconsolata', label: 'Inconsolata (Typewriter)' },
+  { value: 'IBM Plex Mono', label: 'IBM Plex Mono (Typewriter)' },
   { value: 'VT323', label: 'VT323 (Pixel Retro)' },
   { value: 'IM Fell English', label: 'IM Fell English (Antique)' },
   { value: 'Caveat', label: 'Caveat (Handwritten)' },
@@ -64,8 +67,11 @@ const HEADING_FONT_OPTIONS = [
 
 const BODY_FONT_OPTIONS = [
   { value: 'Libre Baskerville', label: 'Libre Baskerville (Cozy)' },
-  { value: 'Special Elite', label: 'Special Elite (Typewriter)' },
-  { value: 'Courier Prime', label: 'Courier Prime (Typewriter)' },
+  { value: 'Special Elite', label: 'Special Elite (Old Mechanical Typewriter)' },
+  { value: 'Courier Prime', label: 'Courier Prime (Classic Typewriter)' },
+  { value: 'Cutive Mono', label: 'Cutive Mono (Typewriter)' },
+  { value: 'Inconsolata', label: 'Inconsolata (Typewriter)' },
+  { value: 'IBM Plex Mono', label: 'IBM Plex Mono (Typewriter)' },
   { value: 'IM Fell English', label: 'IM Fell English (Antique)' },
   { value: 'Caveat', label: 'Caveat (Handwritten)' },
   { value: 'Georgia', label: 'Georgia (Serif)' },
@@ -89,6 +95,7 @@ const TEXTURE_OPTIONS = [
   { value: 'none', label: 'None' }, { value: 'vellum', label: 'Vellum' },
   { value: 'linen', label: 'Linen' }, { value: 'canvas', label: 'Canvas' },
   { value: 'lines', label: 'Lines' }, { value: 'vintage', label: 'Vintage' },
+  { value: 'typewriter', label: 'Typewriter Paper' },
   { value: 'cotton', label: 'Cotton' }, { value: 'coffee', label: 'Coffee Stain' },
   { value: 'tears', label: 'Tears' }, { value: 'worn', label: 'Worn' },
   { value: 'lace', label: 'Lace' }, { value: 'fibers', label: 'Fibers' },
@@ -138,8 +145,8 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [coverFile, setCoverFile] = useState(null);
-    const [selectedTitleFont, setSelectedTitleFont] = useState('Caveat');
-    const [selectedBodyFont, setSelectedBodyFont] = useState('Libre Baskerville');
+    const [selectedTitleFont, setSelectedTitleFont] = useState('Special Elite');
+    const [selectedBodyFont, setSelectedBodyFont] = useState('Special Elite');
     const [markColor, setMarkColor] = useState('#d7c7a5');
     const [fontColor, setFontColor] = useState('#1f1b16');
     const [titleSize, setTitleSize] = useState('32');
@@ -231,10 +238,9 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
             setTitleSize(String(post.titleSize || 32));
             setBodySize(String(post.bodySize || 18));
             setLineHeight(String(Number(post.lineHeight) || 1.75));
-            if (post.titleFont) setSelectedTitleFont(post.titleFont);
-            else if (post.font) setSelectedTitleFont(post.font);
-            if (post.bodyFont) setSelectedBodyFont(post.bodyFont);
-            else setSelectedBodyFont('Libre Baskerville');
+            const savedFont = post.bodyFont || post.titleFont || post.font || 'Special Elite';
+            setSelectedTitleFont(savedFont);
+            setSelectedBodyFont(savedFont);
         }
     }, [post]);
 
@@ -392,8 +398,9 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                     if (data.titleSize) setTitleSize(String(data.titleSize));
                     if (data.bodySize) setBodySize(String(data.bodySize));
                     if (data.lineHeight) setLineHeight(String(data.lineHeight));
-                    if (data.titleFont) setSelectedTitleFont(data.titleFont);
-                    if (data.bodyFont) setSelectedBodyFont(data.bodyFont);
+                    const savedFont = data.bodyFont || data.titleFont || 'Special Elite';
+                    setSelectedTitleFont(savedFont);
+                    setSelectedBodyFont(savedFont);
                 }
             }
         } catch (err) {}
@@ -441,7 +448,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                 <div className="writing-canvas">
                                     <input type="text" name="title" value={formData.title} onChange={handleChange}
                                         className="writing-title" placeholder="Your story begins with a title..."
-                                        style={{ fontSize: `${Number(titleSize) || 32}px`, fontFamily: `'${selectedTitleFont}', ${selectedTitleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(selectedTitleFont) ? 'monospace' : 'serif'}` }}
+                                        style={{ fontSize: `${Number(titleSize) || 32}px`, fontFamily: `'${selectedTitleFont}', ${selectedTitleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(selectedTitleFont) ? 'monospace' : 'serif'}` }}
                                         required />
                                     <LiveMarkdownEditor
                                         value={formData.content}
@@ -454,13 +461,17 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                         dividerStyle="thin"
                                         checkboxStyle="square"
                                         linkStyle="underline"
-                                        fontFamily={`'${selectedBodyFont}', ${selectedBodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(selectedBodyFont) ? 'monospace' : 'serif'}`}
+                                        fontFamily={`'${selectedBodyFont}', ${selectedBodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(selectedBodyFont) ? 'monospace' : 'serif'}`}
                                         fontSize={Number(bodySize) || 18}
                                         lineHeight={Number(lineHeight) || 1.75}
                                         textColor={fontColor}
                                         highlightColor={markColor}
                                         textAlign="left"
-                                        onFontFamilyChange={(font) => setSelectedBodyFont(font === "'Special Elite', monospace" ? 'Special Elite' : font === "'Caveat', cursive" ? 'Caveat' : font)}
+                                        onFontFamilyChange={(font) => {
+                                            const family = font.match(/^['"]?([^,'"]+)/)?.[1]?.trim() || font;
+                                            setSelectedBodyFont(family);
+                                            setSelectedTitleFont(family);
+                                        }}
                                         onFontSizeChange={(size) => setBodySize(String(size))}
                                         onLineHeightChange={(lh) => setLineHeight(String(lh))}
                                         onTextColorChange={setFontColor}
@@ -501,10 +512,24 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                             <div className="sidebar-field-row">
                                 <label>Privacy</label>
                                 <div className="privacy-chips-row">
-                                    {['public', 'private', 'draft', 'hidden'].map(p => (
-                                        <button key={p} type="button" className={`privacy-chip-sm ${formData.privacy === p ? 'active' : ''}`} onClick={() => setFormData(prev => ({ ...prev, privacy: p }))}>{p}</button>
+                                    {[
+                                        { value: 'public', label: 'Public' },
+                                        { value: 'private', label: 'Private' },
+                                        { value: 'draft', label: 'Draft' },
+                                        { value: 'hidden', label: 'Hidden' }
+                                    ].map(({ value, label }) => (
+                                        <button key={value} type="button" className={`privacy-chip-sm ${formData.privacy === value ? 'active' : ''}`} onClick={() => setFormData(prev => ({ ...prev, privacy: value }))}>{label}</button>
                                     ))}
                                 </div>
+                                <small className="privacy-help-text">
+                                    {formData.privacy === 'public'
+                                        ? 'Visible on the public journal.'
+                                        : formData.privacy === 'private'
+                                            ? 'Only visible in the admin dashboard.'
+                                            : formData.privacy === 'draft'
+                                                ? 'Unpublished work saved for later.'
+                                                : 'Hidden from public view.'}
+                                </small>
                             </div>
                             <div className="sidebar-field-row">
                                 <label>Tags</label>
@@ -590,13 +615,13 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                         >
                             <div className="sidebar-field-row">
                                 <label>Title font</label>
-                                <select value={selectedTitleFont} onChange={(e) => setSelectedTitleFont(e.target.value)}>
+                                <select value={selectedTitleFont} onChange={(e) => { setSelectedTitleFont(e.target.value); setSelectedBodyFont(e.target.value); }}>
                                     {HEADING_FONT_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                 </select>
                             </div>
                             <div className="sidebar-field-row">
                                 <label>Body font</label>
-                                <select value={selectedBodyFont} onChange={(e) => setSelectedBodyFont(e.target.value)}>
+                                <select value={selectedBodyFont} onChange={(e) => { setSelectedBodyFont(e.target.value); setSelectedTitleFont(e.target.value); }}>
                                     {BODY_FONT_OPTIONS.map(f => <option key={f.value} value={f.value}>{f.label}</option>)}
                                 </select>
                             </div>

@@ -64,7 +64,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
       <header className="entry-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
         <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
-          fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(titleFont) ? 'monospace' : 'serif'}` : 'var(--font-hand)'
+          fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(titleFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
         }}>
           {post.title}
         </h2>
@@ -88,7 +88,7 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
       <div className="entry-body" style={{
         ...(lineHeight ? { lineHeight } : {}),
         ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
-        fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'VT323'].includes(bodyFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
+        fontFamily: bodyFont ? `'${bodyFont}', ${bodyFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(bodyFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
       }}>
         <MarkdownRenderer 
           content={post.content} 

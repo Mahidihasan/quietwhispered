@@ -179,7 +179,7 @@ const PostPage = () => {
                 <header className="post-page-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
                     <h1 style={{
                         ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
-                        ...(titleFont ? { fontFamily: `'${titleFont}', ${['Special Elite', 'Courier Prime', 'VT323'].includes(titleFont) ? 'monospace' : titleFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
+                        ...(titleFont ? { fontFamily: `'${titleFont}', ${['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(titleFont) ? 'monospace' : titleFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
                     }}>{post.title}</h1>
                     
                     <div className="post-page-meta">
@@ -221,7 +221,7 @@ const PostPage = () => {
                 <div className="post-body" style={{
                     ...(lineHeight ? { lineHeight } : {}),
                     ...(post.bodySize ? { fontSize: `${post.bodySize}px` } : {}),
-                    ...(bodyFont ? { fontFamily: `'${bodyFont}', ${['Special Elite', 'Courier Prime', 'VT323'].includes(bodyFont) ? 'monospace' : bodyFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
+                    ...(bodyFont ? { fontFamily: `'${bodyFont}', ${['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(bodyFont) ? 'monospace' : bodyFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
                 }}>
                     <MarkdownRenderer 
                       content={post.content} 
