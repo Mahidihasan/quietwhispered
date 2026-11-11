@@ -180,13 +180,17 @@ export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}
   } catch (err) {
     if (!isMissingIndexError(err)) throw err;
 
-    const baseQuery = [where('isPublished', '==', true), limit(pageSize)];
-    const q = lastDoc
-      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
-      : query(entriesCollection, ...baseQuery);
+    const q = query(entriesCollection, where('isPublished', '==', true));
     const snap = await getDocs(q);
-    const entries = snap.docs.map(normalizeEntry);
-    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+    const orderedDocs = [...snap.docs].sort((a, b) => {
+      const aCreated = a.data().createdAt?.toMillis?.() || 0;
+      const bCreated = b.data().createdAt?.toMillis?.() || 0;
+      return bCreated - aCreated;
+    });
+    const cursorIndex = lastDoc ? orderedDocs.findIndex((entryDoc) => entryDoc.id === lastDoc.id) : -1;
+    const pageDocs = orderedDocs.slice(cursorIndex + 1, cursorIndex + 1 + pageSize);
+    const entries = pageDocs.map(normalizeEntry);
+    const nextLast = pageDocs.length ? pageDocs[pageDocs.length - 1] : null;
     return { entries, lastDoc: nextLast };
   }
 };

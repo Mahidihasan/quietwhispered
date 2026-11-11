@@ -1,7 +1,6 @@
 import {
   addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -14,6 +13,7 @@ import {
   where
 } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { uploadImageToCloudinary } from './cloudinaryUpload';
 
 const ensureFirebase = () => {
@@ -108,8 +108,8 @@ export const updateEntry = async (id, updates) => {
 export const deleteEntry = async (id) => {
   ensureUser();
   ensureFirebase();
-  const refDoc = doc(db, 'journalEntries', id);
-  return deleteDoc(refDoc);
+  const removeEntry = httpsCallable(getFunctions(auth.app), 'deleteJournalEntry');
+  return removeEntry({ id });
 };
 
 export const getEntryById = async (id) => {
@@ -180,13 +180,17 @@ export const getPublicEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}
   } catch (err) {
     if (!isMissingIndexError(err)) throw err;
 
-    const baseQuery = [where('isPublished', '==', true), limit(pageSize)];
-    const q = lastDoc
-      ? query(entriesCollection, ...baseQuery, startAfter(lastDoc))
-      : query(entriesCollection, ...baseQuery);
+    const q = query(entriesCollection, where('isPublished', '==', true));
     const snap = await getDocs(q);
-    const entries = snap.docs.map(normalizeEntry);
-    const nextLast = snap.docs.length ? snap.docs[snap.docs.length - 1] : null;
+    const orderedDocs = [...snap.docs].sort((a, b) => {
+      const aCreated = a.data().createdAt?.toMillis?.() || 0;
+      const bCreated = b.data().createdAt?.toMillis?.() || 0;
+      return bCreated - aCreated;
+    });
+    const cursorIndex = lastDoc ? orderedDocs.findIndex((entryDoc) => entryDoc.id === lastDoc.id) : -1;
+    const pageDocs = orderedDocs.slice(cursorIndex + 1, cursorIndex + 1 + pageSize);
+    const entries = pageDocs.map(normalizeEntry);
+    const nextLast = pageDocs.length ? pageDocs[pageDocs.length - 1] : null;
     return { entries, lastDoc: nextLast };
   }
 };
