@@ -4,6 +4,13 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/share/:id",
+      "destination": "https://quietwhispered.vercel.app/share/:id",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/dashboard",

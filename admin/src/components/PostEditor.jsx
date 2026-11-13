@@ -345,7 +345,13 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
 
     const buildShareUrl = (postId) => {
         if (!postId || typeof window === 'undefined') return '';
-        return new URL(`/share/${postId}`, window.location.origin).href;
+        const configuredSiteUrl = process.env.REACT_APP_SITE_URL?.trim();
+        const currentHost = window.location.hostname;
+        const productionSiteUrl = currentHost === 'quietwhispered-admin.vercel.app'
+            ? 'https://quietwhispered.vercel.app'
+            : window.location.origin;
+        const siteUrl = configuredSiteUrl || productionSiteUrl;
+        return new URL(`/share/${postId}`, siteUrl).href;
     };
 
     const handleCopyShareUrl = async () => {

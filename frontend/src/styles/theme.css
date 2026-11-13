@@ -2267,6 +2267,11 @@ a:hover {
   font-family: var(--font-hand);
 }
 
+.meta-item svg {
+  display: block;
+  flex: 0 0 auto;
+}
+
 /* Type badge (e.g., "poem", "story", "note") */
 .type-badge {
   background: var(--accent);
