@@ -166,7 +166,7 @@ export const getPublicEntryById = async (id) => {
   const snap = await getDoc(refDoc);
   if (!snap.exists()) return null;
   const data = snap.data();
-  if (!data?.isPublished) return null;
+  if (!data?.isPublished && data?.privacy !== 'link') return null;
   return normalizeEntry(snap);
 };
 

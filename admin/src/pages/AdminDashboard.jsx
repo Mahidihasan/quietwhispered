@@ -314,7 +314,7 @@ const AdminDashboard = () => {
     };
 
     const getPostPrivacy = (post) => {
-        if (['public', 'private', 'draft', 'hidden'].includes(post.privacy)) return post.privacy;
+        if (['public', 'link', 'private', 'draft', 'hidden'].includes(post.privacy)) return post.privacy;
         return post.isPublished ? 'public' : 'draft';
     };
     const publishedCount = posts.filter((post) => getPostPrivacy(post) === 'public').length;

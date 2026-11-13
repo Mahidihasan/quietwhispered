@@ -525,7 +525,15 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                         { value: 'draft', label: 'Draft' },
                                         { value: 'hidden', label: 'Hidden' }
                                     ].map(({ value, label }) => (
-                                        <button key={value} type="button" className={`privacy-chip-sm ${formData.privacy === value ? 'active' : ''}`} onClick={() => setFormData(prev => ({ ...prev, privacy: value }))}>{label}</button>
+                                        <button
+                                            key={value}
+                                            type="button"
+                                            className={`privacy-chip-sm ${formData.privacy === value ? 'active' : ''}`}
+                                            aria-pressed={formData.privacy === value}
+                                            onClick={() => setFormData(prev => ({ ...prev, privacy: value }))}
+                                        >
+                                            {label}
+                                        </button>
                                     ))}
                                 </div>
                                 <small className="privacy-help-text">
@@ -535,9 +543,9 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                             ? 'Only visible in the admin dashboard.'
                                             : formData.privacy === 'link'
                                                 ? 'Anyone with the share link can view this entry. It stays off the public journal.'
-                                            : formData.privacy === 'draft'
-                                                ? 'Unpublished work saved for later.'
-                                                : 'Hidden from public view.'}
+                                                : formData.privacy === 'draft'
+                                                    ? 'Unpublished work saved for later.'
+                                                    : 'Hidden from public view.'}
                                 </small>
                             </div>
                             <div className="sidebar-field-row">
