@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FiCalendar, FiMapPin, FiArrowLeft } from 'react-icons/fi';
 import MediaCard from '../shared/components/MediaCard.jsx';
+import Entry from '../components/Entry';
 import MarkdownRenderer from '../shared/components/MarkdownRenderer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
 import ThinkerLoader from '../shared/components/ThinkerLoader';
@@ -127,6 +128,16 @@ const PostPage = ({ standalone = false }) => {
             <div className="error-state">
                 <h3>Post Not Found</h3>
                 <p>The post you're looking for doesn't exist.</p>
+            </div>
+        );
+    }
+
+    if (standalone) {
+        return (
+            <div className="quiet-page">
+                <main className="quiet-main">
+                    <Entry post={post} mediaSettings={mediaSettings} />
+                </main>
             </div>
         );
     }
