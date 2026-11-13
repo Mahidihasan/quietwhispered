@@ -14,15 +14,15 @@
   "rewrites": [
     {
       "source": "/dashboard",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/login",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ]
 }

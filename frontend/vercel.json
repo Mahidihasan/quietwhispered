@@ -6,12 +6,16 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/post/:id",
+      "destination": "/"
+    },
+    {
       "source": "/share/:id",
-      "destination": "/index.html"
+      "destination": "/"
     },
     {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/"
     }
   ]
 }
