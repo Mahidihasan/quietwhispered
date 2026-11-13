@@ -42,7 +42,7 @@ const normalizeEntry = (snap) => {
   const data = snap.data();
   const createdAt = data.createdAt?.toDate?.() || null;
   const updatedAt = data.updatedAt?.toDate?.() || null;
-  const normalizedDate = data.date?.toDate?.() || data.date || createdAt || null;
+  const normalizedDate = data.date?.toDate?.() || data.date || null;
   return {
     _id: snap.id,
     id: snap.id,

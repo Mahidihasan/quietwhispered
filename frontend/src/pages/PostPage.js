@@ -9,7 +9,7 @@ import ThinkerLoader from '../shared/components/ThinkerLoader';
 import { getEntryById, getPublicEntryById } from '../shared/services/journalService';
 import { subscribeToMediaSettings } from '../shared/services/mediaSettingsService';
 import useAuth from '../shared/hooks/useAuth';
-import { resolvePostDate } from '../shared/utils/dateUtils';
+import { toValidDate } from '../shared/utils/dateUtils';
 
 const FALLBACK_IMAGE = '/images/posts/fallback.svg';
 
@@ -46,7 +46,7 @@ const setCanonical = (url) => {
     link.setAttribute('href', url);
 };
 
-const PostPage = () => {
+const PostPage = ({ standalone = false }) => {
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -92,14 +92,14 @@ const PostPage = () => {
         const description = (post.content || '').split('\n').find(Boolean)?.slice(0, 180) || 'Read this journal entry.';
         const url = window.location.href;
 
-        document.title = `${post.title} | Journal`;
+        document.title = post.title ? `${post.title} | Journal` : 'Journal Entry';
         setCanonical(url);
-        setMetaTag('property', 'og:title', post.title);
+        setMetaTag('property', 'og:title', post.title || 'Journal Entry');
         setMetaTag('property', 'og:description', description);
         setMetaTag('property', 'og:image', absoluteImage);
         setMetaTag('property', 'og:url', url);
         setMetaTag('name', 'twitter:card', 'summary_large_image');
-        setMetaTag('name', 'twitter:title', post.title);
+        setMetaTag('name', 'twitter:title', post.title || 'Journal Entry');
         setMetaTag('name', 'twitter:description', description);
         setMetaTag('name', 'twitter:image', absoluteImage);
     }, [post]);
@@ -136,7 +136,7 @@ const PostPage = () => {
     const activeTexture = (post.paperTexture && post.paperTexture !== 'none') ? post.paperTexture : (mediaSettings?.paperTexture || 'none');
     const activePaperColor = (post.paperColor && post.paperColor !== '#f8f5f0') ? post.paperColor : (mediaSettings?.paperColor || '#FAF8F5');
     /* Off-white - default entry background color */
-    const postDate = resolvePostDate(post);
+    const postDate = toValidDate(post.date);
     const titleFont = post.titleFont || post.font;
     const bodyFont = post.bodyFont || post.font;
 
@@ -165,10 +165,10 @@ const PostPage = () => {
     };
 
     return (
-        <div className="post-page">
-            <button className="back-button" onClick={() => window.history.back()}>
+        <div className={`post-page ${standalone ? 'post-page-standalone' : ''}`.trim()}>
+            {!standalone && <button className="back-button" onClick={() => window.history.back()}>
                 <FiArrowLeft /> Back
-            </button>
+            </button>}
 
             <article className={`post-content ${activeTexture !== 'none' ? 'texture-applied' : ''}`.trim()}
                 style={activeTexture !== 'none' && activePaperColor ? { backgroundColor: activePaperColor } : undefined}
@@ -176,26 +176,26 @@ const PostPage = () => {
                 {activeTexture !== 'none' && (
                     <div className={`post-texture texture-${activeTexture}`} aria-hidden="true" />
                 )}
-                <header className="post-page-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
-                    <h1 style={{
+                {(post.title?.trim() || postDate || (!standalone && (post.location || post.mood))) && <header className="post-page-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
+                    {post.title?.trim() && <h1 style={{
                         ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
                         ...(titleFont ? { fontFamily: `'${titleFont}', ${['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(titleFont) ? 'monospace' : titleFont === 'Caveat' ? 'cursive' : 'serif'}` } : {})
-                    }}>{post.title}</h1>
+                    }}>{post.title}</h1>}
                     
                     <div className="post-page-meta">
-                        <div className="meta-item">
+                        {postDate && <div className="meta-item">
                             <FiCalendar />
-                        <span>{postDate ? format(postDate, 'MMMM dd, yyyy') : 'Undated'}</span>
-                        </div>
+                        <span>{format(postDate, 'MMMM dd, yyyy')}</span>
+                        </div>}
 
-                        {post.location && (
+                        {!standalone && post.location && (
                             <div className="meta-item">
                                 <FiMapPin />
                                 <span>{post.location}</span>
                             </div>
                         )}
 
-                        {post.mood && (
+                        {!standalone && post.mood && (
                             <div className="meta-item">
                                 <span className="mood-badge" style={{ backgroundColor: getMoodColor(post.mood) }}>
                                     {post.mood}
@@ -203,9 +203,9 @@ const PostPage = () => {
                             </div>
                         )}
 
-                        <span className="type-badge">{post.type || 'entry'}</span>
+                        {!standalone && <span className="type-badge">{post.type || 'entry'}</span>}
                     </div>
-                </header>
+                </header>}
 
                 {shouldShowCover && (
                     <div className="post-media">
@@ -245,7 +245,7 @@ const PostPage = () => {
                     </div>
                 )}
 
-                {post.tags && post.tags.length > 0 && (
+                {!standalone && post.tags && post.tags.length > 0 && (
                     <div className="post-tags-container">
                         <h4>Tags</h4>
                         <div className="tags-list">

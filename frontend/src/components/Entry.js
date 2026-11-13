@@ -4,7 +4,7 @@ import MediaCard from '../shared/components/MediaCard.jsx';
 import MarkdownRenderer from '../shared/components/MarkdownRenderer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
 import { getPublicMediaSettings } from '../shared/services/mediaSettingsService';
-import { resolvePostDate } from '../shared/utils/dateUtils';
+import { toValidDate } from '../shared/utils/dateUtils';
 
 const Entry = ({ post, mediaSettings: propSettings }) => {
   const [mediaSettings, setMediaSettings] = useState(propSettings || null);
@@ -33,7 +33,9 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
     post.content.includes(`[embed:${videoUrl}]`) ||
     post.content.includes(`[video:${videoUrl}]`)
   );
-  const postDate = resolvePostDate(post);
+  const postDate = toValidDate(post.date);
+  const hasTitleOrDate = Boolean(post.title?.trim() || postDate);
+  const hasMeta = Boolean(postDate || weatherLabel || moodLabel || post.tags?.length);
   const titleSizeValue = Number(post.titleSize);
   const titleSize = Number.isFinite(titleSizeValue)
     ? Math.min(56, Math.max(20, titleSizeValue))
@@ -55,20 +57,20 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
   return (
     <article
       id={`post-${post._id}`}
-      className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''}`}
+      className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''} ${hasTitleOrDate ? '' : 'entry--no-header'}`.trim()}
       style={activeTexture !== 'none' && activePaperColor ? { backgroundColor: activePaperColor } : undefined}
     >
       {activeTexture !== 'none' && (
         <div className={`entry-texture texture-${activeTexture}`} aria-hidden="true" />
       )}
-      <header className="entry-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
-        <h2 className="entry-title" style={{
+      {hasTitleOrDate && <header className="entry-header" style={{ borderBottomColor: mediaSettings?.dividerColor || 'var(--divider-color, var(--cg-light))' }}>
+        {post.title?.trim() && <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
           fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(titleFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
         }}>
           {post.title}
-        </h2>
-        <div className="entry-meta">
+        </h2>}
+        {hasMeta && <div className="entry-meta">
           {postDate && <span className="entry-date">{format(postDate, 'MMMM d, yyyy')}</span>}
           {weatherLabel && <span className="entry-weather-icon">{weatherLabel}</span>}
           {moodLabel && <span className="entry-sep">•</span>}
@@ -76,8 +78,8 @@ const Entry = ({ post, mediaSettings: propSettings }) => {
           {post.tags?.length ? (
             <span className="entry-tags">{post.tags.map(t => `#${t}`).join(' ')}</span>
           ) : null}
-        </div>
-      </header>
+        </div>}
+      </header>}
 
       {shouldShowCover && (
         <div className={`entry-media ${activeTexture !== 'none' ? `texture-${activeTexture}` : ''}`}>

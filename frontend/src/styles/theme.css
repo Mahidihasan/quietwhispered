@@ -864,6 +864,10 @@ a:hover {
   border-bottom: 2px solid var(--divider-color, var(--cg-light));
 }
 
+.entry.entry--no-header .entry-body {
+  margin-top: 0;
+}
+
 /* Entry title (handwriting font) */
 .entry-title {
   font-size: 18px;
@@ -2118,6 +2122,10 @@ a:hover {
   padding: clamp(16px, 3vw, 28px) clamp(20px, 4vw, 40px) 48px;
   min-height: calc(100vh - 62px);
   position: relative;
+}
+
+.post-page-standalone {
+  min-height: 100vh;
 }
 
 /* Back button (← back to home) */

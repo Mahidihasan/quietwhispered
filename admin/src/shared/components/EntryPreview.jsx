@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import MediaCard from './MediaCard.jsx';
 import SpotifyPlayer from './SpotifyPlayer.jsx';
 import YoutubeAudioPlayer from './YoutubeAudioPlayer.jsx';
-import { resolvePostDate } from '../utils/dateUtils';
+import { toValidDate } from '../utils/dateUtils';
 
 /**
  * Render inline content with markdown and HTML tag support.
@@ -108,7 +108,9 @@ const EntryPreview = ({ post, mediaSettings }) => {
   const weatherLabel = post.weather ? post.weather : null;
   const coverImage = post.media || (post.imageUrls && post.imageUrls[0]) || '';
   const videoUrl = post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '');
-  const postDate = resolvePostDate(post);
+  const postDate = toValidDate(post.date);
+  const hasTitleOrDate = Boolean(post.title?.trim() || postDate);
+  const hasMeta = Boolean(postDate || weatherLabel || moodLabel || post.tags?.length);
   
   const titleSizeValue = Number(post.titleSize);
   const titleSize = Number.isFinite(titleSizeValue)
@@ -204,20 +206,20 @@ const EntryPreview = ({ post, mediaSettings }) => {
   return (
     <article
       id={`preview-${post._id || 'new'}`}
-      className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''}`}
+      className={`entry ${activeTexture !== 'none' ? 'texture-applied' : ''} ${hasTitleOrDate ? '' : 'entry--no-header'}`.trim()}
       style={activeTexture !== 'none' && activePaperColor ? { backgroundColor: activePaperColor } : undefined}
     >
       {activeTexture !== 'none' && (
         <div className={`entry-texture texture-${activeTexture}`} aria-hidden="true" />
       )}
-      <header className="entry-header">
-        <h2 className="entry-title" style={{
+      {hasTitleOrDate && <header className="entry-header">
+        {post.title?.trim() && <h2 className="entry-title" style={{
           ...(titleSize ? { fontSize: `${titleSize}px` } : {}),
           fontFamily: titleFont ? `'${titleFont}', ${titleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(titleFont) ? 'monospace' : 'serif'}` : 'var(--font-body)'
         }}>
-          {post.title || 'Untitled'}
-        </h2>
-        <div className="entry-meta">
+          {post.title}
+        </h2>}
+        {hasMeta && <div className="entry-meta">
           {postDate && <span className="entry-date">{format(postDate, 'MMMM d, yyyy')}</span>}
           {weatherLabel && <span className="entry-weather-icon">{weatherLabel}</span>}
           {moodLabel && <span className="entry-sep">•</span>}
@@ -225,8 +227,8 @@ const EntryPreview = ({ post, mediaSettings }) => {
           {post.tags?.length ? (
             <span className="entry-tags">{post.tags.map(t => `#${t}`).join(' ')}</span>
           ) : null}
-        </div>
-      </header>
+        </div>}
+      </header>}
 
       {shouldShowCover && (
         <div className={`entry-media ${activeTexture !== 'none' ? `texture-${activeTexture}` : ''}`}>

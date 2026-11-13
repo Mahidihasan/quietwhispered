@@ -18,6 +18,7 @@ import MediaCard from '../shared/components/MediaCard.jsx';
 import { getMediaType, getEmbedUrl } from '../shared/utils/mediaUtils.js';
 import YoutubeAudioPlayer from '../shared/components/YoutubeAudioPlayer.jsx';
 import SpotifyPlayer from '../shared/components/SpotifyPlayer.jsx';
+import { processContent } from '../shared/utils/markdownPreprocessor';
 
 const HIGHLIGHT_COLORS = [
   '#d7c7a5','#c9b99a','#e8d5b7','#d4a574','#b8956a',
@@ -133,7 +134,7 @@ const RenderedContent = memo(({ markdown, components }) => {
   if (!markdown) return <div className="md-placeholder" style={{ padding: 0, color: 'var(--text-muted)', opacity: 0.3, fontStyle: 'italic' }}>Write freely. Your thoughts, your voice...</div>;
   
   // Pre-process markdown to convert custom media syntax to rendered components
-  const lines = markdown.split('\n');
+  const lines = processContent(markdown).split('\n');
   const elements = [];
   let markdownBuffer = [];
   
@@ -159,7 +160,7 @@ const RenderedContent = memo(({ markdown, components }) => {
     const trimmed = line.trim();
 
     // Check for [image:url] or [image:url|caption]
-    const imageMatch = trimmed.match(/^\[image:\s*(.+?)\s*\]$/i);
+    const imageMatch = trimmed.match(/^\[image:\s*(.+?)\s*\]$/i) || trimmed.match(/^<!-- image:(.+?) -->$/i);
     if (imageMatch) {
       flushMarkdown();
       const [rawUrl, rawCaption] = imageMatch[1].split('|');
@@ -179,7 +180,7 @@ const RenderedContent = memo(({ markdown, components }) => {
     }
 
     // Check for [video:url]
-    const videoMatch = trimmed.match(/^\[video:\s*(.+?)\s*\]$/i);
+    const videoMatch = trimmed.match(/^\[video:\s*(.+?)\s*\]$/i) || trimmed.match(/^<!-- video:(.+?) -->$/i);
     if (videoMatch) {
       flushMarkdown();
       const videoUrl = videoMatch[1].trim();
@@ -212,7 +213,7 @@ const RenderedContent = memo(({ markdown, components }) => {
     }
 
     // Check for [embed:url] - specifically for YouTube/Spotify
-    const embedMatch = trimmed.match(/^\[embed:\s*(.+?)\s*\]$/i);
+    const embedMatch = trimmed.match(/^\[embed:\s*(.+?)\s*\]$/i) || trimmed.match(/^<!-- embed:(.+?) -->$/i);
     if (embedMatch) {
       flushMarkdown();
       const embedUrl = embedMatch[1].trim();
@@ -503,7 +504,9 @@ const LiveMarkdownEditor = ({
       case 'h1':
       case 'h2':
       case 'h3':
-      case 'h4': {
+      case 'h4':
+      case 'h5':
+      case 'h6': {
         const level = parseInt(action[1]);
         result = toggleHeading(value, selectionStart, level);
         break;
@@ -595,6 +598,11 @@ const LiveMarkdownEditor = ({
     const isCtrl = e.ctrlKey || e.metaKey;
 
     if (isCtrl) {
+      if (/^[1-6]$/.test(e.key)) {
+        e.preventDefault();
+        handleToolbarAction(`h${e.key}`);
+        return;
+      }
       switch (e.key.toLowerCase()) {
         case 'b':
           e.preventDefault();

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ArchiveSlideout from './ArchiveSlideout';
 
-const Navbar = ({ onNewPost, posts = [] }) => {
+const Navbar = ({ onNewPost, posts = [], hideArchive = false }) => {
     const [isArchiveOpen, setIsArchiveOpen] = useState(false);
     const archiveRef = useRef(null);
 
@@ -32,7 +32,7 @@ const Navbar = ({ onNewPost, posts = [] }) => {
                     <h1>quietwhispered</h1>
                 </Link>
                 <div className="nav-links">
-                    {posts.length > 0 && (
+                    {!hideArchive && posts.length > 0 && (
                         <button
                             className="nav-button-archive"
                             onClick={() => setIsArchiveOpen(!isArchiveOpen)}
@@ -54,7 +54,7 @@ const Navbar = ({ onNewPost, posts = [] }) => {
                 </div>
             </div>
             {/* Archive slide-out panel */}
-            {posts.length > 0 && (
+            {!hideArchive && posts.length > 0 && (
                 <div ref={archiveRef}>
                     <ArchiveSlideout 
                         posts={posts} 
@@ -63,7 +63,7 @@ const Navbar = ({ onNewPost, posts = [] }) => {
                     />
                 </div>
             )}
-            {isArchiveOpen && <div className="archive-overlay" onClick={() => setIsArchiveOpen(false)} />}
+            {!hideArchive && isArchiveOpen && <div className="archive-overlay" onClick={() => setIsArchiveOpen(false)} />}
         </nav>
     );
 };

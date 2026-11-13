@@ -38,7 +38,7 @@ const normalizeEntry = (snap) => {
   const data = snap.data();
   const createdAt = data.createdAt?.toDate?.() || null;
   const updatedAt = data.updatedAt?.toDate?.() || null;
-  const normalizedDate = data.date?.toDate?.() || data.date || createdAt || null;
+  const normalizedDate = data.date?.toDate?.() || data.date || null;
   return {
     _id: snap.id,
     id: snap.id,
@@ -119,7 +119,7 @@ export const getPublicEntryById = async (id) => {
   const snap = await getDoc(refDoc);
   if (!snap.exists()) return null;
   const data = snap.data();
-  if (!data?.isPublished) return null;
+  if (!data?.isPublished && data?.privacy !== 'link') return null;
   return normalizeEntry(snap);
 };
 

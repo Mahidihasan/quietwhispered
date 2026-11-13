@@ -221,7 +221,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                 ...post,
                 title: post.title || '',
                 content: post.content || '',
-                date: resolvePostDate(post) ? resolvePostDate(post).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                date: post.date ? resolvePostDate(post)?.toISOString().split('T')[0] || '' : '',
                 coverImage: post.media || post.imageUrls?.[0] || '',
                 youtubeEmbedUrl: post.youtubeEmbedUrl || (post.type === 'video' ? post.media : '') || '',
                 customAudioUrl: post.customAudioUrl || '', mood: post.mood || '',
@@ -345,7 +345,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
 
     const buildShareUrl = (postId) => {
         if (!postId || typeof window === 'undefined') return '';
-        return new URL(`/post/${postId}`, window.location.origin).href;
+        return new URL(`/share/${postId}`, window.location.origin).href;
     };
 
     const handleCopyShareUrl = async () => {
@@ -449,7 +449,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                     <input type="text" name="title" value={formData.title} onChange={handleChange}
                                         className="writing-title" placeholder="Your story begins with a title..."
                                         style={{ fontSize: `${Number(titleSize) || 32}px`, fontFamily: `'${selectedTitleFont}', ${selectedTitleFont === 'Caveat' ? 'cursive' : ['Special Elite', 'Courier Prime', 'Cutive Mono', 'Inconsolata', 'IBM Plex Mono', 'VT323'].includes(selectedTitleFont) ? 'monospace' : 'serif'}` }}
-                                        required />
+                                        />
                                     <LiveMarkdownEditor
                                         value={formData.content}
                                         onChange={(newContent) => setFormData(prev => ({ ...prev, content: newContent }))}
@@ -514,6 +514,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                 <div className="privacy-chips-row">
                                     {[
                                         { value: 'public', label: 'Public' },
+                                        { value: 'link', label: 'Share with URL' },
                                         { value: 'private', label: 'Private' },
                                         { value: 'draft', label: 'Draft' },
                                         { value: 'hidden', label: 'Hidden' }
@@ -526,6 +527,8 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                                         ? 'Visible on the public journal.'
                                         : formData.privacy === 'private'
                                             ? 'Only visible in the admin dashboard.'
+                                            : formData.privacy === 'link'
+                                                ? 'Anyone with the share link can view this entry. It stays off the public journal.'
                                             : formData.privacy === 'draft'
                                                 ? 'Unpublished work saved for later.'
                                                 : 'Hidden from public view.'}
@@ -725,7 +728,7 @@ const PostEditor = ({ post, mediaSettings, onClose, onSave, restoreBackup = true
                         </AccordionSection>
 
                         {/* Share */}
-                        {post?._id && (
+                        {post?._id && ['public', 'link'].includes(formData.privacy) && (
                             <AccordionSection 
                                 icon={<FiShare2 size={14} />} 
                                 title="Share" 
