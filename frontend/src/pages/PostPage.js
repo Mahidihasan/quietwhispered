@@ -65,6 +65,7 @@ const PostPage = ({ standalone = false }) => {
     const fetchPost = useCallback(async () => {
         try {
             setLoading(true);
+            setError('');
             const data = standalone
                 ? await getPublicEntryById(id)
                 : (user ? await getEntryById(id) : await getPublicEntryById(id));
@@ -75,7 +76,9 @@ const PostPage = ({ standalone = false }) => {
                 setPost(data);
             }
         } catch (err) {
-            setError('Post not found or has been deleted');
+            setError(standalone
+                ? `Could not load this shared post. ${err.message || 'Please try again later.'}`
+                : 'Post not found or has been deleted');
             console.error('Error fetching post:', err);
         } finally {
             setLoading(false);
