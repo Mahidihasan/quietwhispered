@@ -1,4 +1,4 @@
-const { onCall, HttpsError } = require('firebase-functions/v2/https');
+const { onCall, onRequest, HttpsError } = require('firebase-functions/v2/https');
 const { defineSecret, defineString } = require('firebase-functions/params');
 const { initializeApp } = require('firebase-admin/app');
 const { getFirestore } = require('firebase-admin/firestore');
@@ -74,28 +74,46 @@ exports.deleteJournalEntry = onCall({ secrets: [cloudinaryApiSecret] }, async (r
   return { deleted: true, imagesDeleted: publicIds.length };
 });
 
-exports.getPublicJournalEntry = onCall({ cors: true }, async (request) => {
-  const entryId = request.data?.id;
-  if (typeof entryId !== 'string' || !entryId.trim()) {
-    throw new HttpsError('invalid-argument', 'A journal entry ID is required.');
-  }
-
-  const snapshot = await getFirestore().collection('journalEntries').doc(entryId).get();
-  if (!snapshot.exists) return { entry: null };
-
-  const data = snapshot.data();
-  if (data?.isPublished !== true && data?.privacy !== 'link') {
-    return { entry: null };
-  }
-
-  return {
-    entry: {
-      ...data,
-      _id: snapshot.id,
-      id: snapshot.id,
-      createdAt: data.createdAt?.toDate?.() || null,
-      updatedAt: data.updatedAt?.toDate?.() || null,
-      date: data.date?.toDate?.() || data.date || null
+exports.getPublicJournalEntryHttp = onRequest(
+  { cors: ['https://quietwhispered.vercel.app'] },
+  async (request, response) => {
+    if (request.method !== 'GET') {
+      response.set('Allow', 'GET').status(405).json({ error: 'method-not-allowed' });
+      return;
     }
-  };
-});
+
+    const entryId = request.query.id;
+    if (typeof entryId !== 'string' || !entryId.trim()) {
+      response.status(400).json({ error: 'A journal entry ID is required.' });
+      return;
+    }
+
+    try {
+      const snapshot = await getFirestore().collection('journalEntries').doc(entryId).get();
+      if (!snapshot.exists) {
+        response.status(404).json({ entry: null });
+        return;
+      }
+
+      const data = snapshot.data();
+      if (data?.isPublished !== true && data?.privacy !== 'link') {
+        response.status(404).json({ entry: null });
+        return;
+      }
+
+      response.json({
+        entry: {
+          ...data,
+          _id: snapshot.id,
+          id: snapshot.id,
+          createdAt: data.createdAt?.toDate?.() || null,
+          updatedAt: data.updatedAt?.toDate?.() || null,
+          date: data.date?.toDate?.() || data.date || null
+        }
+      });
+    } catch (error) {
+      console.error('Public journal entry lookup failed.', error);
+      response.status(500).json({ error: 'Could not load the shared post.' });
+    }
+  }
+);

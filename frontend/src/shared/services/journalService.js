@@ -10,7 +10,6 @@ import {
   updateDoc,
   where
 } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth, db } from '../firebase';
 import { uploadImageToCloudinary } from './cloudinaryUpload';
 import { resolvePostDate } from '../utils/dateUtils';
@@ -116,9 +115,14 @@ export const getEntryById = async (id) => {
 
 export const getPublicEntryById = async (id) => {
   ensureFirebase();
-  const getPublicEntry = httpsCallable(getFunctions(auth.app), 'getPublicJournalEntry');
-  const result = await getPublicEntry({ id });
-  return result.data?.entry || null;
+  const projectId = auth.app.options.projectId;
+  const endpoint = new URL(`https://us-central1-${projectId}.cloudfunctions.net/getPublicJournalEntryHttp`);
+  endpoint.searchParams.set('id', id);
+  const response = await fetch(endpoint.href);
+  const result = await response.json();
+  if (response.status === 404) return null;
+  if (!response.ok) throw new Error(result.error || 'Could not load the shared post.');
+  return result.entry || null;
 };
 
 export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
