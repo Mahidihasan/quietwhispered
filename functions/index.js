@@ -74,7 +74,7 @@ exports.deleteJournalEntry = onCall({ secrets: [cloudinaryApiSecret] }, async (r
   return { deleted: true, imagesDeleted: publicIds.length };
 });
 
-exports.getPublicJournalEntry = onCall(async (request) => {
+exports.getPublicJournalEntry = onCall({ cors: true }, async (request) => {
   const entryId = request.data?.id;
   if (typeof entryId !== 'string' || !entryId.trim()) {
     throw new HttpsError('invalid-argument', 'A journal entry ID is required.');
