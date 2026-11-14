@@ -73,3 +73,29 @@ exports.deleteJournalEntry = onCall({ secrets: [cloudinaryApiSecret] }, async (r
   await entryRef.delete();
   return { deleted: true, imagesDeleted: publicIds.length };
 });
+
+exports.getPublicJournalEntry = onCall(async (request) => {
+  const entryId = request.data?.id;
+  if (typeof entryId !== 'string' || !entryId.trim()) {
+    throw new HttpsError('invalid-argument', 'A journal entry ID is required.');
+  }
+
+  const snapshot = await getFirestore().collection('journalEntries').doc(entryId).get();
+  if (!snapshot.exists) return { entry: null };
+
+  const data = snapshot.data();
+  if (data?.isPublished !== true && data?.privacy !== 'link') {
+    return { entry: null };
+  }
+
+  return {
+    entry: {
+      ...data,
+      _id: snapshot.id,
+      id: snapshot.id,
+      createdAt: data.createdAt?.toDate?.() || null,
+      updatedAt: data.updatedAt?.toDate?.() || null,
+      date: data.date?.toDate?.() || data.date || null
+    }
+  };
+});

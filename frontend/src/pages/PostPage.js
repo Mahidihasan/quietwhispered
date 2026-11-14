@@ -65,7 +65,9 @@ const PostPage = ({ standalone = false }) => {
     const fetchPost = useCallback(async () => {
         try {
             setLoading(true);
-            const data = user ? await getEntryById(id) : await getPublicEntryById(id);
+            const data = standalone
+                ? await getPublicEntryById(id)
+                : (user ? await getEntryById(id) : await getPublicEntryById(id));
             if (!data) {
                 setError('Post not found or has been deleted');
                 setPost(null);
@@ -78,12 +80,12 @@ const PostPage = ({ standalone = false }) => {
         } finally {
             setLoading(false);
         }
-    }, [id, user]);
+    }, [id, standalone, user]);
 
     useEffect(() => {
-        if (authLoading) return;
+        if (!standalone && authLoading) return;
         fetchPost();
-    }, [authLoading, fetchPost]);
+    }, [authLoading, fetchPost, standalone]);
 
     useEffect(() => {
         if (!post) return;

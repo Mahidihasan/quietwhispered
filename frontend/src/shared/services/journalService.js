@@ -10,6 +10,7 @@ import {
   updateDoc,
   where
 } from 'firebase/firestore';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth, db } from '../firebase';
 import { uploadImageToCloudinary } from './cloudinaryUpload';
 import { resolvePostDate } from '../utils/dateUtils';
@@ -115,12 +116,9 @@ export const getEntryById = async (id) => {
 
 export const getPublicEntryById = async (id) => {
   ensureFirebase();
-  const refDoc = doc(db, 'journalEntries', id);
-  const snap = await getDoc(refDoc);
-  if (!snap.exists()) return null;
-  const data = snap.data();
-  if (!data?.isPublished && data?.privacy !== 'link') return null;
-  return normalizeEntry(snap);
+  const getPublicEntry = httpsCallable(getFunctions(auth.app), 'getPublicJournalEntry');
+  const result = await getPublicEntry({ id });
+  return result.data?.entry || null;
 };
 
 export const getEntriesPage = async ({ pageSize = 5, lastDoc = null } = {}) => {
